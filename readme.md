@@ -1,3 +1,5 @@
+A simple PHP [Stomp](http://stomp.github.com) Client
+
 Installing
 ----------
 
@@ -6,7 +8,7 @@ Obtain the source of the library by downloading the distribution and add its con
 Running Examples
 ----------------
 
-Examples are located in `src/examples` folder. Before running them, be sure you have installed this library properly and you have started ActiveMQ broker (recommended version 5.3.0 or above) with [Stomp connector enabled] (http://activemq.apache.org/stomp.html). 
+Examples are located in `src/examples` folder. Before running them, be sure you have installed this library properly and you have started ActiveMQ broker (recommended version 5.5.0 or above) with [Stomp connector enabled] (http://activemq.apache.org/stomp.html). 
 
 You can start by running 
 	
