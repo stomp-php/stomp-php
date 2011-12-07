@@ -86,7 +86,7 @@ class Stomp
      */
     protected function _init ()
     {
-        $pattern = "|^(([a-zA-Z]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
+        $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $this->_brokerUri, $regs)) {
             $scheme = $regs[2];
             $hosts = $regs[3];
