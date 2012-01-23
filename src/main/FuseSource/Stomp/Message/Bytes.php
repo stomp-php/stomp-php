@@ -1,8 +1,8 @@
 <?php
 
-namespace Fusesource\Stomp\Message;
+namespace FuseSource\Stomp\Message;
 
-use Fusesource\Stomp\Message;
+use FuseSource\Stomp\Message;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation

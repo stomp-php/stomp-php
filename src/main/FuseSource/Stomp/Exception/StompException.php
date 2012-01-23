@@ -1,7 +1,7 @@
 <?php
-namespace Fusesource\Stomp\Exception;
+namespace FuseSource\Stomp\Exception;
 
-use Fusesource\Stomp\ExceptionInterface;
+use FuseSource\Stomp\ExceptionInterface;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation

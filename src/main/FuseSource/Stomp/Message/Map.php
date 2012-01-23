@@ -1,7 +1,7 @@
 <?php
-namespace Fusesource\Stomp\Message;
+namespace FuseSource\Stomp\Message;
 
-use Fusesource\Stomp\Message;
+use FuseSource\Stomp\Message;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -39,7 +39,7 @@ class Map extends Message
      */
     function __construct ($msg, $headers = null)
     {
-        if ($msg instanceof \Fusesource\Stomp\Frame) {
+        if ($msg instanceof \FuseSource\Stomp\Frame) {
             $this->_init($msg->command, $msg->headers, $msg->body);
             $this->map = json_decode($msg->body, true);
         } else {

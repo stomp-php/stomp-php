@@ -1,9 +1,9 @@
 <?php
 
-namespace Fusesource\Stomp;
+namespace FuseSource\Stomp;
 
-use Fusesource\Stomp\Exception\StompException;
-use Fusesource\Stomp\Message\Map;
+use FuseSource\Stomp\Exception\StompException;
+use FuseSource\Stomp\Message\Map;
 
 /**
  *

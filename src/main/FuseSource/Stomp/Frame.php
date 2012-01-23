@@ -1,8 +1,8 @@
 <?php
 
-namespace Fusesource\Stomp;
+namespace FuseSource\Stomp;
 
-use Fusesource\Stomp\Exception\StompException;
+use FuseSource\Stomp\Exception\StompException;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
