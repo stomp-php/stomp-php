@@ -1,4 +1,6 @@
 <?php
+
+namespace Fusesource\Stomp;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -16,20 +18,11 @@
  * limitations under the License.
  */
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
-require_once 'Stomp/Frame.php';
-
 /**
- * Basic text stomp message
  *
- * @package Stomp
+ * @author srohweder
  */
-class StompMessage extends StompFrame
+interface ExceptionInterface
 {
-    public function __construct ($body, $headers = null)
-    {
-        $this->_init("SEND", $headers, $body);
-    }
+    //put your code here
 }
-?>

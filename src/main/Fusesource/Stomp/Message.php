@@ -1,4 +1,5 @@
 <?php
+namespace Fusesource\Stomp;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -18,28 +19,16 @@
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
-require_once 'Stomp/Message.php';
 
 /**
- * Message that contains a stream of uninterpreted bytes
+ * Basic text stomp message
  *
  * @package Stomp
  */
-class StompMessageBytes extends StompMessage
+class Message extends Frame
 {
-    /**
-     * Constructor
-     *
-     * @param string $body
-     * @param array $headers
-     */
-    function __construct ($body, $headers = null)
+    public function __construct ($body, $headers = null)
     {
         $this->_init("SEND", $headers, $body);
-        if ($this->headers == null) {
-            $this->headers = array();
-        }
-        $this->headers['content-length'] = count(unpack("c*", $body));
     }
 }
-?>

@@ -28,7 +28,7 @@ $con->connect();
 $body = array("city"=>"Belgrade", "name"=>"Dejan");
 $header = array();
 $header['transformation'] = 'jms-map-json';
-$mapMessage = new StompMessageMap($body, $header);
+$mapMessage = new Map($body, $header);
 $con->send("/queue/test", $mapMessage);
 echo "Sending array: ";
 print_r($body);

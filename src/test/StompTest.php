@@ -1,4 +1,8 @@
 <?php
+
+use Fusesource\Stomp\Stomp;
+use Fusesource\Stomp\Message\Map;
+use Fusesource\Stomp\Message\Bytes;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -16,9 +20,7 @@
  * limitations under the License.
  */
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
-require_once '../main/Stomp.php';
-require_once '../main/Stomp/Message/Map.php';
-require_once '../main/Stomp/Message/Bytes.php';
+
 require_once 'PHPUnit/Framework/TestCase.php';
 /**
  * Stomp test case.
@@ -33,7 +35,7 @@ class StompTest extends PHPUnit_Framework_TestCase
      * @var Stomp
      */
     private $Stomp;
-    private $broker = 'tcp://localhost:61613';
+    private $broker = 'tcp://127.0.0.1:61613';
     private $queue = '/queue/test';
 	private $topic = '/topic/test';
     /**
@@ -42,10 +44,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     protected function setUp ()
     {
         parent::setUp();
-        
-        $stomp_path = realpath('../main/');
-        set_include_path(get_include_path() . PATH_SEPARATOR . $stomp_path);
-        
+
         $this->Stomp = new Stomp($this->broker);
         $this->Stomp->sync = false;
     }
@@ -80,7 +79,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         
         $frame = $this->Stomp->readFrame();
         
-        $this->assertTrue($frame instanceof StompFrame, 'Frame expected');
+        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame, 'Frame expected');
         
         $this->Stomp->ack($frame);
         
@@ -114,7 +113,7 @@ class StompTest extends PHPUnit_Framework_TestCase
             
             for ($x = $y; $x < $y + 10; ++$x) {
                 $frame = $this->Stomp->readFrame();
-                $this->assertTrue($frame instanceof StompFrame);
+                $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
                 $this->assertArrayHasKey($frame->body, $messages, $frame->body . ' is not in the list of messages to ack');
                 $this->assertEquals('sent', $messages[$frame->body], $frame->body . ' has been marked acked, but has been received again.');
                 $messages[$frame->body] = 'acked';
@@ -208,7 +207,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $this->Stomp->send($this->queue, 'testReadFrame');
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof StompFrame);
+        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
         $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
@@ -224,7 +223,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend'));
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof StompFrame);
+        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
         $this->assertEquals('testSend', $frame->body, 'Body of test frame does not match sent message');
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
@@ -252,12 +251,12 @@ class StompTest extends PHPUnit_Framework_TestCase
         $body = array("city"=>"Belgrade", "name"=>"Dejan");
         $header = array();
         $header['transformation'] = 'jms-map-json';
-        $mapMessage = new StompMessageMap($body, $header);
+        $mapMessage = new Map($body, $header);
         $this->Stomp->send($this->queue, $mapMessage);
 
         $this->Stomp->subscribe($this->queue, array('transformation' => 'jms-map-json'));
         $msg = $this->Stomp->readFrame();
-        $this->assertTrue($msg instanceOf StompMessageMap);
+        $this->assertTrue($msg instanceOf Fusesource\Stomp\Message\Map);
         $this->assertEquals($msg->map, $body);
         $this->Stomp->ack($msg);
         $this->Stomp->disconnect();
@@ -272,7 +271,7 @@ class StompTest extends PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
         $body = "test";
-        $mapMessage = new StompMessageBytes($body);
+        $mapMessage = new Bytes($body);
         $this->Stomp->send($this->queue, $mapMessage);
 
         $this->Stomp->subscribe($this->queue);

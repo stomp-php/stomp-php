@@ -1,4 +1,6 @@
 <?php
+
+use Fusesource\Stomp\Stomp;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -16,8 +18,7 @@
  * limitations under the License.
  */
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
-require_once '../main/Stomp.php';
-require_once 'PHPUnit/Framework/TestCase.php';
+
 /**
  * Stomp test case.
  *
@@ -37,9 +38,7 @@ class StompFailoverTest extends PHPUnit_Framework_TestCase
     protected function setUp ()
     {
         parent::setUp();
-        
-        $stomp_path = realpath('../../main/php5/');
-        set_include_path(get_include_path() . PATH_SEPARATOR . $stomp_path);
+
         
         $this->Stomp = new Stomp('failover://(tcp://localhost:61614,tcp://localhost:61613)?randomize=false');
     }

@@ -1,4 +1,8 @@
 <?php
+
+namespace Fusesource\Stomp\Message;
+
+use Fusesource\Stomp\Message;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -18,36 +22,25 @@
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
-require_once 'Stomp/Message.php';
-
 /**
- * Message that contains a set of name-value pairs
+ * Message that contains a stream of uninterpreted bytes
  *
  * @package Stomp
  */
-class StompMessageMap extends StompMessage
+class Bytes extends Message
 {
-    public $map;
-    
     /**
      * Constructor
      *
-     * @param StompFrame|string $msg
+     * @param string $body
      * @param array $headers
      */
-    function __construct ($msg, $headers = null)
+    function __construct ($body, $headers = null)
     {
-        if ($msg instanceof StompFrame) {
-            $this->_init($msg->command, $msg->headers, $msg->body);
-            $this->map = json_decode($msg->body, true);
-        } else {
-            $this->_init("SEND", $headers, $msg);
-            if ($this->headers == null) {
-                $this->headers = array();
-            }
-            $this->headers['transformation'] = 'jms-map-json';
-            $this->body = json_encode($msg);
+        $this->_init("SEND", $headers, $body);
+        if ($this->headers == null) {
+            $this->headers = array();
         }
+        $this->headers['content-length'] = count(unpack("c*", $body));
     }
 }
-?>

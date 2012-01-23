@@ -1,4 +1,7 @@
 <?php
+namespace Fusesource\Stomp\Exception;
+
+use Fusesource\Stomp\ExceptionInterface;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -24,7 +27,7 @@
  *
  * @package Stomp
  */
-class StompException extends Exception
+class StompException extends \Exception implements ExceptionInterface
 {
     protected $_details;
     
@@ -52,4 +55,3 @@ class StompException extends Exception
         return $this->_details;
     }
 }
-?>

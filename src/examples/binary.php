@@ -26,7 +26,7 @@ $con = new Stomp("tcp://localhost:61613");
 $con->connect();
 // send a message to the queue
 $body = "test";
-$bytesMessage = new StompMessageBytes($body);
+$bytesMessage = new Bytes($body);
 $con->send("/queue/test", $bytesMessage);
 echo "Sending message: ";
 print_r($body . "\n");

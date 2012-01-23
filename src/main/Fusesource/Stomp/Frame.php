@@ -1,4 +1,8 @@
 <?php
+
+namespace Fusesource\Stomp;
+
+use Fusesource\Stomp\Exception\StompException;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -23,7 +27,7 @@
  *
  * @package Stomp
  */
-class StompFrame
+class Frame
 {
     public $command;
     public $headers = array();
@@ -50,7 +54,6 @@ class StompFrame
         $this->body = $body;
         
         if ($this->command == 'ERROR') {
-            require_once 'Exception.php';
             throw new StompException($this->headers['message'], 0, $this->body);
         }
     }
@@ -73,4 +76,3 @@ class StompFrame
         return $data .= "\x00";
     }
 }
-?>

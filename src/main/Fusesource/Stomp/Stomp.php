@@ -1,4 +1,10 @@
 <?php
+
+namespace Fusesource\Stomp;
+
+use Fusesource\Stomp\Exception\StompException;
+use Fusesource\Stomp\Message\Map;
+
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -17,8 +23,6 @@
  */
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
-
-require_once 'Stomp/Frame.php';
 
 /**
  * A Stomp Connection
@@ -103,7 +107,6 @@ class Stomp
                 parse_str($params, $this->_params);
             }
         } else {
-            require_once 'Stomp/Exception.php';
             throw new StompException("Bad Broker URL {$this->_brokerUri}");
         }
     }
@@ -120,7 +123,6 @@ class Stomp
         if ($parsed) {
             array_push($this->_hosts, array($parsed['host'] , $parsed['port'] , $parsed['scheme']));
         } else {
-            require_once 'Stomp/Exception.php';
             throw new StompException("Bad Broker URL $url");
         }
     }
@@ -132,7 +134,6 @@ class Stomp
     protected function _makeConnection ()
     {
         if (count($this->_hosts) == 0) {
-            require_once 'Stomp/Exception.php';
             throw new StompException("No broker defined");
         }
         
@@ -164,7 +165,6 @@ class Stomp
             }
             $this->_socket = @fsockopen($scheme . '://' . $host, $port, $connect_errno, $connect_errstr, $this->_connect_timeout_seconds);
             if (!is_resource($this->_socket) && $att >= $this->_attempts && !array_key_exists($i + 1, $this->_hosts)) {
-                require_once 'Stomp/Exception.php';
                 throw new StompException("Could not connect to $host:$port ($att/{$this->_attempts})");
             } else if (is_resource($this->_socket)) {
                 $connected = true;
@@ -173,7 +173,6 @@ class Stomp
             }
         }
         if (! $connected) {
-            require_once 'Stomp/Exception.php';
             throw new StompException("Could not connect to a broker");
         }
     }
@@ -198,15 +197,14 @@ class Stomp
 		if ($this->clientId != null) {
 			$headers["client-id"] = $this->clientId;
 		}
-		$frame = new StompFrame("CONNECT", $headers);
+		$frame = new Frame("CONNECT", $headers);
         $this->_writeFrame($frame);
         $frame = $this->readFrame();
-        if ($frame instanceof StompFrame && $frame->command == 'CONNECTED') {
+        if ($frame instanceof Frame && $frame->command == 'CONNECTED') {
             $this->_sessionId = $frame->headers["session"];
             return true;
         } else {
-            require_once 'Stomp/Exception.php';
-            if ($frame instanceof StompFrame) {
+            if ($frame instanceof Frame) {
                 throw new StompException("Unexpected command: {$frame->command}", 0, $frame->body);
             } else {
                 throw new StompException("Connection not acknowledged");
@@ -236,21 +234,21 @@ class Stomp
      * Send a message to a destination in the messaging system 
      *
      * @param string $destination Destination queue
-     * @param string|StompFrame $msg Message
+     * @param string|Frame $msg Message
      * @param array $properties
      * @param boolean $sync Perform request synchronously
      * @return boolean
      */
     public function send ($destination, $msg, $properties = array(), $sync = null)
     {
-        if ($msg instanceof StompFrame) {
+        if ($msg instanceof Frame) {
             $msg->headers['destination'] = $destination;
             if (is_array($properties)) $msg->headers = array_merge($msg->headers, $properties);
             $frame = $msg;
         } else {
             $headers = $properties;
             $headers['destination'] = $destination;
-            $frame = new StompFrame('SEND', $headers, $msg);
+            $frame = new Frame('SEND', $headers, $msg);
         }
         $this->_prepareReceipt($frame, $sync);
         $this->_writeFrame($frame);
@@ -259,10 +257,10 @@ class Stomp
     /**
      * Prepair frame receipt
      *
-     * @param StompFrame $frame
+     * @param Frame $frame
      * @param boolean $sync
      */
-    protected function _prepareReceipt (StompFrame $frame, $sync)
+    protected function _prepareReceipt (Frame $frame, $sync)
     {
         $receive = $this->sync;
         if ($sync !== null) {
@@ -275,12 +273,12 @@ class Stomp
     /**
      * Wait for receipt
      *
-     * @param StompFrame $frame
+     * @param Frame $frame
      * @param boolean $sync
      * @return boolean
      * @throws StompException
      */
-    protected function _waitForReceipt (StompFrame $frame, $sync)
+    protected function _waitForReceipt (Frame $frame, $sync)
     {
 
         $receive = $this->sync;
@@ -293,16 +291,14 @@ class Stomp
                 return true;
             }
             $frame = $this->readFrame();
-            if ($frame instanceof StompFrame && $frame->command == 'RECEIPT') {
+            if ($frame instanceof Frame && $frame->command == 'RECEIPT') {
                 if ($frame->headers['receipt-id'] == $id) {
                     return true;
                 } else {
-                    require_once 'Stomp/Exception.php';
                     throw new StompException("Unexpected receipt id {$frame->headers['receipt-id']}", 0, $frame->body);
                 }
             } else {
-                require_once 'Stomp/Exception.php';
-                if ($frame instanceof StompFrame) {
+                if ($frame instanceof Frame) {
                     throw new StompException("Unexpected command {$frame->command}", 0, $frame->body);
                 } else {
                     throw new StompException("Receipt not received");
@@ -333,7 +329,7 @@ class Stomp
             }
         }
         $headers['destination'] = $destination;
-        $frame = new StompFrame('SUBSCRIBE', $headers);
+        $frame = new Frame('SUBSCRIBE', $headers);
         $this->_prepareReceipt($frame, $sync);
         $this->_writeFrame($frame);
         if ($this->_waitForReceipt($frame, $sync) == true) {
@@ -361,7 +357,7 @@ class Stomp
             }
         }
         $headers['destination'] = $destination;
-        $frame = new StompFrame('UNSUBSCRIBE', $headers);
+        $frame = new Frame('UNSUBSCRIBE', $headers);
         $this->_prepareReceipt($frame, $sync);
         $this->_writeFrame($frame);
         if ($this->_waitForReceipt($frame, $sync) == true) {
@@ -385,7 +381,7 @@ class Stomp
         if (isset($transactionId)) {
             $headers['transaction'] = $transactionId;
         }
-        $frame = new StompFrame('BEGIN', $headers);
+        $frame = new Frame('BEGIN', $headers);
         $this->_prepareReceipt($frame, $sync);
         $this->_writeFrame($frame);
         return $this->_waitForReceipt($frame, $sync);
@@ -404,7 +400,7 @@ class Stomp
         if (isset($transactionId)) {
             $headers['transaction'] = $transactionId;
         }
-        $frame = new StompFrame('COMMIT', $headers);
+        $frame = new Frame('COMMIT', $headers);
         $this->_prepareReceipt($frame, $sync);
         $this->_writeFrame($frame);
         return $this->_waitForReceipt($frame, $sync);
@@ -421,7 +417,7 @@ class Stomp
         if (isset($transactionId)) {
             $headers['transaction'] = $transactionId;
         }
-        $frame = new StompFrame('ABORT', $headers);
+        $frame = new Frame('ABORT', $headers);
         $this->_prepareReceipt($frame, $sync);
         $this->_writeFrame($frame);
         return $this->_waitForReceipt($frame, $sync);
@@ -430,19 +426,19 @@ class Stomp
      * Acknowledge consumption of a message from a subscription
 	 * Note: This operation is always asynchronous
      *
-     * @param string|StompFrame $messageMessage ID
+     * @param string|Frame $messageMessage ID
      * @param string $transactionId
      * @return boolean
      * @throws StompException
      */
     public function ack ($message, $transactionId = null)
     {
-        if ($message instanceof StompFrame) {
+        if ($message instanceof Frame) {
             $headers = $message->headers;
             if (isset($transactionId)) {
                 $headers['transaction'] = $transactionId;
             }			
-            $frame = new StompFrame('ACK', $headers);
+            $frame = new Frame('ACK', $headers);
             $this->_writeFrame($frame);
             return true;
         } else {
@@ -451,7 +447,7 @@ class Stomp
                 $headers['transaction'] = $transactionId;
             }
             $headers['message-id'] = $message;
-            $frame = new StompFrame('ACK', $headers);
+            $frame = new Frame('ACK', $headers);
             $this->_writeFrame($frame);
             return true;
         }
@@ -469,7 +465,7 @@ class Stomp
 		}
 
         if (is_resource($this->_socket)) {
-            $this->_writeFrame(new StompFrame('DISCONNECT', $headers));
+            $this->_writeFrame(new Frame('DISCONNECT', $headers));
             fclose($this->_socket);
         }
         $this->_socket = null;
@@ -482,12 +478,11 @@ class Stomp
     /**
      * Write frame to server
      *
-     * @param StompFrame $stompFrame
+     * @param Frame $stompFrame
      */
-    protected function _writeFrame (StompFrame $stompFrame)
+    protected function _writeFrame (Frame $stompFrame)
     {
         if (!is_resource($this->_socket)) {
-            require_once 'Stomp/Exception.php';
             throw new StompException('Socket connection hasn\'t been established');
         }
 
@@ -514,7 +509,7 @@ class Stomp
     /**
      * Read response frame from server
      *
-     * @return StompFrame False when no frame to read
+     * @return Frame False when no frame to read
      */
     public function readFrame ()
     {
@@ -552,10 +547,9 @@ class Stomp
                 $command = $v;
             }
         }
-        $frame = new StompFrame($command, $headers, trim($body));
+        $frame = new Frame($command, $headers, trim($body));
         if (isset($frame->headers['transformation']) && $frame->headers['transformation'] == 'jms-map-json') {
-            require_once 'Stomp/Message/Map.php';
-            return new StompMessageMap($frame);
+            return new Map($frame);
         } else {
             return $frame;
         }
@@ -610,4 +604,3 @@ class Stomp
         $this->disconnect();
     }
 }
-?>
