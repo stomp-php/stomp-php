@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/loader.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -24,7 +25,9 @@
  $ php security.php
 */
 // include a library
-require_once("Stomp.php");
+use FuseSource\Stomp\Stomp;
+use FuseSource\Stomp\Exception\StompException;
+
 // make a connection
 $con = new Stomp("tcp://localhost:61613");
 // use sync operations

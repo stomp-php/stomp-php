@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/loader.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -18,8 +19,8 @@
  */
 
 // include a library
-require_once("Stomp.php");
-require_once("Stomp/Message/Map.php");
+use FuseSource\Stomp\Stomp;
+use FuseSource\Stomp\Message\Map;
 // make a connection
 $con = new Stomp("tcp://localhost:61613");
 // connect

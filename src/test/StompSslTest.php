@@ -1,5 +1,5 @@
 <?php
-use Fusesource\Stomp\Stomp;
+use FuseSource\Stomp\Stomp;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation

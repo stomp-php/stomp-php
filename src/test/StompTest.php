@@ -1,8 +1,8 @@
 <?php
 
-use Fusesource\Stomp\Stomp;
-use Fusesource\Stomp\Message\Map;
-use Fusesource\Stomp\Message\Bytes;
+use FuseSource\Stomp\Stomp;
+use FuseSource\Stomp\Message\Map;
+use FuseSource\Stomp\Message\Bytes;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation

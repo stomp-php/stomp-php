@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__.'/loader.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -24,7 +25,8 @@
  $ php connectivity.php
 */
 // include a library
-require_once("Stomp.php");
+
+use FuseSource\Stomp\Stomp;
 // make a connection
 $con = new Stomp("failover://(tcp://localhost:61614,ssl://localhost:61612)?randomize=false");
 // connect
