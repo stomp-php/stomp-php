@@ -1,9 +1,25 @@
 A simple PHP [Stomp](http://stomp.github.com) Client
 
+Version choice
+--------------
+There are 2 Versions of stomp-php. 1.x is compatible with PHP < PHP-5.2 as it 
+does not use PHP-5.3 specific features.
+
+The master branch uses features such as namespaces and newer constants and will 
+become the 2.x release in the near future.
+
+For versioning [semantic versioning](http://semver.org/) is used.
+
+The different Versions can be found at the [tags](https://github.com/dejanb/stomp-php/tags) 
+section.
+
 Installing
 ----------
 
-Obtain the source of the library by downloading the distribution and add its content to your `include_path`. Alternatively, you can grab the source and add `src/main` folder to your `include_path`.
+The source is PSR-0 compliant. So just donwload the source and add the Namespace
+"FuseSource" to your autoloader configuration with the path pointing to 
+src/main/.
+
 
 Running Examples
 ----------------
