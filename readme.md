@@ -10,7 +10,7 @@ become the 2.x release in the near future.
 
 For versioning [semantic versioning](http://semver.org/) is used.
 
-The different Versions can be found at the [tags](tags) 
+The different Versions can be found at the [tags](stomp-php/tags) 
 section.
 
 Installing
