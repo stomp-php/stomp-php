@@ -1,2 +1,5 @@
 nbproject
-src/vendor/ClassLoader
+composer.lock
+composer.phar
+vendor/ClassLoader
+vendor/.composer
