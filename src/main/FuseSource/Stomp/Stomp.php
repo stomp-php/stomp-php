@@ -30,7 +30,7 @@ use FuseSource\Stomp\Message\Map;
  *
  * @package Stomp
  * @author Hiram Chirino <hiram@hiramchirino.com>
- * @author Dejan Bosanac <dejan@nighttale.net> 
+ * @author Dejan Bosanac <dejan@nighttale.net>
  * @author Michael Caplan <mcaplan@labnet.net>
  * @version $Revision: 43 $
  */
@@ -49,14 +49,14 @@ class Stomp
      * @var int
      */
 	public $prefetchSize = 1;
-    
+
 	/**
      * Client id used for durable subscriptions
      *
      * @var string
      */
 	public $clientId = null;
-    
+
     protected $_brokerUri = null;
     protected $_socket = null;
     protected $_hosts = array();
@@ -71,7 +71,7 @@ class Stomp
     protected $_read_timeout_seconds = 60;
     protected $_read_timeout_milliseconds = 0;
     protected $_connect_timeout_seconds = 60;
-    
+
     /**
      * Constructor
      *
@@ -136,16 +136,16 @@ class Stomp
         if (count($this->_hosts) == 0) {
             throw new StompException("No broker defined");
         }
-        
+
         // force disconnect, if previous established connection exists
         $this->disconnect();
-        
+
         $i = $this->_currentHost;
         $att = 0;
         $connected = false;
         $connect_errno = null;
         $connect_errstr = null;
-        
+
         while (! $connected && $att ++ < $this->_attempts) {
             if (isset($this->_params['randomize']) && $this->_params['randomize'] == 'true') {
                 $i = rand(0, count($this->_hosts) - 1);
@@ -211,7 +211,7 @@ class Stomp
             }
         }
     }
-    
+
     /**
      * Check if client session has ben established
      *
@@ -231,7 +231,7 @@ class Stomp
         return $this->_sessionId;
     }
     /**
-     * Send a message to a destination in the messaging system 
+     * Send a message to a destination in the messaging system
      *
      * @param string $destination Destination queue
      * @param string|Frame $msg Message
@@ -437,7 +437,7 @@ class Stomp
             $headers = $message->headers;
             if (isset($transactionId)) {
                 $headers['transaction'] = $transactionId;
-            }			
+            }
             $frame = new Frame('ACK', $headers);
             $this->_writeFrame($frame);
             return true;
@@ -493,19 +493,19 @@ class Stomp
             $this->_writeFrame($stompFrame);
         }
     }
-    
+
     /**
      * Set timeout to wait for content to read
      *
      * @param int $seconds_to_wait  Seconds to wait for a frame
      * @param int $milliseconds Milliseconds to wait for a frame
      */
-    public function setReadTimeout($seconds, $milliseconds = 0) 
+    public function setReadTimeout($seconds, $milliseconds = 0)
     {
         $this->_read_timeout_seconds = $seconds;
         $this->_read_timeout_milliseconds = $milliseconds;
     }
-    
+
     /**
      * Read response frame from server
      *
@@ -516,14 +516,14 @@ class Stomp
         if (!$this->hasFrameToRead()) {
             return false;
         }
-        
+
         $rb = 1024;
         $data = '';
         $end = false;
-        
+
         do {
             $read = fread($this->_socket, $rb);
-            if ($read === false) {
+            if ($read === false || $read === "") {
                 $this->_reconnect();
                 return $this->readFrame();
             }
@@ -534,7 +534,7 @@ class Stomp
             }
             $len = strlen($data);
         } while ($len < 2 || $end == false);
-        
+
         list ($header, $body) = explode("\n\n", $data, 2);
         $header = explode("\n", $header);
         $headers = array();
@@ -555,7 +555,7 @@ class Stomp
         }
         return $frame;
     }
-    
+
     /**
      * Check if there is a frame to read
      *
@@ -566,9 +566,9 @@ class Stomp
         $read = array($this->_socket);
         $write = null;
         $except = null;
-        
+
         $has_frame_to_read = @stream_select($read, $write, $except, $this->_read_timeout_seconds, $this->_read_timeout_milliseconds);
-        
+
         if ($has_frame_to_read !== false)
             $has_frame_to_read = count($read);
 
@@ -578,18 +578,18 @@ class Stomp
         } else if ($has_frame_to_read > 0) {
             return true;
         } else {
-            return false; 
+            return false;
         }
     }
-    
+
     /**
      * Reconnects and renews subscriptions (if there were any)
-     * Call this method when you detect connection problems     
+     * Call this method when you detect connection problems
      */
     protected function _reconnect ()
     {
         $subscriptions = $this->_subscriptions;
-        
+
         $this->connect($this->_username, $this->_password);
         foreach ($subscriptions as $dest => $properties) {
             $this->subscribe($dest, $properties);
