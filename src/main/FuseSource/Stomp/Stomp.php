@@ -71,6 +71,7 @@ class Stomp
     protected $_read_timeout_seconds = 60;
     protected $_read_timeout_milliseconds = 0;
     protected $_connect_timeout_seconds = 60;
+    protected $_waitbuf = array();
     
     /**
      * Constructor
@@ -290,18 +291,25 @@ class Stomp
             if ($id == null) {
                 return true;
             }
-            $frame = $this->readFrame();
-            if ($frame instanceof Frame && $frame->command == 'RECEIPT') {
-                if ($frame->headers['receipt-id'] == $id) {
-                    return true;
-                } else {
-                    throw new StompException("Unexpected receipt id {$frame->headers['receipt-id']}", 0, $frame->body);
+
+            $buf = array();
+            while(true) {
+                $frame = $this->readFrame();
+                if ($frame == false) {
+                    if (!empty($buf)) {
+                        $this->_waitbuf = $buf;
+                        return false;
+                    }
                 }
-            } else {
-                if ($frame instanceof Frame) {
-                    throw new StompException("Unexpected command {$frame->command}", 0, $frame->body);
+                if ($frame instanceof Frame && $frame->command == 'RECEIPT') {
+                    if ($frame->headers['receipt-id'] == $id) {
+                        $this->_waitbuf = $buf;
+                        return true;
+                    } else {
+                        throw new StompException("Unexpected receipt id {$frame->headers['receipt-id']}", 0, $frame->body);
+                    }
                 } else {
-                    throw new StompException("Receipt not received");
+                    $buf[] = $frame;
                 }
             }
         }
@@ -474,6 +482,7 @@ class Stomp
         $this->_subscriptions = array();
         $this->_username = '';
         $this->_password = '';
+        $this->_waitbuf = array();
     }
     /**
      * Write frame to server
@@ -513,6 +522,10 @@ class Stomp
      */
     public function readFrame ()
     {
+        if (!empty($this->_waitbuf)) {
+            return array_shift($this->_waitbuf);
+        }
+
         if (!$this->hasFrameToRead()) {
             return false;
         }
