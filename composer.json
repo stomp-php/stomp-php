@@ -1,7 +1,7 @@
 {
     "name": "fusesource/stomp-php",
     "description": "stomp support for PHP",
-    "keywords": ["messaging","stomp","jms","activemq"],
+    "keywords": ["messaging", "stomp", "jms", "activemq"],
     "homepage": "http://github.com/dejanb/stomp-php",
     "license": "Apache-2.0",
     "authors": [
