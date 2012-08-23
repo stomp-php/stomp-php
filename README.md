@@ -54,15 +54,7 @@ Tests
 The tests at the moment need a running instance of activeMQ listening on the
 default STOMP Port 61613.
 
-To run the tests you first need to fetch the dependencies for the Testsuite.
-
-If you prefer composer
+To run the tests you first need to fetch the dependencies for the test suite
+via composer:
 
     $ php composer.phar install
-
-Or if you prefer to fetch the ClassLoader from github
-
-    $ php vendor/vendor.php
-
-
-
