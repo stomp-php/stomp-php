@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/loader.php';
+require __DIR__.'/../vendor/autoload.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -37,9 +37,9 @@ print_r($body);
 $con->subscribe("/queue/test", array('transformation' => 'jms-map-json'));
 $msg = $con->readFrame();
 
-// extract 
+// extract
 if ( $msg != null) {
-    echo "Received array: "; 
+    echo "Received array: ";
     print_r($msg->map);
     // mark the message as received in the queue
     $con->ack($msg);

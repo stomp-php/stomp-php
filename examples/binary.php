@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/loader.php';
+require __DIR__.'/../vendor/autoload.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -35,9 +35,9 @@ print_r($body . "\n");
 $con->subscribe("/queue/test");
 $msg = $con->readFrame();
 
-// extract 
+// extract
 if ( $msg != null) {
-    echo "Received message: "; 
+    echo "Received message: ";
     print_r($msg->body . "\n");
     // mark the message as received in the queue
     $con->ack($msg);
