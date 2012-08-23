@@ -1,18 +1,9 @@
 <?php
 
-if (file_exists(__DIR__ . '/../../vendor/.composer/autoload.php')) {
-    include_once __DIR__ . '/../../vendor/.composer/autoload.php'; 
-} else {
-    $classLoaderFile = __DIR__ . '/../../vendor/ClassLoader/UniversalClassLoader.php';
-    if (file_exists($classLoaderFile)) {
-        include_once $classLoaderFile;
-    } else {
-        throw new Exception('Missing Symfony ClassLoader ' . $filename);
-    }
-
-    $loader = new Symfony\Component\ClassLoader\UniversalClassLoader();
-
-    $loader->registerNamespace('FuseSource', __DIR__ . '/../main');
-    $loader->register();
+if (!file_exists(__DIR__ . '/../../vendor/autoload.php')) {
+    echo "Please install the dependencies via composer in order to run the tests.\n";
+    echo "See http://getcomposer.org for more information.\n";
+    exit(1);
 }
-        
+
+require __DIR__ . '/../../vendor/autoload.php';
