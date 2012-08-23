@@ -4,7 +4,7 @@
     "description": "stomp support for PHP",
     "keywords": ["messaging","stomp","jms","activeMQ"],
     "homepage": "http://github.com/dejanb/stomp-php",
-    "license": "Apache 2.0",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Dejan Bosnanac",
