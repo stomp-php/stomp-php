@@ -1,6 +1,5 @@
 {
     "name": "fusesource/stomp-php",
-    "type": "library",
     "description": "stomp support for PHP",
     "keywords": ["messaging","stomp","jms","activeMQ"],
     "homepage": "http://github.com/dejanb/stomp-php",
