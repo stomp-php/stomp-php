@@ -1,7 +1,9 @@
 <?php
 
 if (file_exists(__DIR__ . '/../../vendor/.composer/autoload.php')) {
-    include_once __DIR__ . '/../../vendor/.composer/autoload.php'; 
+    include_once __DIR__ . '/../../vendor/.composer/autoload.php';
+} elseif (file_exists(__DIR__ . '/../../vendor/autoload.php')) {
+    include_once __DIR__ . '/../../vendor/autoload.php';
 } else {
     $classLoaderFile = __DIR__ . '/../../vendor/ClassLoader/UniversalClassLoader.php';
     if (file_exists($classLoaderFile)) {
@@ -15,4 +17,3 @@ if (file_exists(__DIR__ . '/../../vendor/.composer/autoload.php')) {
     $loader->registerNamespace('FuseSource', __DIR__ . '/../main');
     $loader->register();
 }
-        
