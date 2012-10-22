@@ -543,7 +543,7 @@ class Stomp
             $data .= $read;
             if (strpos($data, "\x00") !== false) {
                 $end = true;
-                $data = rtrim($data, "\n");
+                $data = trim($data, "\n");
             }
             $len = strlen($data);
         } while ($len < 2 || $end == false);
