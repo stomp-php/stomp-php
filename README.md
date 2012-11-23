@@ -34,14 +34,18 @@ to your project composer.json.
 Running Examples
 ----------------
 
-Examples are located in `src/examples` folder. Before running them, be sure you have installed this library properly and you have started ActiveMQ broker (recommended version 5.5.0 or above) with [Stomp connector enabled] (http://activemq.apache.org/stomp.html).
+Examples are located in `src/examples` folder. Before running them, be sure
+you have installed this library properly and you have started ActiveMQ broker
+(recommended version 5.5.0 or above) with [Stomp connector enabled]
+(http://activemq.apache.org/stomp.html).
 
 You can start by running
 
     cd examples
     php first.php
 
-Also, be sure to check comments in the particular examples for some special configuration steps (if needed).
+Also, be sure to check comments in the particular examples for some special
+configuration steps (if needed).
 
 Documentation
 -------------
@@ -49,20 +53,12 @@ Documentation
 * [Web Site](http://stomp.fusesource.org/documentation/php/)
 
 Tests
--------
+-----
 
 The tests at the moment need a running instance of activeMQ listening on the
 default STOMP Port 61613.
 
-To run the tests you first need to fetch the dependencies for the Testsuite.
-
-If you prefer composer
+To run the tests you first need to fetch the dependencies for the test suite
+via composer:
 
     $ php composer.phar install
-
-Or if you prefer to fetch the ClassLoader from github
-
-    $ php vendor/vendor.php
-
-
-

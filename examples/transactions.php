@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/loader.php';
+require __DIR__.'/../vendor/autoload.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -46,7 +46,7 @@ for ($i = 1; $i < 5; $i++) {
 }
 echo "}\n";
 // they will be available for consumers after commit
-$con->commit("tx2"); 
+$con->commit("tx2");
 
 // try to receive some messages
 $con->begin("tx3");
