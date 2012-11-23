@@ -57,6 +57,11 @@ class Stomp
      */
 	public $clientId = null;
 
+    /**
+    * Vendor flavouring (AMQ or RMQ at the moment)
+    */
+    public $brokerVendor = 'AMQ';
+
     protected $_brokerUri = null;
     protected $_socket = null;
     protected $_hosts = array();
@@ -201,8 +206,12 @@ class Stomp
 		$frame = new Frame("CONNECT", $headers);
         $this->_writeFrame($frame);
         $frame = $this->readFrame();
+
         if ($frame instanceof Frame && $frame->command == 'CONNECTED') {
             $this->_sessionId = $frame->headers["session"];
+            if (isset($frame->headers['server']) && false !== stristr(trim($frame->headers['server']), 'rabbitmq')) {
+                $this->brokerVendor = 'RMQ';
+            }
             return true;
         } else {
             if ($frame instanceof Frame) {
@@ -327,10 +336,20 @@ class Stomp
     public function subscribe ($destination, $properties = null, $sync = null)
     {
         $headers = array('ack' => 'client');
-		$headers['activemq.prefetchSize'] = $this->prefetchSize;
-		if ($this->clientId != null) {
-			$headers["activemq.subcriptionName"] = $this->clientId;
-		}
+        if ($this->brokerVendor == 'AMQ') {
+		  $headers['activemq.prefetchSize'] = $this->prefetchSize;
+        } else if ($this->brokerVendor == 'RMQ') {
+            $headers['prefetch-count'] = $this->prefetchSize;
+        }
+		
+        if ($this->clientId != null) {
+            if ($this->brokerVendor == 'AMQ') {
+                $headers['activemq.subcriptionName'] = $this->clientId;
+            } else if ($this->brokerVendor == 'RMQ') {
+                $headers['id'] = $this->clientId;
+            }
+        }
+
         if (isset($properties)) {
             foreach ($properties as $name => $value) {
                 $headers[$name] = $value;
@@ -362,6 +381,11 @@ class Stomp
         if (isset($properties)) {
             foreach ($properties as $name => $value) {
                 $headers[$name] = $value;
+            }
+        }
+        if ($this->clientId != null) {
+            if ($this->brokerVendor == 'RMQ') {
+                $headers['id'] = $this->clientId;
             }
         }
         $headers['destination'] = $destination;
@@ -445,6 +469,10 @@ class Stomp
             $headers = $message->headers;
             if (isset($transactionId)) {
                 $headers['transaction'] = $transactionId;
+            }
+
+            if ($this->brokerVendor == 'RMQ') {
+                unset($headers['content-length']);
             }
             $frame = new Frame('ACK', $headers);
             $this->_writeFrame($frame);
