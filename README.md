@@ -18,7 +18,7 @@ Installing
 
 The source is PSR-0 compliant. So just donwload the source and add the Namespace
 "FuseSource" to your autoloader configuration with the path pointing to
-src/main/.
+src/.
 
 As an alternate you have the possibility to make use of composer to manage your
 project dependencies.
