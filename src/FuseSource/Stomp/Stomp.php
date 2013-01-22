@@ -344,7 +344,7 @@ class Stomp
 		
         if ($this->clientId != null) {
             if ($this->brokerVendor == 'AMQ') {
-                $headers['activemq.subcriptionName'] = $this->clientId;
+                $headers['activemq.subscriptionName'] = $this->clientId;
             } else if ($this->brokerVendor == 'RMQ') {
                 $headers['id'] = $this->clientId;
             }
