@@ -66,6 +66,7 @@ class Stomp
     protected $_socket = null;
     protected $_hosts = array();
     protected $_params = array();
+    protected $_ctx = null;
     protected $_subscriptions = array();
     protected $_defaultPort = 61613;
     protected $_currentHost = - 1;
@@ -82,11 +83,15 @@ class Stomp
      * Constructor
      *
      * @param string $brokerUri Broker URL
+     * @param array $opts options will be passed to stream_context_create and
+     *        eventually be used to setup the connection. See the respective
+     *        documentation on php.net on how to fill this array.
      * @throws StompException
      */
-    public function __construct ($brokerUri)
+    public function __construct ($brokerUri, $opts = array())
     {
         $this->_brokerUri = $brokerUri;
+        $this->_ctx = stream_context_create($opts);
         $this->_init();
     }
     /**
@@ -169,9 +174,17 @@ class Stomp
                 fclose($this->_socket);
                 $this->_socket = null;
             }
-            $this->_socket = @fsockopen($scheme . '://' . $host, $port, $connect_errno, $connect_errstr, $this->_connect_timeout_seconds);
+
+            $this->_socket = stream_socket_client(
+                $scheme.'://'.$host.':'.$port,
+                $connect_errno, $connect_errstr,
+                $this->_connect_timeout_seconds,
+                STREAM_CLIENT_CONNECT, $this->_ctx
+            );
             if (!is_resource($this->_socket) && $att >= $this->_attempts && !array_key_exists($i + 1, $this->_hosts)) {
-                throw new StompException("Could not connect to $host:$port ($att/{$this->_attempts})");
+                throw new StompException("Could not connect to $host:$port
+                ($att/{$this->_attempts}), ErrorCode $connect_errno, Reason:
+                $connect_errstr");
             } else if (is_resource($this->_socket)) {
                 $connected = true;
                 $this->_currentHost = $i;
