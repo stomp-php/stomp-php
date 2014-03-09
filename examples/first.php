@@ -1,5 +1,8 @@
 <?php
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/../src/FuseSource/Stomp/Stomp.php';
+require __DIR__.'/../src/FuseSource/Stomp/ExceptionInterface.php';
+require __DIR__.'/../src/FuseSource/Stomp/Exception/StompException.php';
+require __DIR__.'/../src/FuseSource/Stomp/Frame.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -22,7 +25,13 @@ require __DIR__.'/../vendor/autoload.php';
 
 use FuseSource\Stomp\Stomp;
 // make a connection
-$con = new Stomp("tcp://localhost:61613");
+$opts = array(
+    'ssl' => array(
+        'local_cert' => './cachain.pem',
+        'passphrase' => 'bcop'
+    )
+);
+$con = new Stomp("ssl://localhost:61613", $opts);
 // connect
 $con->connect();
 // send a message to the queue
