@@ -175,7 +175,7 @@ class Stomp
                 $this->_socket = null;
             }
 
-            $this->_socket = stream_socket_client(
+            $this->_socket = @stream_socket_client(
                 $scheme.'://'.$host.':'.$port,
                 $connect_errno, $connect_errstr,
                 $this->_connect_timeout_seconds,
