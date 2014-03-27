@@ -76,7 +76,7 @@ class Stomp
     protected $_sessionId;
     protected $_read_timeout_seconds = 60;
     protected $_read_timeout_milliseconds = 0;
-    protected $_connect_timeout_seconds = 60;
+    protected $_connect_timeout_seconds;
     protected $_waitbuf = array();
 
     /**
@@ -88,10 +88,11 @@ class Stomp
      *        documentation on php.net on how to fill this array.
      * @throws StompException
      */
-    public function __construct ($brokerUri, $opts = array())
+    public function __construct ($brokerUri, $opts = array(), $connect_timeout_seconds = 60)
     {
         $this->_brokerUri = $brokerUri;
         $this->_ctx = stream_context_create($opts);
+        $this->_connect_timeout_seconds = $connect_timeout_seconds;
         $this->_init();
     }
     /**
