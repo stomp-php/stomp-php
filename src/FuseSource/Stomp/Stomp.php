@@ -70,13 +70,13 @@ class Stomp
     protected $_subscriptions = array();
     protected $_defaultPort = 61613;
     protected $_currentHost = - 1;
-    protected $_attempts = 10;
+    protected $_attempts = null;
     protected $_username = '';
     protected $_password = '';
     protected $_sessionId;
     protected $_read_timeout_seconds = 60;
     protected $_read_timeout_milliseconds = 0;
-    protected $_connect_timeout_seconds;
+    protected $_connect_timeout_seconds = null;
     protected $_waitbuf = array();
 
     /**
@@ -88,11 +88,12 @@ class Stomp
      *        documentation on php.net on how to fill this array.
      * @throws StompException
      */
-    public function __construct ($brokerUri, $opts = array(), $connect_timeout_seconds = 60)
+    public function __construct ($brokerUri, $opts = array(), $connect_timeout_seconds = 60, $attempts = 10)
     {
         $this->_brokerUri = $brokerUri;
         $this->_ctx = stream_context_create($opts);
         $this->_connect_timeout_seconds = $connect_timeout_seconds;
+        $this->_attempts = $attempts;
         $this->_init();
     }
     /**
