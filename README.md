@@ -52,6 +52,10 @@ Documentation
 
 * [Web Site](http://stomp.fusesource.org/documentation/php/)
 
+Step by Step: Certificate based Authentication
+----------------------------------------------
+https://github.com/rethab/php-stomp-cert-example
+
 Tests
 -----
 
