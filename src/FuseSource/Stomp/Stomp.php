@@ -173,7 +173,7 @@ class Stomp
                 $port = $this->_defaultPort;
             }
             if ($this->_socket != null) {
-                stream_socket_shutdown($this->_socket);
+                stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
                 $this->_socket = null;
             }
 
@@ -517,7 +517,7 @@ class Stomp
 
         if (is_resource($this->_socket)) {
             $this->_writeFrame(new Frame('DISCONNECT', $headers));
-            stream_socket_shutdown($this->_socket);
+            stream_socket_shutdown($this->_socket, STREAM_SHUT_RDWR);
         }
         $this->_socket = null;
         $this->_sessionId = null;
