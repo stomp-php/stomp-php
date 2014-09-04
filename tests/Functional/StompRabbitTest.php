@@ -1,8 +1,10 @@
 <?php
+namespace FuseSource\Tests\Functional;
 
-use FuseSource\Stomp\Stomp;
-use FuseSource\Stomp\Message\Map;
 use FuseSource\Stomp\Message\Bytes;
+use FuseSource\Stomp\Message\Map;
+use FuseSource\Stomp\Stomp;
+use PHPUnit_Framework_TestCase;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -21,12 +23,11 @@ use FuseSource\Stomp\Message\Bytes;
  */
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
-require_once 'PHPUnit/Framework/TestCase.php';
 /**
  * Stomp test case.
  * @package Stomp
  * @author Michael Caplan <mcaplan@labnet.net>
- * @author Dejan Bosanac <dejan@nighttale.net> 
+ * @author Dejan Bosanac <dejan@nighttale.net>
  * @version $Revision: 40 $
  */
 class StompRabbitTest extends PHPUnit_Framework_TestCase
@@ -72,25 +73,25 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         }
 
         $this->Stomp->setReadTimeout(5);
-        
+
         $this->assertFalse($this->Stomp->hasFrameToRead(), 'Has frame to read when non expected');
 
         $this->Stomp->send($this->queue, 'testHasFrameToRead');
-        
+
         $this->Stomp->subscribe($this->queue, array('ack' => 'client','prefetch-count' => 1 ));
-        
+
         $this->assertTrue($this->Stomp->hasFrameToRead(), 'Did not have frame to read when expected');
-        
+
         $frame = $this->Stomp->readFrame();
-        
-        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame, 'Frame expected');
-        
+
+        $this->assertTrue($frame instanceof \Fusesource\Stomp\Frame, 'Frame expected');
+
         $this->Stomp->ack($frame);
-        
+
         $this->Stomp->disconnect();
-        
+
         $this->Stomp->setReadTimeout(60);
-    }    
+    }
     /**
      * Tests Stomp->ack()
      */
@@ -99,45 +100,45 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
         }
-        
+
         $messages = array();
-        
+
         for ($x = 0; $x < 100; ++$x) {
             $this->Stomp->send($this->queue, $x);
             $messages[$x] = 'sent';
         }
-        
+
         $this->Stomp->disconnect();
-        
+
         for ($y = 0; $y < 100; $y += 10) {
-            
+
             $this->Stomp->connect($this->login, $this->password);
-            
+
             $this->Stomp->subscribe($this->queue, array('ack' => 'client','activemq.prefetchSize' => 1 ));
-            
+
             for ($x = $y; $x < $y + 10; ++$x) {
                 $frame = $this->Stomp->readFrame();
-                $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
+                $this->assertTrue($frame instanceof \Fusesource\Stomp\Frame);
                 $this->assertArrayHasKey($frame->body, $messages, $frame->body . ' is not in the list of messages to ack');
                 $this->assertEquals('sent', $messages[$frame->body], $frame->body . ' has been marked acked, but has been received again.');
                 $messages[$frame->body] = 'acked';
-                
+
                 $this->assertTrue($this->Stomp->ack($frame), "Unable to ack {$frame->headers['message-id']}");
-                
+
             }
-            
+
             $this->Stomp->disconnect();
-            
+
         }
-        
+
         $un_acked_messages = array();
-        
+
         foreach ($messages as $key => $value) {
             if ($value == 'sent') {
                 $un_acked_messages[] = $key;
             }
         }
-        
+
         $this->assertEquals(0, count($un_acked_messages), 'Remaining messages to ack' . var_export($un_acked_messages, true));
     }
     /**
@@ -152,7 +153,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->Stomp->begin("tx1");
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend', array("transaction" => "tx1")));
         $this->Stomp->abort("tx1");
-        
+
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
         $this->assertFalse($frame);
@@ -211,7 +212,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->Stomp->send($this->queue, 'testReadFrame');
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
+        $this->assertTrue($frame instanceof \Fusesource\Stomp\Frame);
         $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
@@ -227,7 +228,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend'));
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
+        $this->assertTrue($frame instanceof \Fusesource\Stomp\Frame);
         $this->assertEquals('testSend', $frame->body, 'Body of test frame does not match sent message');
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
@@ -243,7 +244,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->subscribe($this->queue));
         $this->Stomp->unsubscribe($this->queue);
     }
-    
+
     /**
      * Tests Stomp message transformation - json map
      */
@@ -260,12 +261,12 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
 
         $this->Stomp->subscribe($this->queue, array('transformation' => 'jms-map-json'));
         $msg = $this->Stomp->readFrame();
-        $this->assertTrue($msg instanceOf Fusesource\Stomp\Message\Map);
+        $this->assertTrue($msg instanceOf \Fusesource\Stomp\Message\Map);
         $this->assertEquals($msg->map, $body);
         $this->Stomp->ack($msg);
         $this->Stomp->disconnect();
-    }    
-    
+    }
+
     /**
      * Tests Stomp byte messages
      */
@@ -283,8 +284,8 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($msg->body, $body);
         $this->Stomp->ack($msg);
         $this->Stomp->disconnect();
-    }        
-    
+    }
+
     /**
      * Tests Stomp->unsubscribe()
      */
@@ -304,7 +305,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
 		sleep(2);
 		$this->consume();
 	}
-    
+
     protected function subscribe() {
         $consumer = new Stomp($this->broker);
         $consumer->sync = true;

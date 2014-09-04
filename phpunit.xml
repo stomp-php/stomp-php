@@ -12,12 +12,20 @@
     stopOnFailure               = "false"
     syntaxCheck                 = "false"
     bootstrap                   = "tests/bootstrap.php" >
+    <filter>
+        <blacklist>
+            <directory>vendor</directory>
+        </blacklist>
+    </filter>
     <testsuites>
         <testsuite name="stomp-php Functional Test Suite">
-            <directory>tests/functional/</directory>
+            <directory>tests/Functional/</directory>
         </testsuite>
-        <testsuite name="stomp-php Stubbed Test Suite">
-            <file>tests/stubbed</file>
+        <testsuite name="stomp-php Unit Test Suite">
+            <directory>tests/Unit/</directory>
         </testsuite>
     </testsuites>
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
+    </logging>
 </phpunit>

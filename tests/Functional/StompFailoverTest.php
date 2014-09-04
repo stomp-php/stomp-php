@@ -1,6 +1,8 @@
 <?php
+namespace FuseSource\Tests\Functional;
 
 use FuseSource\Stomp\Stomp;
+use PHPUnit_Framework_TestCase;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -24,7 +26,7 @@ use FuseSource\Stomp\Stomp;
  *
  * @package Stomp
  * @author Michael Caplan <mcaplan@labnet.net>
- * @version $Revision: 35 $ 
+ * @version $Revision: 35 $
  */
 class StompFailoverTest extends PHPUnit_Framework_TestCase
 {
@@ -39,7 +41,7 @@ class StompFailoverTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        
+
         $this->Stomp = new Stomp('failover://(tcp://localhost:61614,tcp://localhost:61613)?randomize=false');
     }
     /**

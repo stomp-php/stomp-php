@@ -2,5 +2,10 @@ language: php
 php:
   - "5.4"
   - "5.3"
-before_script: ./travisci/bin/ci/install_dependencies.sh
-
+jdk:
+  - oraclejdk7
+before_script:
+  - ./travisci/bin/ci/install_dependencies.sh
+  - composer install
+after_script:
+  - ./travisci/bin/ci/stop_activemq.sh

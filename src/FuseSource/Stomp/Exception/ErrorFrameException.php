@@ -1,7 +1,8 @@
 <?php
-namespace FuseSource\Stomp\Message;
+namespace FuseSource\Stomp\Exception;
 
 use FuseSource\Stomp\Frame;
+
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -21,31 +22,39 @@ use FuseSource\Stomp\Frame;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
-
 /**
- * Message that contains a set of name-value pairs
+ * Stomp server send us an error frame.
+ *
  *
  * @package Stomp
+ * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class Map extends Frame
+class ErrorFrameException extends StompException
 {
-    public $map;
+    /**
+     *
+     * @var Frame
+     */
+    private $_frame;
 
     /**
-     * Constructor
      *
-     * @param Frame|string $msg
-     * @param array $headers
+     * @param Frame $frame
      */
-    function __construct ($msg, array $headers = array())
+    function __construct(Frame $frame)
     {
-        if ($msg instanceof Frame) {
-            parent::__construct($msg->command, $msg->headers, $msg->body);
-            $this->map = json_decode($msg->body, true);
-        } else {
-            parent::__construct("SEND", $headers, $msg);
-            $this->headers['transformation'] = 'jms-map-json';
-            $this->body = json_encode($msg);
-        }
+        $this->_frame = $frame;
+        parent::__construct(
+            sprintf('Error "%s"', $frame->headers['message'])
+        );
+    }
+
+    /**
+     *
+     * @return Frame
+     */
+    public function getFrame()
+    {
+        return $this->_frame;
     }
 }

@@ -1,5 +1,7 @@
 A simple PHP [Stomp](http://stomp.github.com) Client
 
+[![Build Status](https://travis-ci.org/fin-sn-de/stomp-php.svg?branch=feature%2Frewrite-client)](https://travis-ci.org/fin-sn-de/stomp-php)
+
 Version choice
 --------------
 There are 2 Versions of stomp-php. 1.x is compatible with PHP <= PHP-5.2 as it

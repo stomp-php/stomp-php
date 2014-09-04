@@ -1,7 +1,7 @@
 <?php
 namespace FuseSource\Stomp\Exception;
 
-use FuseSource\Stomp\ExceptionInterface;
+use Exception;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -22,36 +22,21 @@ use FuseSource\Stomp\ExceptionInterface;
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
- * A Stomp Connection
- *
+ * Base exception for all special stomp exceptions.
  *
  * @package Stomp
  */
-class StompException extends \Exception implements ExceptionInterface
+class StompException extends Exception
 {
-    protected $_details;
-    
-    /**
-     * Constructor
-     *
-     * @param string $message Error message
-     * @param int $code Error code
-     * @param string $details Stomp server error details
-     */
-    public function __construct($message = null, $code = 0, $details = '')
-    {
-        $this->_details = $details;
-        
-        parent::__construct($message, $code);
-    }
-    
+
     /**
      * Stomp server error details
      *
+     * @deprecated use getMessage()
      * @return string
      */
     public function getDetails()
     {
-        return $this->_details;
+        return $this->getMessage();
     }
 }
