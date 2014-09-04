@@ -500,9 +500,13 @@ class Stomp
 			$headers["client-id"] = $this->clientId;
 		}
 
-        if (is_resource($this->_socket)) {
-            $this->_writeFrame(new Frame('DISCONNECT', $headers));
-            fclose($this->_socket);
+        try {
+            if (is_resource($this->_socket)) {
+                $this->_writeFrame(new Frame('DISCONNECT', $headers));
+                fclose($this->_socket);
+            }
+        } catch (StompException $ex) {
+            // nothing!
         }
         $this->_socket = null;
         $this->_sessionId = null;
@@ -516,21 +520,16 @@ class Stomp
      * Write frame to server
      *
      * @param Frame   $stompFrame
-     * @param integer $loops      this function has passed
      */
-    protected function _writeFrame (Frame $stompFrame, $loops = 1)
+    protected function _writeFrame (Frame $stompFrame)
     {
-        if ($loops > 3) {
-            throw new StompException('Was not possible to write frame in third try!');
-        }
         if (!is_resource($this->_socket)) {
             throw new StompException('Socket connection hasn\'t been established');
         }
 
         $data = $stompFrame->__toString();
         if (!@fwrite($this->_socket, $data, strlen($data))) {
-            $this->_reconnect();
-            $this->_writeFrame($stompFrame, $loops++);
+            throw new StompException('Was not possible to write frame!');
         }
     }
 
@@ -568,8 +567,7 @@ class Stomp
         do {
             $read = fgets($this->_socket, $rb);
             if ($read === false || $read === "") {
-                $this->_reconnect();
-                return $this->readFrame();
+                throw new StompException('Was not possible to read frame.');
             }
             $data .= $read;
             if (strpos($data, "\x00") !== false) {
