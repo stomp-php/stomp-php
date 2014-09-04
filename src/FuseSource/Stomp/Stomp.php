@@ -341,7 +341,7 @@ class Stomp
         } else if ($this->brokerVendor == 'RMQ') {
             $headers['prefetch-count'] = $this->prefetchSize;
         }
-		
+
         if ($this->clientId != null) {
             if ($this->brokerVendor == 'AMQ') {
                 $headers['activemq.subscriptionName'] = $this->clientId;
@@ -515,19 +515,22 @@ class Stomp
     /**
      * Write frame to server
      *
-     * @param Frame $stompFrame
+     * @param Frame   $stompFrame
+     * @param integer $loops      this function has passed
      */
-    protected function _writeFrame (Frame $stompFrame)
+    protected function _writeFrame (Frame $stompFrame, $loops = 1)
     {
+        if ($loops > 3) {
+            throw new StompException('Was not possible to write frame in third try!');
+        }
         if (!is_resource($this->_socket)) {
             throw new StompException('Socket connection hasn\'t been established');
         }
 
         $data = $stompFrame->__toString();
-        $r = fwrite($this->_socket, $data, strlen($data));
-        if ($r === false || $r == 0) {
+        if (!@fwrite($this->_socket, $data, strlen($data))) {
             $this->_reconnect();
-            $this->_writeFrame($stompFrame);
+            $this->_writeFrame($stompFrame, $loops++);
         }
     }
 
