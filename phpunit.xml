@@ -16,8 +16,5 @@
         <testsuite name="stomp-php Functional Test Suite">
             <directory>tests/functional/</directory>
         </testsuite>
-        <testsuite name="stomp-php Stubbed Test Suite">
-            <file>tests/stubbed</file>
-        </testsuite>
     </testsuites>
 </phpunit>
