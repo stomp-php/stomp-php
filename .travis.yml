@@ -4,5 +4,6 @@ php:
   - "5.3"
 jdk:
   - oraclejdk7
-before_script: ./travisci/bin/ci/install_dependencies.sh
-
+before_script:
+  - ./travisci/bin/ci/install_dependencies.sh
+  - composer install
