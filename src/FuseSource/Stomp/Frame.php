@@ -32,32 +32,36 @@ class Frame
     public $command;
     public $headers = array();
     public $body;
-    
+
     /**
      * Constructor
      *
      * @param string $command
-     * @param array $headers
+     * @param array  $headers
      * @param string $body
+     * @throws StompException
      */
-    public function __construct ($command = null, $headers = null, $body = null)
-    {
-        $this->_init($command, $headers, $body);
-    }
-    
-    protected function _init ($command = null, $headers = null, $body = null)
+    public function __construct ($command = null, array $headers = array(), $body = null)
     {
         $this->command = $command;
-        if ($headers != null) {
-            $this->headers = $headers;
-        }
+        $this->headers = $headers ?: array();
         $this->body = $body;
-        
+        $this->onErrorFrame();
+    }
+
+
+    /**
+     * Detect error frame and throw exception.
+     *
+     * @throws StompException
+     */
+    protected function onErrorFrame ()
+    {
         if ($this->command == 'ERROR') {
             throw new StompException($this->headers['message'], 0, $this->body);
         }
     }
-    
+
     /**
      * Convert frame to transportable string
      *
@@ -66,11 +70,11 @@ class Frame
     public function __toString()
     {
         $data = $this->command . "\n";
-        
+
         foreach ($this->headers as $name => $value) {
             $data .= $name . ":" . $value . "\n";
         }
-        
+
         $data .= "\n";
         $data .= $this->body;
         return $data .= "\x00";

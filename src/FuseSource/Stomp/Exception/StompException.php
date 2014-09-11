@@ -1,7 +1,7 @@
 <?php
 namespace FuseSource\Stomp\Exception;
 
-use FuseSource\Stomp\ExceptionInterface;
+use Exception;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -27,10 +27,10 @@ use FuseSource\Stomp\ExceptionInterface;
  *
  * @package Stomp
  */
-class StompException extends \Exception implements ExceptionInterface
+class StompException extends Exception
 {
     protected $_details;
-    
+
     /**
      * Constructor
      *
@@ -41,10 +41,10 @@ class StompException extends \Exception implements ExceptionInterface
     public function __construct($message = null, $code = 0, $details = '')
     {
         $this->_details = $details;
-        
+
         parent::__construct($message, $code);
     }
-    
+
     /**
      * Stomp server error details
      *

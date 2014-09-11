@@ -1,7 +1,7 @@
 <?php
 namespace FuseSource\Stomp\Message;
 
-use FuseSource\Stomp\Message;
+use FuseSource\Stomp\Frame;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -27,26 +27,23 @@ use FuseSource\Stomp\Message;
  *
  * @package Stomp
  */
-class Map extends Message
+class Map extends Frame
 {
     public $map;
-    
+
     /**
      * Constructor
      *
-     * @param StompFrame|string $msg
+     * @param Frame|string $msg
      * @param array $headers
      */
-    function __construct ($msg, $headers = null)
+    function __construct ($msg, array $headers = array())
     {
-        if ($msg instanceof \FuseSource\Stomp\Frame) {
-            $this->_init($msg->command, $msg->headers, $msg->body);
+        if ($msg instanceof Frame) {
+            parent::__construct($msg->command, $msg->headers, $msg->body);
             $this->map = json_decode($msg->body, true);
         } else {
-            $this->_init("SEND", $headers, $msg);
-            if ($this->headers == null) {
-                $this->headers = array();
-            }
+            parent::__construct("SEND", $headers, $msg);
             $this->headers['transformation'] = 'jms-map-json';
             $this->body = json_encode($msg);
         }

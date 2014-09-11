@@ -27,8 +27,8 @@ namespace FuseSource\Stomp;
  */
 class Message extends Frame
 {
-    public function __construct ($body, $headers = null)
+    public function __construct ($body, array $headers = array())
     {
-        $this->_init("SEND", $headers, $body);
+        parent::__construct("SEND", $headers, $body);
     }
 }
