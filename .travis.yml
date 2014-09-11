@@ -2,5 +2,7 @@ language: php
 php:
   - "5.4"
   - "5.3"
+jdk:
+  - oraclejdk7
 before_script: ./travisci/bin/ci/install_dependencies.sh
 
