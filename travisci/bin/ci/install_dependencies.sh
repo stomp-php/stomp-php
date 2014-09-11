@@ -6,7 +6,6 @@ tar -xzf apache-activemq-${AMQ_VERSION}-bin.tar.gz
 
 cp travisci/conf/amq/activemq.xml apache-activemq-${AMQ_VERSION}/conf/activemq.xml
 
-pwd
-dir -l ./apache-activemq-${AMQ_VERSION}/bin/linux-x86-32/
-./apache-activemq-${AMQ_VERSION}/bin/linux-x86-32/activemq start
+cd ./apache-activemq-${AMQ_VERSION}/bin/linux-x86-32/
+./activemq start
 
