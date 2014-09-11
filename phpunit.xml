@@ -12,6 +12,11 @@
     stopOnFailure               = "false"
     syntaxCheck                 = "false"
     bootstrap                   = "tests/bootstrap.php" >
+    <filter>
+        <blacklist>
+            <directory>vendor</directory>
+        </blacklist>
+    </filter>
     <testsuites>
         <testsuite name="stomp-php Functional Test Suite">
             <directory>tests/functional/</directory>

@@ -7,3 +7,5 @@ jdk:
 before_script:
   - ./travisci/bin/ci/install_dependencies.sh
   - composer install
+after_script:
+  - ./travisci/bin/ci/stop_activemq.sh
