@@ -339,7 +339,7 @@ class Stomp
     public function disconnect ()
     {
         try {
-            if ($this->_connection->isConnected()) {
+            if ($this->_connection && $this->_connection->isConnected()) {
                 $frame = new Frame('DISCONNECT');
                 if ($this->clientId != null) {
                     $frame->setHeader("client-id", $this->clientId);
