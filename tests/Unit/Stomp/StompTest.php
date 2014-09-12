@@ -35,7 +35,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     public function testConnectWillThrowExceptionIfUnexpectedFrameArrives()
     {
         $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
-            ->setMethods(['readFrame', 'writeFrame'])
+            ->setMethods(array('readFrame', 'writeFrame'))
             ->disableOriginalConstructor()
             ->getMock();
         $connection
@@ -47,7 +47,7 @@ class StompTest extends PHPUnit_Framework_TestCase
                 )
             );
         $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
-            ->setMethods(['createConnection'])
+            ->setMethods(array('createConnection'))
             ->disableOriginalConstructor()
             ->getMock();
         $stomp->expects($this->once())->method('createConnection')->will($this->returnValue($connection));
@@ -63,7 +63,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     public function testConnectWillThrowExceptionIfNoFrameWasRead()
     {
         $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
-            ->setMethods(['readFrame', 'writeFrame'])
+            ->setMethods(array('readFrame', 'writeFrame'))
             ->disableOriginalConstructor()
             ->getMock();
         $connection
@@ -73,7 +73,7 @@ class StompTest extends PHPUnit_Framework_TestCase
                 $this->returnValue(false)
             );
         $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
-            ->setMethods(['createConnection'])
+            ->setMethods(array('createConnection'))
             ->disableOriginalConstructor()
             ->getMock();
         $stomp->expects($this->once())->method('createConnection')->will($this->returnValue($connection));
@@ -86,7 +86,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     public function testConnectWillDetermineRabbitMqDialect()
     {
         $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
-            ->setMethods(['readFrame', 'writeFrame'])
+            ->setMethods(array('readFrame', 'writeFrame'))
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -100,7 +100,7 @@ class StompTest extends PHPUnit_Framework_TestCase
                 $this->returnValue($connectFrame)
             );
         $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
-            ->setMethods(['createConnection'])
+            ->setMethods(array('createConnection'))
             ->disableOriginalConstructor()
             ->getMock();
         $stomp->expects($this->once())->method('createConnection')->will($this->returnValue($connection));
@@ -115,7 +115,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     public function testConnectWillDetermineSessionIdAndUsesActiveMqAsDefaultDialect()
     {
         $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
-            ->setMethods(['readFrame', 'writeFrame'])
+            ->setMethods(array('readFrame', 'writeFrame'))
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -129,7 +129,7 @@ class StompTest extends PHPUnit_Framework_TestCase
                 $this->returnValue($connectFrame)
             );
         $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
-            ->setMethods(['createConnection'])
+            ->setMethods(array('createConnection'))
             ->disableOriginalConstructor()
             ->getMock();
         $stomp->expects($this->once())->method('createConnection')->will($this->returnValue($connection));
@@ -149,7 +149,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     {
 
         $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
-            ->setMethods(['readFrame', 'writeFrame'])
+            ->setMethods(array('readFrame', 'writeFrame'))
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -163,7 +163,7 @@ class StompTest extends PHPUnit_Framework_TestCase
                 $this->returnValue($receiptFrame)
             );
         $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
-            ->setMethods(['createConnection'])
+            ->setMethods(array('createConnection'))
             ->disableOriginalConstructor()
             ->getMock();
         $stomp->expects($this->once())->method('createConnection')->will($this->returnValue($connection));
@@ -182,7 +182,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     {
 
         $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
-            ->setMethods(['readFrame', 'writeFrame'])
+            ->setMethods(array('readFrame', 'writeFrame'))
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -193,7 +193,7 @@ class StompTest extends PHPUnit_Framework_TestCase
                 $this->returnValue(false)
             );
         $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
-            ->setMethods(['createConnection'])
+            ->setMethods(array('createConnection'))
             ->disableOriginalConstructor()
             ->getMock();
         $stomp->expects($this->once())->method('createConnection')->will($this->returnValue($connection));
