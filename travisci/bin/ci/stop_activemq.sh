@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./apache-activemq-${AMQ_VERSION}/bin/activemq stop
+./apache-activemq-5.10.0/bin/activemq stop
