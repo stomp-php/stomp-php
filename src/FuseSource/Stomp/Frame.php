@@ -49,6 +49,40 @@ class Frame
         $this->onErrorFrame();
     }
 
+    /**
+     * Set a specific header value.
+     *
+     * @param string $key
+     * @param string $value
+     * @return void
+     */
+    public function setHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
+    }
+
+    /**
+     * Add given headers to currently set headers.
+     *
+     * Will override existing keys.
+     *
+     * @param array $header
+     * @return void
+     */
+    public function addHeaders(array $header)
+    {
+        $this->headers += $header;
+    }
+
+    /**
+     * Stomp message Id
+     *
+     * @return string
+     */
+    public function getMessageId ()
+    {
+        return isset($this->headers['message-id']) ? $this->headers['message-id'] : null;
+    }
 
     /**
      * Detect error frame and throw exception.
