@@ -1,6 +1,8 @@
 <?php
+namespace FuseSource\Tests\Functional;
 
 use FuseSource\Stomp\Stomp;
+use PHPUnit_Framework_TestCase;
 
 /**
  * Stomp test case.
@@ -40,7 +42,7 @@ class StompASyncTest extends PHPUnit_Framework_TestCase
     public function testAsyncSub()
     {
         $this->assertTrue($this->Stomp->connect());
-        
+
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
         $this->assertTrue($this->Stomp->subscribe('/queue/test'));

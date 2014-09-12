@@ -1,8 +1,11 @@
 <?php
 
-use FuseSource\Stomp\Stomp;
-use FuseSource\Stomp\Message\Map;
+namespace FuseSource\Tests\Functional;
+
 use FuseSource\Stomp\Message\Bytes;
+use FuseSource\Stomp\Message\Map;
+use FuseSource\Stomp\Stomp;
+use PHPUnit_Framework_TestCase;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -78,7 +81,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
         $frame = $this->Stomp->readFrame();
 
-        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame, 'Frame expected');
+        $this->assertTrue($frame instanceof \Fusesource\Stomp\Frame, 'Frame expected');
 
         $this->Stomp->ack($frame);
 
@@ -112,7 +115,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
             for ($x = $y; $x < $y + 10; ++$x) {
                 $frame = $this->Stomp->readFrame();
-                $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
+                $this->assertTrue($frame instanceof \Fusesource\Stomp\Frame);
                 $this->assertArrayHasKey($frame->body, $messages, $frame->body . ' is not in the list of messages to ack');
                 $this->assertEquals('sent', $messages[$frame->body], $frame->body . ' has been marked acked, but has been received again.');
                 $messages[$frame->body] = 'acked';
@@ -206,7 +209,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $this->Stomp->send($this->queue, 'testReadFrame');
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
+        $this->assertTrue($frame instanceof \Fusesource\Stomp\Frame);
         $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
@@ -222,7 +225,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend'));
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof Fusesource\Stomp\Frame);
+        $this->assertTrue($frame instanceof \Fusesource\Stomp\Frame);
         $this->assertEquals('testSend', $frame->body, 'Body of test frame does not match sent message');
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
@@ -255,7 +258,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
         $this->Stomp->subscribe($this->queue, array('transformation' => 'jms-map-json'));
         $msg = $this->Stomp->readFrame();
-        $this->assertTrue($msg instanceOf Fusesource\Stomp\Message\Map);
+        $this->assertTrue($msg instanceOf \Fusesource\Stomp\Message\Map);
         $this->assertEquals($msg->map, $body);
         $this->Stomp->ack($msg);
         $this->Stomp->disconnect();

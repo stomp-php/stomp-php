@@ -46,7 +46,6 @@ class Frame
         $this->command = $command;
         $this->headers = $headers ?: array();
         $this->body = $body;
-        $this->onErrorFrame();
     }
 
     /**
@@ -85,15 +84,13 @@ class Frame
     }
 
     /**
-     * Detect error frame and throw exception.
+     * Is error frame.
      *
-     * @throws StompException
+     * @return boolean
      */
-    protected function onErrorFrame ()
+    public function isErrorFrame ()
     {
-        if ($this->command == 'ERROR') {
-            throw new StompException($this->headers['message'], 0, $this->body);
-        }
+        return ($this->command == 'ERROR');
     }
 
     /**

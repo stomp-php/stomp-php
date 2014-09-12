@@ -306,7 +306,11 @@ class Connection
             }
             $len = strlen($data);
         } while ($len < 2 || $end == false); // need at least 2 bytes or stop if frame end is detected
-        return $this->_parseFrame($data);
+        $frame = $this->_parseFrame($data);
+        if ($frame->isErrorFrame()) {
+            throw new StompException($frame->headers['message'], 0, $frame->body);
+        }
+        return $frame;
     }
 
 
