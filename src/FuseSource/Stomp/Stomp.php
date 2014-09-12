@@ -104,7 +104,18 @@ class Stomp
      */
     public function __construct ($brokerUri)
     {
-        $this->_connection = new Connection($brokerUri);
+        $this->_connection = $this->createConnection($brokerUri);
+    }
+
+    /**
+     * Get Connection.
+     *
+     * @param string $brokerUri
+     * @return Connection
+     */
+    protected function createConnection ($brokerUri)
+    {
+        return new Connection($brokerUri);
     }
 
     /**
@@ -181,33 +192,29 @@ class Stomp
      */
     protected function _sendFrameExpectingReceipt (Frame $stompFrame)
     {
-        $stompFrame->setHeader('receipt', md5(microtime()));
+        $receipt = md5(microtime());
+        $stompFrame->setHeader('receipt', $receipt);
         $this->_connection->writeFrame($stompFrame);
-        return $this->_waitForReceipt($stompFrame);
+        return $this->_waitForReceipt($receipt);
     }
 
 
     /**
      * Wait for an receipt
      *
-     * @param Frame $frame
+     * @param string $receipt
      * @return boolean
      * @throws StompException
      */
-    protected function _waitForReceipt (Frame $frame)
+    protected function _waitForReceipt ($receipt)
     {
-        $id = (isset($frame->headers['receipt'])) ? $frame->headers['receipt'] : null;
-        if ($id === null) {
-            return true;
-        }
-
-        while(true) {
+        while (true) {
             if ($frame = $this->_connection->readFrame()) {
                 if ($frame->command == 'RECEIPT') {
-                    if ($frame->headers['receipt-id'] == $id) {
+                    if ($frame->headers['receipt-id'] == $receipt) {
                         return true;
                     } else {
-                        throw new StompException("Unexpected receipt id {$frame->headers['receipt-id']}", 0, $frame->body);
+                        throw new StompException("Unexpected receipt id {$frame->headers['receipt-id']} - expected was $receipt", 0, $frame->body);
                     }
                 } else {
                     $this->_unprocessedFrames[] = $frame;
@@ -385,6 +392,16 @@ class Stomp
     public function getConnection()
     {
         return $this->_connection;
+    }
+
+    /**
+     * Get the currently used protocol.
+     *
+     * @return null|Protocol
+     */
+    public function getProtocol()
+    {
+        return $this->_protocol;
     }
 
 

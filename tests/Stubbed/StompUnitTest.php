@@ -1,6 +1,8 @@
 <?php
-namespace FuseSource\Stomp;
 
+namespace FuseSource\Tests\Stubbed;
+
+use FuseSource\Stomp\Stomp;
 use PHPUnit_Framework_TestCase;
 
 // Prepare mocking function calls
