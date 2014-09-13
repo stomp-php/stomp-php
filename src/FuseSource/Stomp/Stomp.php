@@ -105,18 +105,7 @@ class Stomp
      */
     public function __construct ($broker)
     {
-        $this->_connection = $broker instanceof Connection ? $broker : $this->createConnection($broker);
-    }
-
-    /**
-     * Get Connection.
-     *
-     * @param string $brokerUri
-     * @return Connection
-     */
-    protected function createConnection ($brokerUri)
-    {
-        return new Connection($brokerUri);
+        $this->_connection = $broker instanceof Connection ? $broker : new Connection($broker);
     }
 
     /**
@@ -295,7 +284,7 @@ class Stomp
      * Acknowledge consumption of a message from a subscription
 	 * Note: This operation is always asynchronous
      *
-     * @param string|Frame $messageMessage ID
+     * @param string|Frame $message ID to ack
      * @param string $transactionId
      * @return boolean
      * @throws StompException
@@ -316,17 +305,7 @@ class Stomp
      */
     public function readFrame ()
     {
-        return $this->_readBufferedFrame() ?: $this->_connection->readFrame();
-    }
-
-    /**
-     * Read next buffered frame.
-     *
-     * @return Frame null when no frame to read
-     */
-    protected function _readBufferedFrame ()
-    {
-        return array_shift($this->_unprocessedFrames);
+        return array_shift($this->_unprocessedFrames) ?: $this->_connection->readFrame();
     }
 
     /**
@@ -350,6 +329,7 @@ class Stomp
         $this->_sessionId = null;
         $this->_subscriptions = array();
         $this->_unprocessedFrames = array();
+        $this->_protocol = null;
     }
 
     /**
@@ -394,6 +374,8 @@ class Stomp
     /**
      * Get the currently used protocol.
      *
+     * Protocol is only set after calling connect().
+     *
      * @return null|Protocol
      */
     public function getProtocol()
@@ -405,7 +387,7 @@ class Stomp
     /**
      * Set timeout to wait for content to read
      *
-     * @param int $seconds_to_wait  Seconds to wait for a frame
+     * @param int $seconds  Seconds to wait for a frame
      * @param int $milliseconds Milliseconds to wait for a frame
      * @return void
      *

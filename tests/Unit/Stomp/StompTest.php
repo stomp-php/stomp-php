@@ -255,13 +255,7 @@ class StompTest extends PHPUnit_Framework_TestCase
                     }
                 )
             );
-        $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
-            ->setMethods(array('createConnection'))
-            ->disableOriginalConstructor()
-            ->getMock();
-        $stomp->expects($this->once())->method('createConnection')->will($this->returnValue($connection));
-
-        $stomp->__construct(null);
+        $stomp = new Stomp($connection);
 
 
 
