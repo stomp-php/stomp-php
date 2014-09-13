@@ -43,7 +43,7 @@ class Parser
      *
      * @var Frames[]
      */
-    private $_frames = [];
+    private $_frames = array();
 
     /**
      * Current buffer for new frames.
