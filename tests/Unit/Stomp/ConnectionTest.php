@@ -142,37 +142,6 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         }
     }
 
-
-    public function testParseFrameTransformsToMapIfJmsMapHeaderIsSet()
-    {
-        $connection = new Connection('tcp://localhost');
-        $parse = new \ReflectionMethod($connection, '_parseFrame');
-        $parse->setAccessible(true);
-
-        $body = json_encode(array('var' => 'value'));
-        $msg = "CMD\nheader1:value1\ntransformation:jms-map-json\n\n" . $body;
-
-        $result = $parse->invoke($connection, $msg);
-        $this->assertInstanceOf('\FuseSource\Stomp\Message\Map', $result);
-        $this->assertEquals('value', $result->map['var']);
-    }
-
-    public function testParseFrameTransformsToFrameByDefault()
-    {
-        $connection = new Connection('tcp://localhost');
-        $parse = new \ReflectionMethod($connection, '_parseFrame');
-        $parse->setAccessible(true);
-
-        $body = 'var';
-        $msg = "CMD\nheader1:value1\n\n\n" . $body;
-
-        $result = $parse->invoke($connection, $msg);
-        $this->assertInstanceOf('\FuseSource\Stomp\Frame', $result);
-        $this->assertEquals('var', $result->body);
-        $this->assertEquals('value1', $result->headers['header1']);
-    }
-
-
     /**
      * @expectedException \FuseSource\Stomp\Exception\StompException
      */

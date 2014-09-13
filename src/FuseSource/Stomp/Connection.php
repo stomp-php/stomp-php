@@ -81,6 +81,13 @@ class Connection
     private $_connection = null;
 
     /**
+     * Frame parser
+     *
+     * @var Parser
+     */
+    private $_parser;
+
+    /**
      * Initialize connection
      *
      * Example broker uri
@@ -94,6 +101,7 @@ class Connection
      */
     public function __construct ($brokerUri, $connectionTimeout = 1)
     {
+        $this->_parser = new Parser();
         $this->_connect_timeout = $connectionTimeout;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
@@ -274,59 +282,23 @@ class Connection
      */
     public function readFrame ()
     {
+        if ($this->_parser->hasBufferedFrames()) {
+            return $this->_parser->getFrame();
+        }
         if (!$this->hasDataToRead()) {
             return false;
         }
 
-        $readBuffer = 1024;
-        $data = '';
-        $end = false;
-
         do {
-            $read = @fgets($this->_connection, $readBuffer);
-            if ($read === false || $read === "") {
+            $read = @fread($this->_connection, 1024);
+            if ($read === false) {
                 throw new StompException('Was not possible to read frame.');
             }
-            $data .= $read;
-            if (strpos($data, "\x00") !== false) {
-                $end = true;
-                $data = trim($data, "\n");
-            }
-            $len = strlen($data);
-        } while ($len < 2 || $end == false); // need at least 2 bytes or stop if frame end is detected
-        $frame = $this->_parseFrame($data);
+            $this->_parser->addData($read);
+        } while (!$this->_parser->parse());
+        $frame = $this->_parser->getFrame();
         if ($frame->isErrorFrame()) {
             throw new StompException($frame->headers['message'], 0, $frame->body);
-        }
-        return $frame;
-    }
-
-
-    /**
-     * Parse a frame from source.
-     *
-     * @param string $data
-     * @return Map|Frame
-     */
-    protected function _parseFrame ($data)
-    {
-        list ($header, $body) = explode("\n\n", $data, 2);
-        $header = explode("\n", $header);
-        $headers = array();
-        $command = null;
-        foreach ($header as $v) {
-            if (isset($command)) {
-                list ($name, $value) = explode(':', $v, 2);
-                $headers[$name] = $value;
-            } else {
-                $command = $v;
-            }
-        }
-        $frame = new Frame($command, $headers, trim($body));
-        if (isset($frame->headers['transformation']) && $frame->headers['transformation'] == 'jms-map-json') {
-            return new Map($frame);
-        } else {
-            return $frame;
         }
         return $frame;
     }
