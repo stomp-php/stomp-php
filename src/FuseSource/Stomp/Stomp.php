@@ -99,12 +99,12 @@ class Stomp
     /**
      * Constructor
      *
-     * @param string $brokerUri Broker URL
+     * @param string|Connection $broker Broker URL or a connection
      * @throws StompException
      */
-    public function __construct ($brokerUri)
+    public function __construct ($broker)
     {
-        $this->_connection = $this->createConnection($brokerUri);
+        $this->_connection = $broker instanceof Connection ? $broker : $this->createConnection($broker);
     }
 
     /**
@@ -220,9 +220,10 @@ class Stomp
                     $this->_unprocessedFrames[] = $frame;
                 }
             } else {
-                return false;
+                break;
             }
         }
+        return false;
     }
     /**
      * Register to listen to a given destination
@@ -235,12 +236,8 @@ class Stomp
      */
     public function subscribe ($destination, $properties = null, $sync = null)
     {
-        if ($this->sendFrame($this->_protocol->getSubscribeFrame($destination, $properties ?: array()), $sync)) {
-            $this->_subscriptions[$destination] = true;
-            return true;
-        } else {
-            return false;
-        }
+        $subscribe =  $this->sendFrame($this->_protocol->getSubscribeFrame($destination, $properties ?: array()), $sync);
+        return $this->_subscriptions[$destination] = $subscribe;
     }
     /**
      * Remove an existing subscription
@@ -253,12 +250,11 @@ class Stomp
      */
     public function unsubscribe ($destination, $properties = null, $sync = null)
     {
-        if ($this->sendFrame($this->_protocol->getUnsubscribeFrame($destination, $properties ?: array()), $sync)) {
-            unset($this->_subscriptions[$destination]);
-            return true;
-        } else {
-            return false;
+        $unsubscribe = $this->sendFrame($this->_protocol->getUnsubscribeFrame($destination, $properties ?: array()), $sync);
+        if ($unsubscribe) {
+            $this->_subscriptions[$destination] = false;
         }
+        return $unsubscribe;
     }
     /**
      * Start a transaction

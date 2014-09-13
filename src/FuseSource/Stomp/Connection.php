@@ -162,7 +162,7 @@ class Connection
      */
     public function connect ()
     {
-        if (!$this->_connection) {
+        if (!$this->isConnected()) {
             $this->_connection = $this->_getConnection();
         }
         return true;
