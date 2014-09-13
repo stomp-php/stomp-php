@@ -83,6 +83,11 @@ class Connection
     /**
      * Initialize connection
      *
+     * Example broker uri
+     * - Use only one broker uri: tcp://localhost:61614
+     * - use failover in given order: failover://(tcp://localhost:61614,ssl://localhost:61612)
+     * - use brokers in random order://(tcp://localhost:61614,ssl://localhost:61612)?randomize=true
+     *
      * @param string $brokerUri
      * @throws StompException
      */
@@ -96,7 +101,7 @@ class Connection
 
             if ($options) {
                 parse_str($options, $connectionOptions);
-                $this->_params += $connectionOptions;
+                $this->_params = $connectionOptions + $this->_params;
             }
 
             if ($scheme != "failover") {
@@ -119,16 +124,12 @@ class Connection
      * Parce a broker URL
      *
      * @param string $url Broker URL
-     * @throws StompException
      * @return void
      */
     private function _parseUrl ($url)
     {
-        if ($parsed = parse_url($url)) {
-            array_push($this->_hosts, $parsed);
-        } else {
-            throw new StompException("Bad Broker URL $url");
-        }
+        $parsed = parse_url($url);
+        array_push($this->_hosts, $parsed + array('port' => '61613', 'scheme' => 'tcp'));
     }
 
 
@@ -196,7 +197,7 @@ class Connection
      *
      * @return array
      */
-    private function _getHostList ()
+    protected function _getHostList ()
     {
         $hosts = array_values($this->_hosts);
         if ($this->_params['randomize']) {
@@ -208,16 +209,13 @@ class Connection
     /**
      * Try to connect to given host.
      *
-     * Will return null if connect can't be established.
-     *
      * @param array $host
-     * @return resource (stream)|null
+     * @return resource (stream)
+     * @throws Exception if connection setup fails
      */
     protected function _connect (array $host)
     {
-        $port = self::DEFAULT_PORT;
         extract($host, EXTR_OVERWRITE);
-
         $errNo = null;
         $errStr = null;
         $socket = @fsockopen($scheme . '://' . $host, $port, $errNo, $errStr, $this->_connect_timeout);
@@ -295,7 +293,7 @@ class Connection
         $end = false;
 
         do {
-            $read = fgets($this->_connection, $readBuffer);
+            $read = @fgets($this->_connection, $readBuffer);
             if ($read === false || $read === "") {
                 throw new StompException('Was not possible to read frame.');
             }

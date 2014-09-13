@@ -101,6 +101,7 @@ class Stomp
      *
      * @param string|Connection $broker Broker URL or a connection
      * @throws StompException
+     * @see Connection::__construct()
      */
     public function __construct ($broker)
     {
