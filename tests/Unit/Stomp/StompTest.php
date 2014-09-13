@@ -1,6 +1,7 @@
 <?php
 namespace FuseSource\Tests\Unit;
 
+use FuseSource\Stomp\Connection;
 use FuseSource\Stomp\Frame;
 use FuseSource\Stomp\Stomp;
 use PHPUnit_Framework_TestCase;
@@ -322,5 +323,55 @@ class StompTest extends PHPUnit_Framework_TestCase
                'Frame must be the correct Frame from queued up frames in given order. (FIFO)'
             );
        }
+    }
+
+    public function testAckWillUseMessageAsMessageIdForAckFrame()
+    {
+        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+            ->setMethods(array('readFrame', 'writeFrame'))
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('readFrame')
+            ->will(
+                $this->returnValue(
+                    new Frame('CONNECTED', array('session' => 'id', 'server' => 'activemq'))
+                )
+            );
+        $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
+            ->setMethods(array('sendFrame'))
+            ->setConstructorArgs(array($connection))
+            ->getMock();
+
+        $lastSendFrame = null;
+        $lastSyncState = null;
+        $stomp->expects($this->any())
+            ->method('sendFrame')
+            ->will(
+                $this->returnCallback(
+                    function (Frame $frame, $sync) use (&$lastSendFrame, &$lastSyncState)
+                    {
+                        $lastSendFrame = $frame;
+                        $lastSyncState = $sync;
+                    }
+                )
+            );
+
+        $stomp->connect();
+        $stomp->ack('my-message-id', 'my-transaction-id');
+
+        $this->assertEquals(
+            'my-message-id', $lastSendFrame->headers['message-id'],
+            'Ack must set param message as message-id if no frame was given!'
+        );
+    }
+
+    function testGetConnectionReturnsUsedConnection()
+    {
+        $connection = new Connection('tcp://myhost');
+        $stomp = new Stomp($connection);
+
+        $this->assertSame($connection, $stomp->getConnection(), 'getConnection must return passed connection instance.');
     }
 }
