@@ -2,6 +2,7 @@
 
 namespace FuseSource\Tests\Functional;
 
+use FuseSource\Stomp\Connection;
 use FuseSource\Stomp\Exception\StompException;
 use FuseSource\Stomp\Frame;
 use PHPUnit_Framework_TestCase;
@@ -78,7 +79,6 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         fclose($fp);
     }
 
-
     function testWriteFrameThrowsExceptionIfConnectionIsBroken()
     {
         $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
@@ -103,4 +103,47 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         }
         fclose($fp);
     }
+
+    function testHasDataToReadThrowsExceptionIfConnectionIsBroken()
+    {
+        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+            ->setMethods(array('isConnected', '_connect'))
+            ->setConstructorArgs(array('tcp://host'))
+            ->getMock();
+
+        $fp = tmpfile();
+
+        $connection->expects($this->once())->method('_connect')->will($this->returnValue($fp));
+
+        $connected = false;
+        $connection->expects($this->exactly(2))
+            ->method('isConnected')
+            ->will(
+                $this->returnCallback(
+                    function () use (&$connected) {
+                        return $connected;
+                    }
+                )
+            );
+
+        $connection->connect();
+        $connected = true;
+        fclose($fp);
+        try {
+            $connection->readFrame();
+            $this->fail('Expected a exception!');
+        } catch (StompException $excpetion) {
+            $this->assertEquals('Check failed to determine if the socket is readable', $excpetion->getMessage());
+        }
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    function testConnectionFailLeadsToException()
+    {
+        $connection = new Connection('tcp://0.0.0.1:15');
+        $connection->connect();
+    }
+
 }

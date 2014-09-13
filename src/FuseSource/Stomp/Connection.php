@@ -52,7 +52,7 @@ class Connection
      *
      * @var integer
      */
-    private $_connect_timeout = 1;
+    private $_connect_timeout;
 
     /**
      * Connection read wait timeout.
@@ -89,10 +89,12 @@ class Connection
      * - use brokers in random order://(tcp://localhost:61614,ssl://localhost:61612)?randomize=true
      *
      * @param string $brokerUri
+     * @param integer $connectionTimeout in seconds
      * @throws StompException
      */
-    public function __construct ($brokerUri)
+    public function __construct ($brokerUri, $connectionTimeout = 1)
     {
+        $this->_connect_timeout = $connectionTimeout;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
             $scheme = $matches[2];
@@ -130,18 +132,6 @@ class Connection
     {
         $parsed = parse_url($url);
         array_push($this->_hosts, $parsed + array('port' => '61613', 'scheme' => 'tcp'));
-    }
-
-
-    /**
-     * Set the connection timeout.
-     *
-     * @param integer $connectTimeout in seconds
-     * @return void
-     */
-    public function setConnectTimeout ($connectTimeout)
-    {
-        $this->_connect_timeout = $connectTimeout;
     }
 
     /**
