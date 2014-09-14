@@ -57,5 +57,37 @@ class StompSyncTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('test 2', $frame->body, 'test 2 not received!');
         $this->Stomp->ack($frame);
     }
+
+
+    public function testCommitTransaction()
+    {
+        $this->assertTrue($this->Stomp->connect());
+        $this->assertTrue($this->Stomp->begin('my-id'));
+        $this->assertTrue($this->Stomp->send('/queue/test', 'test 1', array('transaction' => 'my-id')));
+        $this->assertTrue($this->Stomp->commit('my-id'));
+
+        $this->assertTrue($this->Stomp->subscribe('/queue/test'));
+
+
+        $frame = $this->Stomp->readFrame();
+        $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
+        $this->Stomp->ack($frame);
+    }
+
+
+    public function testAbortTransaction()
+    {
+        $this->assertTrue($this->Stomp->connect());
+        $this->assertTrue($this->Stomp->begin('my-id'));
+        $this->assertTrue($this->Stomp->send('/queue/test', 'test t-id', array('transaction' => 'my-id')));
+        $this->assertTrue($this->Stomp->abort('my-id'));
+
+        $this->assertTrue($this->Stomp->subscribe('/queue/test'));
+
+        $this->Stomp->getConnection()->setReadTimeout(array(1, 0));
+
+        $frame = $this->Stomp->readFrame();
+        $this->assertFalse($frame);
+    }
 }
 
