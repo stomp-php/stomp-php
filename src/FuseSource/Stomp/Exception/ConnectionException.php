@@ -1,8 +1,6 @@
 <?php
 namespace FuseSource\Stomp\Exception;
 
-use Exception;
-
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
