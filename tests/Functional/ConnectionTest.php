@@ -3,7 +3,8 @@
 namespace FuseSource\Tests\Functional;
 
 use FuseSource\Stomp\Connection;
-use FuseSource\Stomp\Exception\StompException;
+use FuseSource\Stomp\Exception\ConnectionException;
+use FuseSource\Stomp\Exception\ErrorFrameException;
 use FuseSource\Stomp\Frame;
 use PHPUnit_Framework_TestCase;
 /**
@@ -48,8 +49,8 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         try {
             $connection->readFrame();
             $this->fail('Expected a exception!');
-        } catch (StompException $excpetion) {
-            $this->assertEquals('Was not possible to read frame.', $excpetion->getMessage());
+        } catch (ConnectionException $excpetion) {
+            $this->assertContains('Was not possible to read data from stream.', $excpetion->getMessage());
         }
     }
 
@@ -73,8 +74,9 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         try {
             $connection->readFrame();
             $this->fail('Expected a exception!');
-        } catch (StompException $excpetion) {
-            $this->assertEquals('stomp-err-info', $excpetion->getMessage());
+        } catch (ErrorFrameException $excpetion) {
+            $this->assertContains('stomp-err-info', $excpetion->getMessage());
+            $this->assertEquals('body', $excpetion->getFrame()->body);
         }
         fclose($fp);
     }
@@ -98,8 +100,8 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         try {
             $connection->writeFrame(new Frame('TEST'));
             $this->fail('Expected a exception!');
-        } catch (StompException $excpetion) {
-            $this->assertEquals('Was not possible to write frame!', $excpetion->getMessage());
+        } catch (ConnectionException $excpetion) {
+            $this->assertContains('Was not possible to write frame!', $excpetion->getMessage());
         }
         fclose($fp);
     }
@@ -132,18 +134,27 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         try {
             $connection->readFrame();
             $this->fail('Expected a exception!');
-        } catch (StompException $excpetion) {
-            $this->assertEquals('Check failed to determine if the socket is readable', $excpetion->getMessage());
+        } catch (ConnectionException $excpetion) {
+            $this->assertContains('Check failed to determine if the socket is readable', $excpetion->getMessage());
         }
     }
 
-    /**
-     * @expectedException \Exception
-     */
     function testConnectionFailLeadsToException()
     {
         $connection = new Connection('tcp://0.0.0.1:15');
-        $connection->connect();
+        try {
+            $connection->connect();
+            $this->fail('Expected an exception!');
+        } catch (ConnectionException $ex) {
+            $this->assertContains('Could not connect to a broker', $ex->getMessage());
+
+            $this->assertInstanceOf('FuseSource\Stomp\Exception\ConnectionException', $ex->getPrevious(), 'There should be a previous exception.');
+            $prev = $ex->getPrevious();
+            $hostinfo = $prev->getConnectionInfo();
+            $this->assertEquals('0.0.0.1', $hostinfo['host']);
+            $this->assertEquals('15', $hostinfo['port']);
+
+        }
     }
 
     function testConnectionWillReturnBufferedFramesIfMoreThanOneWasReturnedInLastRead()

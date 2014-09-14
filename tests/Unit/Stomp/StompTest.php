@@ -2,6 +2,7 @@
 namespace FuseSource\Tests\Unit;
 
 use FuseSource\Stomp\Connection;
+use FuseSource\Stomp\Exception\UnexpectedResponseException;
 use FuseSource\Stomp\Frame;
 use FuseSource\Stomp\Stomp;
 use PHPUnit_Framework_TestCase;
@@ -32,17 +33,21 @@ use ReflectionMethod;
  */
 class StompTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @expectedException FuseSource\Stomp\Exception\StompException
-     */
     public function testConnectWillThrowExceptionIfUnexpectedFrameArrives()
     {
-        $stomp = $this->getStompWithInjectedMockedConnectionReadResult(new Frame('FAIL'));
-        $stomp->connect();
+        $frame = new Frame('FAIL');
+        $stomp = $this->getStompWithInjectedMockedConnectionReadResult($frame);
+        try {
+            $stomp->connect();
+            $this->fail('Expected exception!');
+        } catch (UnexpectedResponseException $connectionException) {
+            $this->assertSame($frame, $connectionException->getFrame());
+        }
+
     }
 
     /**
-     * @expectedException FuseSource\Stomp\Exception\StompException
+     * @expectedException \FuseSource\Stomp\Exception\ConnectionException
      */
     public function testConnectWillThrowExceptionIfNoFrameWasRead()
     {

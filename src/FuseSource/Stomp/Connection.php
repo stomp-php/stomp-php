@@ -2,9 +2,8 @@
 
 namespace FuseSource\Stomp;
 
-use Exception;
-use FuseSource\Stomp\Exception\StompException;
-use FuseSource\Stomp\Message\Map;
+use FuseSource\Stomp\Exception\ConnectionException;
+use FuseSource\Stomp\Exception\ErrorFrameException;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -81,6 +80,13 @@ class Connection
     private $_connection = null;
 
     /**
+     * Connected host info.
+     *
+     * @var array
+     */
+    private $_activeHost = array();
+
+    /**
      * Frame parser
      *
      * @var Parser
@@ -97,7 +103,7 @@ class Connection
      *
      * @param string $brokerUri
      * @param integer $connectionTimeout in seconds
-     * @throws StompException
+     * @throws ConnectionException
      */
     public function __construct ($brokerUri, $connectionTimeout = 1)
     {
@@ -125,7 +131,7 @@ class Connection
         }
 
         if (empty($this->_hosts)) {
-            throw new StompException("Bad Broker URL {$brokerUri}");
+            throw new ConnectionException("Bad Broker URL {$brokerUri}. Check used scheme!");
         }
     }
 
@@ -157,7 +163,7 @@ class Connection
      * Connect to an broker.
      *
      * @return boolean
-     * @throws
+     * @throws ConnectionException
      */
     public function connect ()
     {
@@ -172,8 +178,8 @@ class Connection
     /**
      * Get a connection.
      *
-     * @return type
-     * @throws Exception
+     * @return resource (stream)
+     * @throws ConnectionException
      */
     protected function _getConnection ()
     {
@@ -182,9 +188,9 @@ class Connection
         while ($host = array_shift($hosts)) {
             try {
                 return $this->_connect($host);
-            } catch (Exception $connectionException) {
+            } catch (ConnectionException $connectionException) {
                 if (empty($hosts)) {
-                    throw new Exception("Could not connect to a broker", 500, $connectionException);
+                    throw new ConnectionException("Could not connect to a broker", array(), $connectionException);
                 }
             }
         }
@@ -207,24 +213,19 @@ class Connection
     /**
      * Try to connect to given host.
      *
-     * @param array $host
+     * @param array $hostinfo
      * @return resource (stream)
-     * @throws Exception if connection setup fails
+     * @throws ConnectionException if connection setup fails
      */
-    protected function _connect (array $host)
+    protected function _connect (array $hostinfo)
     {
-        extract($host, EXTR_OVERWRITE);
+        $this->_activeHost = $hostinfo;
+        extract($hostinfo, EXTR_OVERWRITE);
         $errNo = null;
         $errStr = null;
         $socket = @fsockopen($scheme . '://' . $host, $port, $errNo, $errStr, $this->_connect_timeout);
         if (!is_resource($socket)) {
-            throw new Exception(
-                sprintf(
-                    'Failed to connect to "%s://%s:%s". %s (%s)',
-                    $scheme, $host, $port,
-                    $errStr, $errNo
-                )
-            );
+            throw new ConnectionException(sprintf('Failed to connect. (%s: %s)', $errNo, $errStr), $hostinfo);
         }
 
         return $socket;
@@ -252,6 +253,7 @@ class Connection
             fclose($this->_connection);
         }
         $this->_connection = null;
+        $this->_activeHost = array();
     }
 
 
@@ -260,16 +262,16 @@ class Connection
      *
      * @param Frame $stompFrame
      * @return boolean
-     * @throws StompException
+     * @throws ConnectionException
      */
     public function writeFrame (Frame $stompFrame)
     {
         if (!$this->isConnected()) {
-            throw new StompException('Not connected to any server.');
+            throw new ConnectionException('Not connected to any server.', $this->_activeHost);
         }
         $data = $stompFrame->__toString();
         if (!@fwrite($this->_connection, $data, strlen($data))) {
-            throw new StompException('Was not possible to write frame!');
+            throw new ConnectionException('Was not possible to write frame!', $this->_activeHost);
         }
         return true;
     }
@@ -278,7 +280,7 @@ class Connection
      * Try to read a frame from the server.
      *
      * @return Frame|False when no frame to read
-     * @throws StompException
+     * @throws ConnectionException
      */
     public function readFrame ()
     {
@@ -292,13 +294,13 @@ class Connection
         do {
             $read = @fread($this->_connection, 1024);
             if ($read === false) {
-                throw new StompException('Was not possible to read frame.');
+                throw new ConnectionException('Was not possible to read data from stream.', $this->_activeHost);
             }
             $this->_parser->addData($read);
         } while (!$this->_parser->parse());
         $frame = $this->_parser->getFrame();
         if ($frame->isErrorFrame()) {
-            throw new StompException($frame->headers['message'], 0, $frame->body);
+            throw new ErrorFrameException($frame);
         }
         return $frame;
     }
@@ -309,13 +311,13 @@ class Connection
      * This might wait until readTimeout is reached.
      *
      * @return boolean
-     * @throws StompException
-     * @see setReadTimeout()
+     * @throws ConnectionException
+     * @see Connection::setReadTimeout()
      */
     public function hasDataToRead ()
     {
         if (!$this->isConnected()) {
-            throw new StompException('Not connected to any server.');
+            throw new ConnectionException('Not connected to any server.', $this->_activeHost);
         }
 
         $read = array($this->_connection);
@@ -324,7 +326,7 @@ class Connection
         $hasStreamInfo = @stream_select($read, $write, $except, $this->_read_timeout[0], $this->_read_timeout[1]);
 
         if ($hasStreamInfo === false) {
-            throw new StompException('Check failed to determine if the socket is readable');
+            throw new ConnectionException('Check failed to determine if the socket is readable.', $this->_activeHost);
         }
         return !empty($read);
     }

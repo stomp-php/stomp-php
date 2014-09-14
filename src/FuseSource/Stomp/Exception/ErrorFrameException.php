@@ -1,7 +1,8 @@
 <?php
 namespace FuseSource\Stomp\Exception;
 
-use Exception;
+use FuseSource\Stomp\Frame;
+
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -22,21 +23,38 @@ use Exception;
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
- * Base exception for all special stomp exceptions.
+ * Stomp server send us an error frame.
+ *
  *
  * @package Stomp
+ * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class StompException extends Exception
+class ErrorFrameException extends StompException
 {
+    /**
+     *
+     * @var Frame
+     */
+    private $_frame;
 
     /**
-     * Stomp server error details
      *
-     * @deprecated use getMessage()
-     * @return string
+     * @param Frame $frame
      */
-    public function getDetails()
+    function __construct(Frame $frame)
     {
-        return $this->getMessage();
+        $this->_frame = $frame;
+        parent::__construct(
+            sprintf('Error "%s"', $frame->headers['message'])
+        );
+    }
+
+    /**
+     *
+     * @return Frame
+     */
+    public function getFrame()
+    {
+        return $this->_frame;
     }
 }

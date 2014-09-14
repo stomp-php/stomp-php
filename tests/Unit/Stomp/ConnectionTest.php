@@ -116,7 +116,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     {
         $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
             ->setMethods(array('_connect'))
-            ->setConstructorArgs(array('failover://(host1,host2,host3)'))
+            ->setConstructorArgs(array('failover://(tcp://host1,tcp://host2,tcp://host3)'))
             ->getMock();
 
         $expectedHosts = array(
@@ -129,7 +129,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
                 function ($host) use (&$expectedHosts, $test) {
                     $current = array_shift($expectedHosts);
                     $test->assertEquals($current, $host['host'], 'Wrong host given to connect.');
-                    throw new \FuseSource\Stomp\Exception\StompException('-');
+                    throw new \FuseSource\Stomp\Exception\ConnectionException('Connection failed.', $host);
                 }
             )
         );

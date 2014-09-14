@@ -2,7 +2,9 @@
 
 namespace FuseSource\Stomp;
 
+use FuseSource\Stomp\Exception\ConnectionException;
 use FuseSource\Stomp\Exception\StompException;
+use FuseSource\Stomp\Exception\UnexpectedResponseException;
 use FuseSource\Stomp\Protocol\ActiveMq;
 use FuseSource\Stomp\Protocol\RabbitMq;
 
@@ -123,7 +125,7 @@ class Stomp
         $this->sendFrame($this->_protocol->getConnectFrame($login, $passcode), false);
         if ($frame = $this->_connection->readFrame()) {
             if ($frame->command != 'CONNECTED') {
-                throw new StompException("Unexpected command: {$frame->command}", 0, $frame->body);
+                throw new UnexpectedResponseException($frame, 'Expected a CONNECTED Frame!');
             }
             $this->_sessionId = $frame->headers["session"];
             if (isset($frame->headers['server']) && false !== stristr(trim($frame->headers['server']), 'rabbitmq')) {
@@ -134,7 +136,7 @@ class Stomp
             }
             return true;
         }
-        throw new StompException("Connection not acknowledged");
+        throw new ConnectionException("Connection not acknowledged");
     }
 
     /**
@@ -194,7 +196,7 @@ class Stomp
      *
      * @param string $receipt
      * @return boolean
-     * @throws StompException
+     * @throws UnexpectedResponseException
      */
     protected function _waitForReceipt ($receipt)
     {
@@ -204,7 +206,7 @@ class Stomp
                     if ($frame->headers['receipt-id'] == $receipt) {
                         return true;
                     } else {
-                        throw new StompException("Unexpected receipt id {$frame->headers['receipt-id']} - expected was $receipt", 0, $frame->body);
+                        throw new UnexpectedResponseException($frame, sprintf('Expected receipt id %s', $receipt));
                     }
                 } else {
                     $this->_unprocessedFrames[] = $frame;
