@@ -213,19 +213,19 @@ class Connection
     /**
      * Try to connect to given host.
      *
-     * @param array $hostinfo
+     * @param array $host
      * @return resource (stream)
      * @throws ConnectionException if connection setup fails
      */
-    protected function _connect (array $hostinfo)
+    protected function _connect (array $host)
     {
-        $this->_activeHost = $hostinfo;
-        extract($hostinfo, EXTR_OVERWRITE);
+        $this->_activeHost = $host;
         $errNo = null;
         $errStr = null;
-        $socket = @fsockopen($scheme . '://' . $host, $port, $errNo, $errStr, $this->_connect_timeout);
+        $socket = @fsockopen($host['scheme'] . '://' . $host['host'], $host['port'], $errNo, $errStr, $this->_connect_timeout);
+
         if (!is_resource($socket)) {
-            throw new ConnectionException(sprintf('Failed to connect. (%s: %s)', $errNo, $errStr), $hostinfo);
+            throw new ConnectionException(sprintf('Failed to connect. (%s: %s)', $errNo, $errStr), $host);
         }
 
         return $socket;
