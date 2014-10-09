@@ -14,3 +14,7 @@ Changelog stomp-php
 - removed the posibillity to auto-reconnect outside the connect process (it's quite intransparent and can lead to much more problems than expected)
 - added a read buffer seen at https://github.com/camronlevanger/stomp-php/commit/8bca4a55b5db8493f543c7f2d1db13d42455e19d
 
+2.1.1
+-----
+
+- fixed deadloop on connection exception (https://github.com/fin-sn-de/stomp-php/issues/1)

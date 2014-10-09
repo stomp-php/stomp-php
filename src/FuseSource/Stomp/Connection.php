@@ -293,7 +293,7 @@ class Connection
 
         do {
             $read = @fread($this->_connection, 1024);
-            if ($read === false) {
+            if ($read === false || $read === '') {
                 throw new ConnectionException('Was not possible to read data from stream.', $this->_activeHost);
             }
             $this->_parser->addData($read);
