@@ -3,6 +3,7 @@
 namespace FuseSource\Stomp;
 
 use FuseSource\Stomp\Exception\ConnectionException;
+use FuseSource\Stomp\Exception\MissingReceiptException;
 use FuseSource\Stomp\Exception\StompException;
 use FuseSource\Stomp\Exception\UnexpectedResponseException;
 use FuseSource\Stomp\Protocol\ActiveMq;
@@ -196,7 +197,8 @@ class Stomp
      *
      * @param string $receipt
      * @return boolean
-     * @throws UnexpectedResponseException
+     * @throws UnexpectedResponseException If response has an invalid receipt.
+     * @throws MissingReceiptException     If no receipt is received.
      */
     protected function _waitForReceipt ($receipt)
     {
@@ -215,7 +217,7 @@ class Stomp
                 break;
             }
         }
-        return false;
+        throw new MissingReceiptException($receipt);
     }
     /**
      * Register to listen to a given destination
