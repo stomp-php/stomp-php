@@ -1,37 +1,31 @@
 A simple PHP [Stomp](http://stomp.github.com) Client
 
-[![Build Status](https://travis-ci.org/fin-sn-de/stomp-php.svg?branch=feature%2Frewrite-client)](https://travis-ci.org/fin-sn-de/stomp-php)
+[![Build Status](https://travis-ci.org/fin-sn-de/stomp-php.svg?branch=master)](https://travis-ci.org/fin-sn-de/stomp-php)
 
 Version choice
 --------------
-There are 2 Versions of stomp-php. 1.x is compatible with PHP <= PHP-5.2 as it
-does not use PHP-5.3 specific features.
-
-The master branch uses features such as namespaces and newer constants and will
-become the 2.x release in the near future.
-
-For versioning [semantic versioning](http://semver.org/) is used.
-
-The different Versions can be found at the [tags](stomp-php/tags)
-section.
+This fork is not compatible to the original stomp from https://github.com/dejanb/stomp-php.
+This is caused since the original fork is mostly outdated. The last compatible version is 2.2.2.
 
 Installing
 ----------
 
-The source is PSR-0 compliant. So just donwload the source and add the Namespace
-"FuseSource" to your autoloader configuration with the path pointing to
-src/.
+composer.json
 
-As an alternate you have the possibility to make use of composer to manage your
-project dependencies.
+```json
+ "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jh-ism-online-webmaster/stomp-php"
+        }
+    ]
+```
 
-Just add
-
+```json
     "require": {
-        "fusesource/stomp-php" : "2.0.*"
-    }
-
-to your project composer.json.
+        "jh-ism-online-webmaster/stomp-php": "2.2.2"
+    },
+```
 
 Running Examples
 ----------------
