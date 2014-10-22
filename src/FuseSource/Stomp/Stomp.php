@@ -100,6 +100,13 @@ class Stomp
     private $_protocol;
 
     /**
+     * Seconds to wait for a receipt.
+     *
+     * @var float
+     */
+    private $_receiptWait = 2;
+
+    /**
      * Constructor
      *
      * @param string|Connection $broker Broker URL or a connection
@@ -202,6 +209,7 @@ class Stomp
      */
     protected function _waitForReceipt ($receipt)
     {
+        $stopAfter = $this->calculateReceiptWaitEnd();
         while (true) {
             if ($frame = $this->_connection->readFrame()) {
                 if ($frame->command == 'RECEIPT') {
@@ -213,12 +221,24 @@ class Stomp
                 } else {
                     $this->_unprocessedFrames[] = $frame;
                 }
-            } else {
+            }
+            if (microtime(true) > $stopAfter) {
                 break;
             }
         }
         throw new MissingReceiptException($receipt);
     }
+
+    /**
+     * Returns the timestamp with microtime to stop wait for a receipt.
+     *
+     * @return float
+     */
+    protected function calculateReceiptWaitEnd()
+    {
+        return microtime(true) + $this->_receiptWait;
+    }
+
     /**
      * Register to listen to a given destination
      *
@@ -413,4 +433,16 @@ class Stomp
     {
         return $this->_connection->hasDataToRead();
     }
+
+    /**
+     * Set seconds to wait for a receipt.
+     *
+     * @param float $seconds
+     */
+    public function setReceiptWait($seconds)
+    {
+        $this->_receiptWait = $seconds;
+    }
+
+
 }
