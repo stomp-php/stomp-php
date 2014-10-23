@@ -342,7 +342,9 @@ class Stomp
     {
         try {
             if ($this->_connection && $this->_connection->isConnected()) {
-                $this->sendFrame($this->_protocol->getDisconnectFrame(), false);
+                if ($this->_protocol) {
+                    $this->sendFrame($this->_protocol->getDisconnectFrame(), false);
+                }
                 $this->_connection->diconnect();
             }
         } catch (StompException $ex) {
