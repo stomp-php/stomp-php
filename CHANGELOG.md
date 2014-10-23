@@ -28,3 +28,7 @@ Changelog stomp-php
 -----
 - setting a client id will not longer lead to an durable subscription (https://github.com/fin-sn-de/stomp-php/issues/3)
 - `subscribe` and `subscribe` now have a new parameter `durable` which is `false` as default
+
+2.2.4
+-----
+- fixed possible nullpointer on broken connections
