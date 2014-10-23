@@ -1,5 +1,5 @@
 <?php
-namespace FuseSource\Tests\Unit;
+namespace FuseSource\Tests\Unit\Stomp;
 
 use FuseSource\Stomp\Connection;
 use FuseSource\Stomp\Exception\UnexpectedResponseException;

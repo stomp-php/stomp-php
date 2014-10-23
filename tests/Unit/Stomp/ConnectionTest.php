@@ -1,5 +1,5 @@
 <?php
-namespace FuseSource\Tests\Unit;
+namespace FuseSource\Tests\Unit\Stomp;
 
 use Exception;
 use FuseSource\Stomp\Connection;

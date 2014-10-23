@@ -1,5 +1,5 @@
 <?php
-namespace FuseSource\Tests\Unit;
+namespace FuseSource\Tests\Unit\Stomp;
 
 use FuseSource\Stomp\Parser;
 use PHPUnit_Framework_TestCase;
