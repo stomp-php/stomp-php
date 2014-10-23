@@ -299,6 +299,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
     }
 
 	public function testDurable() {
+        $this->markTestSkipped('This test is not compatible to an active mq env.');
 		$this->subscribe();
 		sleep(2);
 		$this->produce();

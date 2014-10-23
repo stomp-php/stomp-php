@@ -53,13 +53,17 @@ class RabbitMq extends Protocol
      *
      * @param string $destination
      * @param array $headers
+     * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getSubscribeFrame ($destination, array $headers = array())
+    public function getSubscribeFrame ($destination, array $headers = array(), $durable = false)
     {
         $frame = parent::getSubscribeFrame($destination, $headers);
         $frame->setHeader('prefetch-count', $this->getPrefetchSize());
         $this->addClientId($frame);
+        if ($durable) {
+            $frame->setHeader('persistent', 'true');
+        }
         return $frame;
     }
 
@@ -68,26 +72,16 @@ class RabbitMq extends Protocol
      *
      * @param string $destination
      * @param array $headers
+     * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getUnsubscribeFrame ($destination, array $headers = array())
+    public function getUnsubscribeFrame ($destination, array $headers = array(), $durable = false)
     {
         $frame = parent::getUnsubscribeFrame($destination, $headers);
         $this->addClientId($frame);
+        if ($durable) {
+            $frame->setHeader('persistent', 'true');
+        }
         return $frame;
     }
-
-    /**
-     * Add client id to frame.
-     *
-     * @param Frame $frame
-     * @return void
-     */
-    protected function addClientId (Frame $frame)
-    {
-        if ($this->hasClientId()) {
-            $frame->setHeader('id', $this->getClientId());
-        }
-    }
-
 }

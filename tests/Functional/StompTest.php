@@ -297,9 +297,9 @@ class StompTest extends PHPUnit_Framework_TestCase
 
 	public function testDurable() {
 		$this->subscribe();
-		sleep(2);
+        usleep(500000);
 		$this->produce();
-		sleep(2);
+        usleep(500000);
 		$this->consume();
 	}
 
@@ -316,8 +316,8 @@ class StompTest extends PHPUnit_Framework_TestCase
         $consumer->sync = false;
 		$consumer->clientId = "test";
         $consumer->connect("system", "manager");
-		$consumer->subscribe($this->topic);
-		$consumer->unsubscribe($this->topic);
+		$consumer->subscribe($this->topic, null, null, true);
+
 		$consumer->disconnect();
 	}
 
@@ -327,13 +327,19 @@ class StompTest extends PHPUnit_Framework_TestCase
 		$consumer2->clientId = "test";
 		$consumer2->setReadTimeout(1);
         $consumer2->connect("system", "manager");
-		$consumer2->subscribe($this->topic);
+		$consumer2->subscribe($this->topic, null, null, true);
 
         $frame = $consumer2->readFrame();
 		$this->assertEquals($frame->body, "test message");
 		if ($frame != null) {
 			$consumer2->ack($frame);
 		}
+
+        // yes, that's active mq! you must unsub two times...
+        // http://mail-archives.apache.org/mod_mbox/activemq-dev/201205.mbox/raw/%3C634996273.21688.1336051731428.JavaMail.tomcat@hel.zones.apache.org%3E/
+        $consumer2->unsubscribe($this->topic);
+        // that took me some time...
+        $consumer2->unsubscribe($this->topic, null, null, true);
 
 		$consumer2->disconnect();
 	}

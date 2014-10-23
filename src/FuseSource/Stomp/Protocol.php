@@ -85,14 +85,16 @@ class Protocol
      *
      * @param string $destination
      * @param array $headers
+     * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getSubscribeFrame ($destination, array $headers = array())
+    public function getSubscribeFrame ($destination, array $headers = array(), $durable = false)
     {
         $frame = new Frame('SUBSCRIBE');
         $frame->setHeader('ack', 'client');
         $frame->addHeaders($headers);
         $frame->setHeader('destination', $destination);
+        $this->addClientId($frame);
         return $frame;
     }
 
@@ -101,9 +103,10 @@ class Protocol
      *
      * @param string $destination
      * @param array $headers
+     * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getUnsubscribeFrame ($destination, array $headers = array())
+    public function getUnsubscribeFrame ($destination, array $headers = array(), $durable = false)
     {
         $frame = new Frame('UNSUBSCRIBE');
         $frame->addHeaders($headers);
@@ -174,6 +177,20 @@ class Protocol
     }
 
     /**
+     * Get the disconnect frame.
+     *
+     * @return Frame
+     */
+    public function getDisconnectFrame()
+    {
+        $frame = new Frame('DISCONNECT');
+        if ($this->hasClientId()) {
+            $frame->setHeader("client-id", $this->getClientId());
+        }
+        return $frame;
+    }
+
+    /**
      * Configured prefetch size.
      *
      * @return integer
@@ -203,4 +220,16 @@ class Protocol
         return $this->_clientId;
     }
 
+    /**
+     * Add client id to frame.
+     *
+     * @param Frame $frame
+     * @return void
+     */
+    protected function addClientId (Frame $frame)
+    {
+        if ($this->hasClientId()) {
+            $frame->setHeader('id', $this->getClientId());
+        }
+    }
 }

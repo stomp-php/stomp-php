@@ -20,5 +20,11 @@ Changelog stomp-php
 - fixed deadloop on connection exception (https://github.com/fin-sn-de/stomp-php/issues/1)
 
 2.2.2
+-----
 - This is the last version which is compatible to original fork!
 - all sync operations will throw an exception if they are left unconfimred (https://github.com/fin-sn-de/stomp-php/issues/2)
+
+2.2.3
+-----
+- setting a client id will not longer lead to an durable subscription (https://github.com/fin-sn-de/stomp-php/issues/3)
+- `subscribe` and `subscribe` now have a new parameter `durable` which is `false` as default

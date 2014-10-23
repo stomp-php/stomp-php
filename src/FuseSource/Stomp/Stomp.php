@@ -245,12 +245,13 @@ class Stomp
      * @param string $destination Destination queue
      * @param array $properties
      * @param boolean $sync Perform request synchronously
+     * @param boolean $durable durable subscription
      * @return boolean
      * @throws StompException
      */
-    public function subscribe ($destination, $properties = null, $sync = null)
+    public function subscribe ($destination, $properties = null, $sync = null, $durable = false)
     {
-        $subscribe =  $this->sendFrame($this->_protocol->getSubscribeFrame($destination, $properties ?: array()), $sync);
+        $subscribe =  $this->sendFrame($this->_protocol->getSubscribeFrame($destination, $properties ?: array(), $durable), $sync);
         return $this->_subscriptions[$destination] = $subscribe;
     }
     /**
@@ -259,12 +260,13 @@ class Stomp
      * @param string $destination
      * @param array $properties
      * @param boolean $sync Perform request synchronously
+     * @param boolean $durable durable subscription
      * @return boolean
      * @throws StompException
      */
-    public function unsubscribe ($destination, $properties = null, $sync = null)
+    public function unsubscribe ($destination, $properties = null, $sync = null, $durable = false)
     {
-        $unsubscribe = $this->sendFrame($this->_protocol->getUnsubscribeFrame($destination, $properties ?: array()), $sync);
+        $unsubscribe = $this->sendFrame($this->_protocol->getUnsubscribeFrame($destination, $properties ?: array(), $durable), $sync);
         if ($unsubscribe) {
             $this->_subscriptions[$destination] = false;
         }
@@ -340,11 +342,7 @@ class Stomp
     {
         try {
             if ($this->_connection && $this->_connection->isConnected()) {
-                $frame = new Frame('DISCONNECT');
-                if ($this->clientId != null) {
-                    $frame->setHeader("client-id", $this->clientId);
-                }
-                $this->sendFrame($frame, false);
+                $this->sendFrame($this->_protocol->getDisconnectFrame(), false);
                 $this->_connection->diconnect();
             }
         } catch (StompException $ex) {
