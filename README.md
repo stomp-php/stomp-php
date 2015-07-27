@@ -1,6 +1,6 @@
 A simple PHP [Stomp](http://stomp.github.com) Client
 
-[![Build Status](https://travis-ci.org/fin-sn-de/stomp-php.svg?branch=master)](https://travis-ci.org/fin-sn-de/stomp-php)
+[![Build Status](https://travis-ci.org/stomp-php/stomp-php.svg?branch=master)](https://travis-ci.org/stomp-php/stomp-php)
 
 Version choice
 --------------
@@ -16,14 +16,14 @@ composer.json
  "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/jh-ism-online-webmaster/stomp-php"
+            "url": "https://github.com/stomp-php/stomp-php"
         }
     ]
 ```
 
 ```json
     "require": {
-        "jh-ism-online-webmaster/stomp-php": "2.2.2"
+        "stomp-php/stomp-php": "2.2.2"
     },
 ```
 
