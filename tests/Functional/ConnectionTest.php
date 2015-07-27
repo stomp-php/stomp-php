@@ -157,39 +157,5 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    function testConnectionWillReturnBufferedFramesIfMoreThanOneWasReturnedInLastRead()
-    {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
-            ->setMethods(array('hasDataToRead', '_connect'))
-            ->setConstructorArgs(array('tcp://host'))
-            ->getMock();
-
-        $fp = tmpfile();
-
-        fwrite($fp, "INFO\nmsgno:1\n\nbody1\x00" . PHP_EOL);
-        fwrite($fp, "INFO\nmsgno:22\n\nbody22\x00");
-        fwrite($fp, "INFO\nmsgno:333\n\nbody333\x00" . PHP_EOL);
-        fwrite($fp, "INFO\nmsgno:4\n\nbody\x00");
-        fseek($fp, 0);
-
-        $connection->expects($this->once())->method('_connect')->will($this->returnValue($fp));
-        $connection->expects($this->once())->method('hasDataToRead')->will($this->returnValue(true));
-
-        $connection->connect();
-
-        $firstFrame = $connection->readFrame();
-        fclose($fp);
-
-        // even if connection is closed, there must be known frames...
-        $secondFrame = $connection->readFrame();
-        $thirdFrame = $connection->readFrame();
-        $fourthFrame = $connection->readFrame();
-
-        $this->assertEquals('body1', $firstFrame->body);
-        $this->assertEquals('body22', $secondFrame->body);
-        $this->assertEquals('body333', $thirdFrame->body);
-        $this->assertEquals('body', $fourthFrame->body);
-    }
-
 }
 
