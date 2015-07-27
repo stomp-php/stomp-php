@@ -87,6 +87,15 @@ class Connection
     private $_activeHost = array();
 
     /**
+     * Stream Context used for client connection
+     *
+     * @see http://php.net/manual/de/function.stream-context-create.php
+     *
+     * @var array
+     */
+    private $_context = array();
+
+    /**
      * Frame parser
      *
      * @var Parser
@@ -103,12 +112,14 @@ class Connection
      *
      * @param string $brokerUri
      * @param integer $connectionTimeout in seconds
+     * @param array   $context stream context
      * @throws ConnectionException
      */
-    public function __construct ($brokerUri, $connectionTimeout = 1)
+    public function __construct ($brokerUri, $connectionTimeout = 1, array $context = array())
     {
         $this->_parser = new Parser();
         $this->_connect_timeout = $connectionTimeout;
+        $this->_context = $context;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
             $scheme = $matches[2];
@@ -157,6 +168,17 @@ class Connection
     public function setReadTimeout (array $timeout)
     {
         $this->_read_timeout = $timeout;
+    }
+
+    /**
+     * Set socket context
+     *
+     * @param array $context
+     * @return void
+     */
+    public function setContext(array $context)
+    {
+        $this->_context = $context;
     }
 
     /**
@@ -222,7 +244,8 @@ class Connection
         $this->_activeHost = $host;
         $errNo = null;
         $errStr = null;
-        $socket = @fsockopen($host['scheme'] . '://' . $host['host'], $host['port'], $errNo, $errStr, $this->_connect_timeout);
+        $context = stream_context_create($this->_context);
+        $socket = @stream_socket_client($host['scheme'] . '://' . $host['host'] . ':' . $host['port'], $errNo, $errStr, $this->_connect_timeout, STREAM_CLIENT_CONNECT, $context);
 
         if (!is_resource($socket)) {
             throw new ConnectionException(sprintf('Failed to connect. (%s: %s)', $errNo, $errStr), $host);
@@ -250,7 +273,7 @@ class Connection
     public function diconnect ()
     {
         if ($this->isConnected()) {
-            fclose($this->_connection);
+            stream_socket_shutdown($this->_connection, STREAM_SHUT_RDWR);
         }
         $this->_connection = null;
         $this->_activeHost = array();
