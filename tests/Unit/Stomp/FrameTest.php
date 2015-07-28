@@ -13,10 +13,10 @@ class FrameTest extends PHPUnit_Framework_TestCase
     {
         $frame = new Frame(
             'SEND',
-            [
+            array(
                 'destination' => '/queue/a',
                 'receipt' => 'message-12345'
-            ],
+            ),
             'hello queue a^@'
         );
 
@@ -58,7 +58,7 @@ hello queue a^@' . "\x00",
     /** @test */
     public function shouldConvertFrameWithoutBodyToString()
     {
-        $frame = new Frame('SEND', ['destination' => '/queue/a']);
+        $frame = new Frame('SEND', array('destination' => '/queue/a'));
 
         $result = $frame->__toString();
         $this->assertEquals(
