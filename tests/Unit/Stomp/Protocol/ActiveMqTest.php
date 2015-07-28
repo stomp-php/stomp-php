@@ -1,8 +1,8 @@
 <?php
-namespace FuseSource\Tests\Unit\Protocol;
+namespace Stomp\Tests\Unit\Protocol;
 
-use FuseSource\Stomp\Protocol;
-use FuseSource\Stomp\Protocol\ActiveMq;
+use Stomp\Protocol;
+use Stomp\Protocol\ActiveMq;
 use PHPUnit_Framework_TestCase;
 /**
  *

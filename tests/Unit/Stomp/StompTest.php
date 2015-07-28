@@ -1,10 +1,10 @@
 <?php
-namespace FuseSource\Tests\Unit\Stomp;
+namespace Stomp\Tests\Unit\Stomp;
 
-use FuseSource\Stomp\Connection;
-use FuseSource\Stomp\Exception\UnexpectedResponseException;
-use FuseSource\Stomp\Frame;
-use FuseSource\Stomp\Stomp;
+use Stomp\Connection;
+use Stomp\Exception\UnexpectedResponseException;
+use Stomp\Frame;
+use Stomp\Stomp;
 use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
 /**
@@ -47,7 +47,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\ConnectionException
+     * @expectedException \Stomp\Exception\ConnectionException
      */
     public function testConnectWillThrowExceptionIfNoFrameWasRead()
     {
@@ -66,7 +66,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
         $stomp->connect();
 
-        $this->assertInstanceOf('\FuseSource\Stomp\Protocol\RabbitMq', $stomp->getProtocol(), 'Unexpected Protocol.');
+        $this->assertInstanceOf('\Stomp\Protocol\RabbitMq', $stomp->getProtocol(), 'Unexpected Protocol.');
     }
 
 
@@ -80,13 +80,13 @@ class StompTest extends PHPUnit_Framework_TestCase
 
         $stomp->connect();
 
-        $this->assertInstanceOf('\FuseSource\Stomp\Protocol\ActiveMq', $stomp->getProtocol(), 'Unexpected Protocol.');
+        $this->assertInstanceOf('\Stomp\Protocol\ActiveMq', $stomp->getProtocol(), 'Unexpected Protocol.');
         $this->assertEquals('your-session-id', $stomp->getSessionId(), 'Wrong session id.');
     }
 
 
     /**
-     * @expectedException FuseSource\Stomp\Exception\StompException
+     * @expectedException Stomp\Exception\StompException
      */
     public function testWaitForReceiptWillThrowExceptionOnIdMissmatch()
     {
@@ -123,7 +123,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
 
     /**
-     * @expectedException FuseSource\Stomp\Exception\MissingReceiptException
+     * @expectedException Stomp\Exception\MissingReceiptException
      * @expectedExceptionMessage my-expected-receive-id
      */
     public function testWaitForReceiptWillThrowExceptionIfConnectionReadTimeoutOccurs()
@@ -146,7 +146,7 @@ class StompTest extends PHPUnit_Framework_TestCase
      */
     protected function getStompWithInjectedMockedConnectionReadResult($readFrameResult)
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('readFrame', 'writeFrame'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -176,7 +176,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $stomp->send('correct-destination', $frame, $headers, true);
 
         // verify
-        $this->assertInstanceOf('\FuseSource\Stomp\Frame', $lastSendFrame);
+        $this->assertInstanceOf('\Stomp\Frame', $lastSendFrame);
         $this->assertEquals($frame->command, $lastSendFrame->command, 'Send must not change frame command.');
         $this->assertEquals(
             'correct-destination',
@@ -206,7 +206,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $stomp->send('correct-destination', $framebody, $headers, false);
 
         // verify
-        $this->assertInstanceOf('\FuseSource\Stomp\Frame', $lastSendFrame);
+        $this->assertInstanceOf('\Stomp\Frame', $lastSendFrame);
         $this->assertEquals('SEND', $lastSendFrame->command, 'Send must set SEND as frame command, if frame was text.');
         $this->assertEquals(
             'correct-destination',
@@ -235,7 +235,7 @@ class StompTest extends PHPUnit_Framework_TestCase
      */
     protected function getStompMockWithSendFrameCatcher(&$lastSendFrame, &$lastSyncState)
     {
-        $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
+        $stomp = $this->getMockBuilder('\Stomp\Stomp')
             ->setMethods(array('sendFrame'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -258,7 +258,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
     public function testSendFrameWithSyncWillLeadToMessageWithReceiptHeader()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('writeFrame', 'readFrame'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -287,11 +287,11 @@ class StompTest extends PHPUnit_Framework_TestCase
         try {
             $stomp->setReceiptWait(0);
             $stomp->sendFrame(new Frame(), true);
-        } catch (\FuseSource\Stomp\Exception\MissingReceiptException $ex) {
+        } catch (\Stomp\Exception\MissingReceiptException $ex) {
             // is allowed, since we send no receipt...
         }
 
-        $this->assertInstanceOf('\FuseSource\Stomp\Frame', $lastWriteFrame);
+        $this->assertInstanceOf('\Stomp\Frame', $lastWriteFrame);
         $this->assertArrayHasKey('receipt', $lastWriteFrame->headers, 'Written frame should have a "receipt" header.');
 
     }
@@ -299,7 +299,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
     public function testWaitForReceiptWillQueueUpFramesWithNoReceiptCommand()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('readFrame'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -351,7 +351,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
     public function testAckWillUseMessageAsMessageIdForAckFrame()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('readFrame', 'writeFrame'))
             ->disableOriginalConstructor()
             ->getMock();
@@ -363,7 +363,7 @@ class StompTest extends PHPUnit_Framework_TestCase
                     new Frame('CONNECTED', array('session' => 'id', 'server' => 'activemq'))
                 )
             );
-        $stomp = $this->getMockBuilder('\FuseSource\Stomp\Stomp')
+        $stomp = $this->getMockBuilder('\Stomp\Stomp')
             ->setMethods(array('sendFrame'))
             ->setConstructorArgs(array($connection))
             ->getMock();

@@ -1,8 +1,8 @@
 <?php
 
-namespace FuseSource\Stomp;
+namespace Stomp;
 
-use FuseSource\Stomp\Message\Map;
+use Stomp\Message\Map;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation

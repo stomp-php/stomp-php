@@ -1,9 +1,9 @@
 <?php
 
-namespace FuseSource\Stomp\Protocol;
+namespace Stomp\Protocol;
 
-use FuseSource\Stomp\Frame;
-use FuseSource\Stomp\Protocol;
+use Stomp\Frame;
+use Stomp\Protocol;
 
 /**
  *
@@ -25,7 +25,7 @@ use FuseSource\Stomp\Protocol;
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
- * ActiveMq Stomp dialect.
+ * RabbitMq Stomp dialect.
  *
  *
  * @package Stomp
@@ -34,10 +34,11 @@ use FuseSource\Stomp\Protocol;
  * @author Michael Caplan <mcaplan@labnet.net>
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ActiveMq extends Protocol
+class RabbitMq extends Protocol
 {
+
     /**
-     * Configure a ActiveMq protocol.
+     * Configure a RabbitMq protocol.
      *
      * @param Protocol $base
      */
@@ -46,31 +47,41 @@ class ActiveMq extends Protocol
         parent::__construct($base->getPrefetchSize(), $base->getClientId());
     }
 
+
     /**
-     * ActiveMq subscribe frame.
+     * RabbitMq subscribe frame.
      *
      * @param string $destination
      * @param array $headers
      * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getSubscribeFrame($destination, array $headers = array(), $durable = false)
+    public function getSubscribeFrame ($destination, array $headers = array(), $durable = false)
     {
         $frame = parent::getSubscribeFrame($destination, $headers);
-        $frame->setHeader('activemq.prefetchSize', $this->getPrefetchSize());
+        $frame->setHeader('prefetch-count', $this->getPrefetchSize());
+        $this->addClientId($frame);
         if ($durable) {
-            $frame->setHeader('activemq.subscriptionName', $this->getClientId());
+            $frame->setHeader('persistent', 'true');
         }
         return $frame;
     }
 
-    public function getUnsubscribeFrame($destination, array $headers = array(), $durable = false)
+    /**
+     * RabbitMq unsubscribe frame.
+     *
+     * @param string $destination
+     * @param array $headers
+     * @param boolean $durable durable subscription
+     * @return Frame
+     */
+    public function getUnsubscribeFrame ($destination, array $headers = array(), $durable = false)
     {
-        $frame = parent::getUnsubscribeFrame($destination, $headers, $durable);
-        if ($this->hasClientId() && $durable) {
-            $frame->setHeader('activemq.subscriptionName', $this->getClientId());
+        $frame = parent::getUnsubscribeFrame($destination, $headers);
+        $this->addClientId($frame);
+        if ($durable) {
+            $frame->setHeader('persistent', 'true');
         }
         return $frame;
     }
-
 }

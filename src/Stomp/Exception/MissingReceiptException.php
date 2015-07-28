@@ -1,7 +1,7 @@
 <?php
-namespace FuseSource\Stomp\Exception;
+namespace Stomp\Exception;
 
-use FuseSource\Stomp\Frame;
+use Stomp\Frame;
 
 /**
  *

@@ -1,6 +1,6 @@
 <?php
 
-namespace FuseSource\Stomp;
+namespace Stomp;
 
 /**
  *

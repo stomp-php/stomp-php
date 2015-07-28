@@ -1,5 +1,5 @@
 <?php
-namespace FuseSource\Stomp;
+namespace Stomp;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation

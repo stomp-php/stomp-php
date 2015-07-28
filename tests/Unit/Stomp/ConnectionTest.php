@@ -1,9 +1,9 @@
 <?php
-namespace FuseSource\Tests\Unit\Stomp;
+namespace Stomp\Tests\Unit\Stomp;
 
 use Exception;
-use FuseSource\Stomp\Connection;
-use FuseSource\Stomp\Frame;
+use Stomp\Connection;
+use Stomp\Frame;
 use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
 /**
@@ -104,7 +104,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testBrokerUriParseWithEmptyListWillLeadToException()
     {
@@ -114,7 +114,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testConnectionSetupTriesFullHostListBeforeGivingUp()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('_connect'))
             ->setConstructorArgs(array('failover://(tcp://host1,tcp://host2,tcp://host3)'))
             ->getMock();
@@ -129,7 +129,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
                 function ($host) use (&$expectedHosts, $test) {
                     $current = array_shift($expectedHosts);
                     $test->assertEquals($current, $host['host'], 'Wrong host given to connect.');
-                    throw new \FuseSource\Stomp\Exception\ConnectionException('Connection failed.', $host);
+                    throw new \Stomp\Exception\ConnectionException('Connection failed.', $host);
                 }
             )
         );
@@ -143,7 +143,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testHasDataToReadThrowsExceptionIfNotConnected()
     {
@@ -152,7 +152,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testReadFrameThrowsExceptionIfNotConnected()
     {
@@ -161,7 +161,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testWriteFrameThrowsExceptionIfNotConnected()
     {

@@ -19,8 +19,8 @@ require __DIR__.'/../vendor/autoload.php';
  */
 
 // include a library
-use FuseSource\Stomp\Stomp;
-use FuseSource\Stomp\Message\Map;
+use Stomp\Stomp;
+use Stomp\Message\Map;
 // make a connection
 $con = new Stomp("tcp://localhost:61613");
 // connect

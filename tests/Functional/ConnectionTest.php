@@ -1,11 +1,11 @@
 <?php
 
-namespace FuseSource\Tests\Functional;
+namespace Stomp\Tests\Functional;
 
-use FuseSource\Stomp\Connection;
-use FuseSource\Stomp\Exception\ConnectionException;
-use FuseSource\Stomp\Exception\ErrorFrameException;
-use FuseSource\Stomp\Frame;
+use Stomp\Connection;
+use Stomp\Exception\ConnectionException;
+use Stomp\Exception\ErrorFrameException;
+use Stomp\Frame;
 use PHPUnit_Framework_TestCase;
 /**
  *
@@ -34,7 +34,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 {
     function testReadFrameThrowsExceptionIfStreamIsBroken()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('hasDataToRead', '_connect'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
@@ -56,7 +56,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     function testReadFrameThrowsExceptionIfErrorFrameIsReceived()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('hasDataToRead', '_connect'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
@@ -83,7 +83,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     function testWriteFrameThrowsExceptionIfConnectionIsBroken()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('_connect'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
@@ -108,7 +108,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     function testHasDataToReadThrowsExceptionIfConnectionIsBroken()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('isConnected', '_connect'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
@@ -148,7 +148,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         } catch (ConnectionException $ex) {
             $this->assertContains('Could not connect to a broker', $ex->getMessage());
 
-            $this->assertInstanceOf('FuseSource\Stomp\Exception\ConnectionException', $ex->getPrevious(), 'There should be a previous exception.');
+            $this->assertInstanceOf('Stomp\Exception\ConnectionException', $ex->getPrevious(), 'There should be a previous exception.');
             $prev = $ex->getPrevious();
             $hostinfo = $prev->getConnectionInfo();
             $this->assertEquals('0.0.0.1', $hostinfo['host']);

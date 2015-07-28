@@ -1,8 +1,8 @@
 <?php
-namespace FuseSource\Stomp\Exception;
 
-use FuseSource\Stomp\Frame;
+namespace Stomp\Message;
 
+use Stomp\Message;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -23,38 +23,21 @@ use FuseSource\Stomp\Frame;
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
- * Stomp server send us an error frame.
- *
+ * Message that contains a stream of uninterpreted bytes
  *
  * @package Stomp
- * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ErrorFrameException extends StompException
+class Bytes extends Message
 {
     /**
+     * Constructor
      *
-     * @var Frame
+     * @param string $body
+     * @param array $headers
      */
-    private $_frame;
-
-    /**
-     *
-     * @param Frame $frame
-     */
-    function __construct(Frame $frame)
+    function __construct ($body, array $headers = array())
     {
-        $this->_frame = $frame;
-        parent::__construct(
-            sprintf('Error "%s"', $frame->headers['message'])
-        );
-    }
-
-    /**
-     *
-     * @return Frame
-     */
-    public function getFrame()
-    {
-        return $this->_frame;
+        parent::__construct($body, $headers);
+        $this->headers['content-length'] = count(unpack("c*", $body));
     }
 }

@@ -1,7 +1,7 @@
 <?php
-namespace FuseSource\Tests\Functional;
+namespace Stomp\Tests\Functional;
 
-use FuseSource\Stomp\Stomp;
+use Stomp\Stomp;
 use PHPUnit_Framework_TestCase;
 /**
  *

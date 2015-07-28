@@ -20,7 +20,7 @@ require __DIR__.'/../vendor/autoload.php';
 
 // include a library
 
-use FuseSource\Stomp\Stomp;
+use Stomp\Stomp;
 
 // create a producer
 $producer = new Stomp("tcp://localhost:61613");

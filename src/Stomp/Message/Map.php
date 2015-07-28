@@ -1,8 +1,7 @@
 <?php
+namespace Stomp\Message;
 
-namespace FuseSource\Stomp\Message;
-
-use FuseSource\Stomp\Message;
+use Stomp\Frame;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation
@@ -22,22 +21,31 @@ use FuseSource\Stomp\Message;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
+
 /**
- * Message that contains a stream of uninterpreted bytes
+ * Message that contains a set of name-value pairs
  *
  * @package Stomp
  */
-class Bytes extends Message
+class Map extends Frame
 {
+    public $map;
+
     /**
      * Constructor
      *
-     * @param string $body
+     * @param Frame|string $msg
      * @param array $headers
      */
-    function __construct ($body, array $headers = array())
+    function __construct ($msg, array $headers = array())
     {
-        parent::__construct($body, $headers);
-        $this->headers['content-length'] = count(unpack("c*", $body));
+        if ($msg instanceof Frame) {
+            parent::__construct($msg->command, $msg->headers, $msg->body);
+            $this->map = json_decode($msg->body, true);
+        } else {
+            parent::__construct("SEND", $headers, $msg);
+            $this->headers['transformation'] = 'jms-map-json';
+            $this->body = json_encode($msg);
+        }
     }
 }

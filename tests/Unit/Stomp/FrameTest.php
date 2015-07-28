@@ -1,9 +1,9 @@
 <?php
 
-namespace FuseSource\Tests\Unit\Stomp;
+namespace Stomp\Tests\Unit\Stomp;
 
 
-use FuseSource\Stomp\Frame;
+use Stomp\Frame;
 use PHPUnit_Framework_TestCase;
 
 class FrameTest extends PHPUnit_Framework_TestCase

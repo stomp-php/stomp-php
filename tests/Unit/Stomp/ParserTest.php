@@ -1,7 +1,7 @@
 <?php
-namespace FuseSource\Tests\Unit\Stomp;
+namespace Stomp\Tests\Unit\Stomp;
 
-use FuseSource\Stomp\Parser;
+use Stomp\Parser;
 use PHPUnit_Framework_TestCase;
 /**
  *
@@ -39,7 +39,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $parser->addData($msg);
         $parser->parse();
         $result = $parser->getFrame();
-        $this->assertInstanceOf('\FuseSource\Stomp\Message\Map', $result);
+        $this->assertInstanceOf('\Stomp\Message\Map', $result);
         $this->assertEquals('value', $result->map['var']);
     }
 
@@ -53,7 +53,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $parser->parse();
         $result = $parser->getFrame();
 
-        $this->assertInstanceOf('\FuseSource\Stomp\Frame', $result);
+        $this->assertInstanceOf('\Stomp\Frame', $result);
         $this->assertEquals('var', $result->body);
         $this->assertEquals('value1', $result->headers['header1']);
     }

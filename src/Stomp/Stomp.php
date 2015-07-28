@@ -1,13 +1,13 @@
 <?php
 
-namespace FuseSource\Stomp;
+namespace Stomp;
 
-use FuseSource\Stomp\Exception\ConnectionException;
-use FuseSource\Stomp\Exception\MissingReceiptException;
-use FuseSource\Stomp\Exception\StompException;
-use FuseSource\Stomp\Exception\UnexpectedResponseException;
-use FuseSource\Stomp\Protocol\ActiveMq;
-use FuseSource\Stomp\Protocol\RabbitMq;
+use Stomp\Exception\ConnectionException;
+use Stomp\Exception\MissingReceiptException;
+use Stomp\Exception\StompException;
+use Stomp\Exception\UnexpectedResponseException;
+use Stomp\Protocol\ActiveMq;
+use Stomp\Protocol\RabbitMq;
 
 /**
  *

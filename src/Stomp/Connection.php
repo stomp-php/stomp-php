@@ -1,9 +1,9 @@
 <?php
 
-namespace FuseSource\Stomp;
+namespace Stomp;
 
-use FuseSource\Stomp\Exception\ConnectionException;
-use FuseSource\Stomp\Exception\ErrorFrameException;
+use Stomp\Exception\ConnectionException;
+use Stomp\Exception\ErrorFrameException;
 /**
  *
  * Copyright 2005-2006 The Apache Software Foundation

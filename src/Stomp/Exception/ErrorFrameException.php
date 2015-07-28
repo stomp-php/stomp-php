@@ -1,7 +1,7 @@
 <?php
-namespace FuseSource\Stomp\Exception;
+namespace Stomp\Exception;
 
-use FuseSource\Stomp\Frame;
+use Stomp\Frame;
 
 /**
  *
@@ -23,13 +23,13 @@ use FuseSource\Stomp\Frame;
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
- * Exception that occurs, when a frame / response was received that was not expected at this moment.
+ * Stomp server send us an error frame.
  *
  *
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class UnexpectedResponseException extends StompException
+class ErrorFrameException extends StompException
 {
     /**
      *
@@ -40,12 +40,13 @@ class UnexpectedResponseException extends StompException
     /**
      *
      * @param Frame $frame
-     * @param string $expectedInfo
      */
-    function __construct(Frame $frame, $expectedInfo)
+    function __construct(Frame $frame)
     {
         $this->_frame = $frame;
-        parent::__construct(sprintf('Unexpected response received. %s', $expectedInfo));
+        parent::__construct(
+            sprintf('Error "%s"', $frame->headers['message'])
+        );
     }
 
     /**
@@ -56,5 +57,4 @@ class UnexpectedResponseException extends StompException
     {
         return $this->_frame;
     }
-
 }

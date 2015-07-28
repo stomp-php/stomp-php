@@ -1,5 +1,5 @@
 <?php
-namespace FuseSource\Stomp\Exception;
+namespace Stomp\Exception;
 
 /**
  *
