@@ -5,7 +5,9 @@ A simple PHP [Stomp](http://stomp.github.com) Client
 Version choice
 --------------
 This fork is not compatible to the original stomp from https://github.com/dejanb/stomp-php.
-This is caused since the original fork is mostly outdated. The last compatible version is 2.2.2.
+The last compatible version is 2.2.2.
+The last php-5.3 compatible version is 3.0.0.
+
 
 Installing
 ----------
@@ -23,7 +25,7 @@ composer.json
 
 ```json
     "require": {
-        "stomp-php/stomp-php": "2.2.2"
+        "stomp-php/stomp-php": "3.0.0"
     },
 ```
 
