@@ -223,7 +223,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     public function testLoginDataFromConstructorIsUsedIfNoLoginDataPassedToConnect()
     {
         $stomp = $this->getStompMockWithSendFrameCatcher($lastSendFrame, $lastSyncState);
-        $connection = $this->getMock('Stomp\Connection', [], [], '', false);
+        $connection = $this->getMock('Stomp\Connection', array(), array(), '', false);
 
         $stomp->__construct($connection, 'myUser', 'myPassword');
 
@@ -247,7 +247,7 @@ class StompTest extends PHPUnit_Framework_TestCase
     public function testLoginDataFromConstructorIsIgnoredIfLoginDataPassedToConnect()
     {
         $stomp = $this->getStompMockWithSendFrameCatcher($lastSendFrame, $lastSyncState);
-        $connection = $this->getMock('Stomp\Connection', [], [], '', false);
+        $connection = $this->getMock('Stomp\Connection', array(), array(), '', false);
 
         $stomp->__construct($connection, 'myUserFirst', 'myPasswordFirst');
 
