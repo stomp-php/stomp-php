@@ -9,12 +9,13 @@
 
 namespace Stomp\Tests\Unit\Stomp;
 
-use Stomp\Connection;
-use Stomp\Exception\UnexpectedResponseException;
-use Stomp\Frame;
-use Stomp\Stomp;
 use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
+use Stomp\Connection;
+use Stomp\Exception\UnexpectedResponseException;
+use Stomp\Exception\ConnectionException;
+use Stomp\Frame;
+use Stomp\Stomp;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -218,6 +219,54 @@ class StompTest extends PHPUnit_Framework_TestCase
         );
     }
 
+
+    public function testLoginDataFromConstructorIsUsedIfNoLoginDataPassedToConnect()
+    {
+        $stomp = $this->getStompMockWithSendFrameCatcher($lastSendFrame, $lastSyncState);
+        $connection = $this->getMock('Stomp\Connection', [], [], '', false);
+
+        $stomp->__construct($connection, 'myUser', 'myPassword');
+
+        try {
+            $stomp->connect();
+        } catch (ConnectionException $ex) {
+            // since mocked connection don't return expected frame...
+        }
+
+        // verify
+        $this->assertInstanceOf('\Stomp\Frame', $lastSendFrame);
+        $this->assertEquals('CONNECT', $lastSendFrame->command, 'Connect must set CONNECT as frame command.');
+
+        $this->assertArrayHasKey('login', $lastSendFrame->headers, 'Expected login data.');
+        $this->assertArrayHasKey('passcode', $lastSendFrame->headers, 'Expected passcode data.');
+
+        $this->assertEquals('myUser', $lastSendFrame->headers['login'], 'Expected login data from constructor.');
+        $this->assertEquals('myPassword', $lastSendFrame->headers['passcode'], 'Expected passcode data from constructor.');
+    }
+
+    public function testLoginDataFromConstructorIsIgnoredIfLoginDataPassedToConnect()
+    {
+        $stomp = $this->getStompMockWithSendFrameCatcher($lastSendFrame, $lastSyncState);
+        $connection = $this->getMock('Stomp\Connection', [], [], '', false);
+
+        $stomp->__construct($connection, 'myUserFirst', 'myPasswordFirst');
+
+        try {
+            $stomp->connect('myUserFromConnect', 'myPasswordFromConnect');
+        } catch (ConnectionException $ex) {
+            // since mocked connection don't return expected frame...
+        }
+
+        // verify
+        $this->assertInstanceOf('\Stomp\Frame', $lastSendFrame);
+        $this->assertEquals('CONNECT', $lastSendFrame->command, 'Connect must set CONNECT as frame command.');
+
+        $this->assertArrayHasKey('login', $lastSendFrame->headers, 'Expected login data.');
+        $this->assertArrayHasKey('passcode', $lastSendFrame->headers, 'Expected passcode data.');
+
+        $this->assertEquals('myUserFromConnect', $lastSendFrame->headers['login'], 'Expected login data from connect.');
+        $this->assertEquals('myPasswordFromConnect', $lastSendFrame->headers['passcode'], 'Expected passcode data from connect.');
+    }
 
     /**
      * Get a stomp mock which will catch arguments passed to lasSendFrame and SyncState

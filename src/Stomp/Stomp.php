@@ -97,15 +97,31 @@ class Stomp
     private $_receiptWait = 2;
 
     /**
+     *
+     * @var string
+     */
+    private $_login = null;
+
+    /**
+     *
+     * @var string
+     */
+    private $_passcode = null;
+
+    /**
      * Constructor
      *
      * @param string|Connection $broker Broker URL or a connection
+     * @param string $login
+     * @param string $passcode
      * @throws StompException
      * @see Connection::__construct()
      */
-    public function __construct ($broker)
+    public function __construct ($broker, $login = null, $passcode = null)
     {
         $this->_connection = $broker instanceof Connection ? $broker : new Connection($broker);
+        $this->_login = $login;
+        $this->_passcode = $passcode;
     }
 
     /**
@@ -116,11 +132,17 @@ class Stomp
      * @return boolean
      * @throws StompException
      */
-    public function connect ($login = '', $passcode = '')
+    public function connect ($login = null, $passcode = null)
     {
+        if ($login !== null) {
+            $this->_login = $login;
+        }
+        if ($passcode !== null) {
+            $this->_passcode = $passcode;
+        }
         $this->_connection->connect();
         $this->_protocol = new Protocol($this->prefetchSize, $this->clientId);
-        $this->sendFrame($this->_protocol->getConnectFrame($login, $passcode), false);
+        $this->sendFrame($this->_protocol->getConnectFrame($this->_login, $this->_passcode), false);
         if ($frame = $this->_connection->readFrame()) {
             if ($frame->command != 'CONNECTED') {
                 throw new UnexpectedResponseException($frame, 'Expected a CONNECTED Frame!');
