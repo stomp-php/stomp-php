@@ -1,25 +1,16 @@
 <?php
 
-namespace FuseSource\Stomp;
-
-use FuseSource\Stomp\Exception\ConnectionException;
-use FuseSource\Stomp\Exception\ErrorFrameException;
-/**
+/*
+ * This file is part of the Stomp package.
  *
- * Copyright 2005-2006 The Apache Software Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Stomp;
+
+use Stomp\Exception\ConnectionException;
+use Stomp\Exception\ErrorFrameException;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -87,6 +78,15 @@ class Connection
     private $_activeHost = array();
 
     /**
+     * Stream Context used for client connection
+     *
+     * @see http://php.net/manual/de/function.stream-context-create.php
+     *
+     * @var array
+     */
+    private $_context = array();
+
+    /**
      * Frame parser
      *
      * @var Parser
@@ -103,12 +103,14 @@ class Connection
      *
      * @param string $brokerUri
      * @param integer $connectionTimeout in seconds
+     * @param array   $context stream context
      * @throws ConnectionException
      */
-    public function __construct ($brokerUri, $connectionTimeout = 1)
+    public function __construct ($brokerUri, $connectionTimeout = 1, array $context = array())
     {
         $this->_parser = new Parser();
         $this->_connect_timeout = $connectionTimeout;
+        $this->_context = $context;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
             $scheme = $matches[2];
@@ -157,6 +159,17 @@ class Connection
     public function setReadTimeout (array $timeout)
     {
         $this->_read_timeout = $timeout;
+    }
+
+    /**
+     * Set socket context
+     *
+     * @param array $context
+     * @return void
+     */
+    public function setContext(array $context)
+    {
+        $this->_context = $context;
     }
 
     /**
@@ -222,7 +235,8 @@ class Connection
         $this->_activeHost = $host;
         $errNo = null;
         $errStr = null;
-        $socket = @fsockopen($host['scheme'] . '://' . $host['host'], $host['port'], $errNo, $errStr, $this->_connect_timeout);
+        $context = stream_context_create($this->_context);
+        $socket = @stream_socket_client($host['scheme'] . '://' . $host['host'] . ':' . $host['port'], $errNo, $errStr, $this->_connect_timeout, STREAM_CLIENT_CONNECT, $context);
 
         if (!is_resource($socket)) {
             throw new ConnectionException(sprintf('Failed to connect. (%s: %s)', $errNo, $errStr), $host);
@@ -250,7 +264,7 @@ class Connection
     public function diconnect ()
     {
         if ($this->isConnected()) {
-            fclose($this->_connection);
+            stream_socket_shutdown($this->_connection, STREAM_SHUT_RDWR);
         }
         $this->_connection = null;
         $this->_activeHost = array();
@@ -292,7 +306,7 @@ class Connection
         }
 
         do {
-            $read = @fread($this->_connection, 1024);
+            $read = @fgets($this->_connection, 1024);
             if ($read === false || $read === '') {
                 throw new ConnectionException('Was not possible to read data from stream.', $this->_activeHost);
             }

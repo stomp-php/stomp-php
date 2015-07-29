@@ -1,28 +1,20 @@
 <?php
 
-namespace FuseSource\Tests\Functional;
-
-use FuseSource\Stomp\Connection;
-use FuseSource\Stomp\Exception\ConnectionException;
-use FuseSource\Stomp\Exception\ErrorFrameException;
-use FuseSource\Stomp\Frame;
-use PHPUnit_Framework_TestCase;
-/**
+/*
+ * This file is part of the Stomp package.
  *
- * Copyright 2005-2006 The Apache Software Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Stomp\Tests\Functional;
+
+use Stomp\Connection;
+use Stomp\Exception\ConnectionException;
+use Stomp\Exception\ErrorFrameException;
+use Stomp\Frame;
+use PHPUnit_Framework_TestCase;
+
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
@@ -34,7 +26,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 {
     function testReadFrameThrowsExceptionIfStreamIsBroken()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('hasDataToRead', '_connect'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
@@ -56,7 +48,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     function testReadFrameThrowsExceptionIfErrorFrameIsReceived()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('hasDataToRead', '_connect'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
@@ -83,7 +75,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     function testWriteFrameThrowsExceptionIfConnectionIsBroken()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('_connect'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
@@ -108,7 +100,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     function testHasDataToReadThrowsExceptionIfConnectionIsBroken()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('isConnected', '_connect'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
@@ -148,47 +140,13 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         } catch (ConnectionException $ex) {
             $this->assertContains('Could not connect to a broker', $ex->getMessage());
 
-            $this->assertInstanceOf('FuseSource\Stomp\Exception\ConnectionException', $ex->getPrevious(), 'There should be a previous exception.');
+            $this->assertInstanceOf('Stomp\Exception\ConnectionException', $ex->getPrevious(), 'There should be a previous exception.');
             $prev = $ex->getPrevious();
             $hostinfo = $prev->getConnectionInfo();
             $this->assertEquals('0.0.0.1', $hostinfo['host']);
             $this->assertEquals('15', $hostinfo['port']);
 
         }
-    }
-
-    function testConnectionWillReturnBufferedFramesIfMoreThanOneWasReturnedInLastRead()
-    {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
-            ->setMethods(array('hasDataToRead', '_connect'))
-            ->setConstructorArgs(array('tcp://host'))
-            ->getMock();
-
-        $fp = tmpfile();
-
-        fwrite($fp, "INFO\nmsgno:1\n\nbody1\x00" . PHP_EOL);
-        fwrite($fp, "INFO\nmsgno:22\n\nbody22\x00");
-        fwrite($fp, "INFO\nmsgno:333\n\nbody333\x00" . PHP_EOL);
-        fwrite($fp, "INFO\nmsgno:4\n\nbody\x00");
-        fseek($fp, 0);
-
-        $connection->expects($this->once())->method('_connect')->will($this->returnValue($fp));
-        $connection->expects($this->once())->method('hasDataToRead')->will($this->returnValue(true));
-
-        $connection->connect();
-
-        $firstFrame = $connection->readFrame();
-        fclose($fp);
-
-        // even if connection is closed, there must be known frames...
-        $secondFrame = $connection->readFrame();
-        $thirdFrame = $connection->readFrame();
-        $fourthFrame = $connection->readFrame();
-
-        $this->assertEquals('body1', $firstFrame->body);
-        $this->assertEquals('body22', $secondFrame->body);
-        $this->assertEquals('body333', $thirdFrame->body);
-        $this->assertEquals('body', $fourthFrame->body);
     }
 
 }

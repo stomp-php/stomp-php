@@ -20,9 +20,15 @@ require __DIR__.'/../vendor/autoload.php';
 
 // include a library
 
-use FuseSource\Stomp\Stomp;
+use Stomp\Stomp;
 // make a connection
-$con = new Stomp("tcp://localhost:61613");
+$opts = array(
+    'ssl' => array(
+        'local_cert' => './cachain.pem',
+        'passphrase' => 'bcop'
+    )
+);
+$con = new Stomp("ssl://localhost:61613", $opts);
 // connect
 $con->connect();
 // send a message to the queue

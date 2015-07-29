@@ -1,27 +1,20 @@
 <?php
-namespace FuseSource\Tests\Unit\Stomp;
+
+/*
+ * This file is part of the Stomp package.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Stomp\Tests\Unit\Stomp;
 
 use Exception;
-use FuseSource\Stomp\Connection;
-use FuseSource\Stomp\Frame;
+use Stomp\Connection;
+use Stomp\Frame;
 use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
-/**
- *
- * Copyright 2005-2006 The Apache Software Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
@@ -104,7 +97,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testBrokerUriParseWithEmptyListWillLeadToException()
     {
@@ -114,7 +107,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     public function testConnectionSetupTriesFullHostListBeforeGivingUp()
     {
-        $connection = $this->getMockBuilder('\FuseSource\Stomp\Connection')
+        $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('_connect'))
             ->setConstructorArgs(array('failover://(tcp://host1,tcp://host2,tcp://host3)'))
             ->getMock();
@@ -129,7 +122,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
                 function ($host) use (&$expectedHosts, $test) {
                     $current = array_shift($expectedHosts);
                     $test->assertEquals($current, $host['host'], 'Wrong host given to connect.');
-                    throw new \FuseSource\Stomp\Exception\ConnectionException('Connection failed.', $host);
+                    throw new \Stomp\Exception\ConnectionException('Connection failed.', $host);
                 }
             )
         );
@@ -143,7 +136,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testHasDataToReadThrowsExceptionIfNotConnected()
     {
@@ -152,7 +145,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testReadFrameThrowsExceptionIfNotConnected()
     {
@@ -161,7 +154,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \FuseSource\Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testWriteFrameThrowsExceptionIfNotConnected()
     {

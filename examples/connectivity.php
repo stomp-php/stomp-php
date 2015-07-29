@@ -26,7 +26,7 @@ require __DIR__.'/../vendor/autoload.php';
 */
 // include a library
 
-use FuseSource\Stomp\Stomp;
+use Stomp\Stomp;
 // make a connection
 $con = new Stomp("failover://(tcp://localhost:61614,ssl://localhost:61612)?randomize=false");
 // connect

@@ -1,30 +1,20 @@
 <?php
 
-namespace FuseSource\Stomp;
-
-use FuseSource\Stomp\Exception\ConnectionException;
-use FuseSource\Stomp\Exception\MissingReceiptException;
-use FuseSource\Stomp\Exception\StompException;
-use FuseSource\Stomp\Exception\UnexpectedResponseException;
-use FuseSource\Stomp\Protocol\ActiveMq;
-use FuseSource\Stomp\Protocol\RabbitMq;
-
-/**
+/*
+ * This file is part of the Stomp package.
  *
- * Copyright 2005-2006 The Apache Software Foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
+namespace Stomp;
+
+use Stomp\Exception\ConnectionException;
+use Stomp\Exception\MissingReceiptException;
+use Stomp\Exception\StompException;
+use Stomp\Exception\UnexpectedResponseException;
+use Stomp\Protocol\ActiveMq;
+use Stomp\Protocol\RabbitMq;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -107,15 +97,31 @@ class Stomp
     private $_receiptWait = 2;
 
     /**
+     *
+     * @var string
+     */
+    private $_login = null;
+
+    /**
+     *
+     * @var string
+     */
+    private $_passcode = null;
+
+    /**
      * Constructor
      *
      * @param string|Connection $broker Broker URL or a connection
+     * @param string $login
+     * @param string $passcode
      * @throws StompException
      * @see Connection::__construct()
      */
-    public function __construct ($broker)
+    public function __construct ($broker, $login = null, $passcode = null)
     {
         $this->_connection = $broker instanceof Connection ? $broker : new Connection($broker);
+        $this->_login = $login;
+        $this->_passcode = $passcode;
     }
 
     /**
@@ -126,11 +132,17 @@ class Stomp
      * @return boolean
      * @throws StompException
      */
-    public function connect ($login = '', $passcode = '')
+    public function connect ($login = null, $passcode = null)
     {
+        if ($login !== null) {
+            $this->_login = $login;
+        }
+        if ($passcode !== null) {
+            $this->_passcode = $passcode;
+        }
         $this->_connection->connect();
         $this->_protocol = new Protocol($this->prefetchSize, $this->clientId);
-        $this->sendFrame($this->_protocol->getConnectFrame($login, $passcode), false);
+        $this->sendFrame($this->_protocol->getConnectFrame($this->_login, $this->_passcode), false);
         if ($frame = $this->_connection->readFrame()) {
             if ($frame->command != 'CONNECTED') {
                 throw new UnexpectedResponseException($frame, 'Expected a CONNECTED Frame!');

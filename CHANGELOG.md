@@ -32,3 +32,12 @@ Changelog stomp-php
 2.2.4
 -----
 - fixed possible nullpointer on broken connections
+
+3.0.0
+-----
+- This version aims to cover all current forks from https://github.com/dejanb/stomp-php.
+- moved to namespace `Stomp`
+- changed back to `fgets` (https://github.com/dejanb/stomp-php/pull/22)
+- upated travis-ci config
+- merged unit tests for `Stomp\Frame` (https://github.com/chuhlomin/stomp-php/)
+- use stream_socket_client (https://github.com/dejanb/stomp-php/pull/25)

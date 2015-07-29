@@ -25,8 +25,8 @@ require __DIR__.'/../vendor/autoload.php';
  $ php security.php
 */
 // include a library
-use FuseSource\Stomp\Stomp;
-use FuseSource\Stomp\Exception\StompException;
+use Stomp\Stomp;
+use Stomp\Exception\StompException;
 
 // make a connection
 $con = new Stomp("tcp://localhost:61613");
