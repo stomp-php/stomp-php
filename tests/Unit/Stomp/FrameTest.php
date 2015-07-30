@@ -9,7 +9,6 @@
 
 namespace Stomp\Tests\Unit\Stomp;
 
-
 use Stomp\Frame;
 use PHPUnit_Framework_TestCase;
 

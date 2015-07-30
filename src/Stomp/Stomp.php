@@ -42,14 +42,14 @@ class Stomp
      *
      * @var int
      */
-	public $prefetchSize = 1;
+    public $prefetchSize = 1;
 
-	/**
+    /**
      * Client id used for durable subscriptions
      *
      * @var string
      */
-	public $clientId = null;
+    public $clientId = null;
 
     /**
     * Vendor flavouring (AMQ or RMQ at the moment)
@@ -61,52 +61,52 @@ class Stomp
      *
      * @var string[]
      */
-    private $_subscriptions = array();
+    private $subscriptions = array();
 
     /**
      * Connection session id
      *
      * @var string
      */
-    private $_sessionId;
+    private $sessionId;
 
     /**
      * Frames that have been readed but not processed yet.
      *
      * @var Frame[]
      */
-    private $_unprocessedFrames = array();
+    private $unprocessedFrames = array();
 
     /**
      *
      * @var Connection
      */
-    private $_connection;
+    private $connection;
 
     /**
      *
      * @var Protocol
      */
-    private $_protocol;
+    private $protocol;
 
     /**
      * Seconds to wait for a receipt.
      *
      * @var float
      */
-    private $_receiptWait = 2;
+    private $receiptWait = 2;
 
     /**
      *
      * @var string
      */
-    private $_login = null;
+    private $login = null;
 
     /**
      *
      * @var string
      */
-    private $_passcode = null;
+    private $passcode = null;
 
     /**
      * Constructor
@@ -117,11 +117,11 @@ class Stomp
      * @throws StompException
      * @see Connection::__construct()
      */
-    public function __construct ($broker, $login = null, $passcode = null)
+    public function __construct($broker, $login = null, $passcode = null)
     {
-        $this->_connection = $broker instanceof Connection ? $broker : new Connection($broker);
-        $this->_login = $login;
-        $this->_passcode = $passcode;
+        $this->connection = $broker instanceof Connection ? $broker : new Connection($broker);
+        $this->login = $login;
+        $this->passcode = $passcode;
     }
 
     /**
@@ -132,27 +132,27 @@ class Stomp
      * @return boolean
      * @throws StompException
      */
-    public function connect ($login = null, $passcode = null)
+    public function connect($login = null, $passcode = null)
     {
         if ($login !== null) {
-            $this->_login = $login;
+            $this->login = $login;
         }
         if ($passcode !== null) {
-            $this->_passcode = $passcode;
+            $this->passcode = $passcode;
         }
-        $this->_connection->connect();
-        $this->_protocol = new Protocol($this->prefetchSize, $this->clientId);
-        $this->sendFrame($this->_protocol->getConnectFrame($this->_login, $this->_passcode), false);
-        if ($frame = $this->_connection->readFrame()) {
+        $this->connection->connect();
+        $this->protocol = new Protocol($this->prefetchSize, $this->clientId);
+        $this->sendFrame($this->protocol->getConnectFrame($this->login, $this->passcode), false);
+        if ($frame = $this->connection->readFrame()) {
             if ($frame->command != 'CONNECTED') {
                 throw new UnexpectedResponseException($frame, 'Expected a CONNECTED Frame!');
             }
-            $this->_sessionId = $frame->headers["session"];
+            $this->sessionId = $frame->headers["session"];
             if (isset($frame->headers['server']) && false !== stristr(trim($frame->headers['server']), 'rabbitmq')) {
                 $this->brokerVendor = 'RMQ';
-                $this->_protocol = new RabbitMq($this->_protocol);
+                $this->protocol = new RabbitMq($this->protocol);
             } else {
-                $this->_protocol = new ActiveMq($this->_protocol);
+                $this->protocol = new ActiveMq($this->protocol);
             }
             return true;
         }
@@ -168,7 +168,7 @@ class Stomp
      * @param boolean $sync Perform request synchronously
      * @return boolean
      */
-    public function send ($destination, $msg, array $header = array(), $sync = null)
+    public function send($destination, $msg, array $header = array(), $sync = null)
     {
         if (!$msg instanceof Frame) {
             return $this->send($destination, new Frame('SEND', $header, $msg), array(), $sync);
@@ -186,13 +186,14 @@ class Stomp
      * @param boolean $sync
      * @return boolean
      */
-    public function sendFrame(Frame $frame, $sync = null) {
+    public function sendFrame(Frame $frame, $sync = null)
+    {
         // determine if client was configured to write sync or not
         $writeSync = $sync !== null ? $sync : $this->sync;
         if ($writeSync) {
-            return $this->_sendFrameExpectingReceipt($frame);
+            return $this->sendFrameExpectingReceipt($frame);
         } else {
-            return $this->_connection->writeFrame($frame);
+            return $this->connection->writeFrame($frame);
         }
     }
 
@@ -201,13 +202,14 @@ class Stomp
      * Write frame to server and expect an matching receipt frame
      *
      * @param Frame $stompFrame
+     * @return bool
      */
-    protected function _sendFrameExpectingReceipt (Frame $stompFrame)
+    protected function sendFrameExpectingReceipt(Frame $stompFrame)
     {
         $receipt = md5(microtime());
         $stompFrame->setHeader('receipt', $receipt);
-        $this->_connection->writeFrame($stompFrame);
-        return $this->_waitForReceipt($receipt);
+        $this->connection->writeFrame($stompFrame);
+        return $this->waitForReceipt($receipt);
     }
 
 
@@ -219,11 +221,11 @@ class Stomp
      * @throws UnexpectedResponseException If response has an invalid receipt.
      * @throws MissingReceiptException     If no receipt is received.
      */
-    protected function _waitForReceipt ($receipt)
+    protected function waitForReceipt($receipt)
     {
         $stopAfter = $this->calculateReceiptWaitEnd();
         while (true) {
-            if ($frame = $this->_connection->readFrame()) {
+            if ($frame = $this->connection->readFrame()) {
                 if ($frame->command == 'RECEIPT') {
                     if ($frame->headers['receipt-id'] == $receipt) {
                         return true;
@@ -231,7 +233,7 @@ class Stomp
                         throw new UnexpectedResponseException($frame, sprintf('Expected receipt id %s', $receipt));
                     }
                 } else {
-                    $this->_unprocessedFrames[] = $frame;
+                    $this->unprocessedFrames[] = $frame;
                 }
             }
             if (microtime(true) > $stopAfter) {
@@ -248,7 +250,7 @@ class Stomp
      */
     protected function calculateReceiptWaitEnd()
     {
-        return microtime(true) + $this->_receiptWait;
+        return microtime(true) + $this->receiptWait;
     }
 
     /**
@@ -261,10 +263,18 @@ class Stomp
      * @return boolean
      * @throws StompException
      */
-    public function subscribe ($destination, $properties = null, $sync = null, $durable = false)
+    public function subscribe($destination, $properties = null, $sync = null, $durable = false)
     {
-        $subscribe =  $this->sendFrame($this->_protocol->getSubscribeFrame($destination, $properties ?: array(), $durable), $sync);
-        return $this->_subscriptions[$destination] = $subscribe;
+        $subscribe = $this->sendFrame(
+            $this->protocol->getSubscribeFrame(
+                $destination,
+                $properties ?: array(),
+                $durable
+            ),
+            $sync
+        );
+
+        return $this->subscriptions[$destination] = $subscribe;
     }
     /**
      * Remove an existing subscription
@@ -276,12 +286,21 @@ class Stomp
      * @return boolean
      * @throws StompException
      */
-    public function unsubscribe ($destination, $properties = null, $sync = null, $durable = false)
+    public function unsubscribe($destination, $properties = null, $sync = null, $durable = false)
     {
-        $unsubscribe = $this->sendFrame($this->_protocol->getUnsubscribeFrame($destination, $properties ?: array(), $durable), $sync);
+        $unsubscribe = $this->sendFrame(
+            $this->protocol->getUnsubscribeFrame(
+                $destination,
+                $properties ?: array(),
+                $durable
+            ),
+            $sync
+        );
+
         if ($unsubscribe) {
-            $this->_subscriptions[$destination] = false;
+            $this->subscriptions[$destination] = false;
         }
+
         return $unsubscribe;
     }
     /**
@@ -292,9 +311,9 @@ class Stomp
      * @return boolean
      * @throws StompException
      */
-    public function begin ($transactionId = null, $sync = null)
+    public function begin($transactionId = null, $sync = null)
     {
-        return $this->sendFrame($this->_protocol->getBeginFrame($transactionId), $sync);
+        return $this->sendFrame($this->protocol->getBeginFrame($transactionId), $sync);
     }
     /**
      * Commit a transaction in progress
@@ -304,9 +323,9 @@ class Stomp
      * @return boolean
      * @throws StompException
      */
-    public function commit ($transactionId = null, $sync = null)
+    public function commit($transactionId = null, $sync = null)
     {
-        return $this->sendFrame($this->_protocol->getCommitFrame($transactionId), $sync);
+        return $this->sendFrame($this->protocol->getCommitFrame($transactionId), $sync);
     }
     /**
      * Roll back a transaction in progress
@@ -314,25 +333,25 @@ class Stomp
      * @param string $transactionId
      * @param boolean $sync Perform request synchronously
      */
-    public function abort ($transactionId = null, $sync = null)
+    public function abort($transactionId = null, $sync = null)
     {
-        return $this->sendFrame($this->_protocol->getAbortFrame($transactionId), $sync);
+        return $this->sendFrame($this->protocol->getAbortFrame($transactionId), $sync);
     }
     /**
      * Acknowledge consumption of a message from a subscription
-	 * Note: This operation is always asynchronous
+     * Note: This operation is always asynchronous
      *
      * @param string|Frame $message ID to ack
      * @param string $transactionId
      * @return boolean
      * @throws StompException
      */
-    public function ack ($message, $transactionId = null)
+    public function ack($message, $transactionId = null)
     {
         if ($message instanceof Frame) {
-            return $this->sendFrame($this->_protocol->getAckFrame($message->getMessageId(), $transactionId), false);
+            return $this->sendFrame($this->protocol->getAckFrame($message->getMessageId(), $transactionId), false);
         } else {
-            return $this->sendFrame($this->_protocol->getAckFrame($message, $transactionId), false);
+            return $this->sendFrame($this->protocol->getAckFrame($message, $transactionId), false);
         }
     }
 
@@ -341,31 +360,31 @@ class Stomp
      *
      * @return Frame False when no frame to read
      */
-    public function readFrame ()
+    public function readFrame()
     {
-        return array_shift($this->_unprocessedFrames) ?: $this->_connection->readFrame();
+        return array_shift($this->unprocessedFrames) ?: $this->connection->readFrame();
     }
 
     /**
      * Graceful disconnect from the server
      *
      */
-    public function disconnect ()
+    public function disconnect()
     {
         try {
-            if ($this->_connection && $this->_connection->isConnected()) {
-                if ($this->_protocol) {
-                    $this->sendFrame($this->_protocol->getDisconnectFrame(), false);
+            if ($this->connection && $this->connection->isConnected()) {
+                if ($this->protocol) {
+                    $this->sendFrame($this->protocol->getDisconnectFrame(), false);
                 }
-                $this->_connection->diconnect();
+                $this->connection->diconnect();
             }
         } catch (StompException $ex) {
             // nothing!
         }
-        $this->_sessionId = null;
-        $this->_subscriptions = array();
-        $this->_unprocessedFrames = array();
-        $this->_protocol = null;
+        $this->sessionId = null;
+        $this->subscriptions = array();
+        $this->unprocessedFrames = array();
+        $this->protocol = null;
     }
 
     /**
@@ -375,7 +394,7 @@ class Stomp
      */
     public function getSessionId()
     {
-        return $this->_sessionId;
+        return $this->sessionId;
     }
 
     /**
@@ -392,9 +411,9 @@ class Stomp
      *
      * @return boolean
      */
-    public function isConnected ()
+    public function isConnected()
     {
-        return !empty($this->_sessionId) && $this->_connection->isConnected();
+        return !empty($this->sessionId) && $this->connection->isConnected();
     }
 
     /**
@@ -404,7 +423,7 @@ class Stomp
      */
     public function getConnection()
     {
-        return $this->_connection;
+        return $this->connection;
     }
 
     /**
@@ -416,7 +435,7 @@ class Stomp
      */
     public function getProtocol()
     {
-        return $this->_protocol;
+        return $this->protocol;
     }
 
 
@@ -431,7 +450,7 @@ class Stomp
      */
     public function setReadTimeout($seconds, $milliseconds = 0)
     {
-        $this->_connection->setReadTimeout(array($seconds, $milliseconds));
+        $this->connection->setReadTimeout(array($seconds, $milliseconds));
     }
 
 
@@ -443,7 +462,7 @@ class Stomp
      */
     public function hasFrameToRead()
     {
-        return $this->_connection->hasDataToRead();
+        return $this->connection->hasDataToRead();
     }
 
     /**
@@ -453,8 +472,6 @@ class Stomp
      */
     public function setReceiptWait($seconds)
     {
-        $this->_receiptWait = $seconds;
+        $this->receiptWait = $seconds;
     }
-
-
 }

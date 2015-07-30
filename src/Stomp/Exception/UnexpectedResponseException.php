@@ -26,16 +26,16 @@ class UnexpectedResponseException extends StompException
      *
      * @var Frame
      */
-    private $_frame;
+    private $frame;
 
     /**
      *
      * @param Frame $frame
      * @param string $expectedInfo
      */
-    function __construct(Frame $frame, $expectedInfo)
+    public function __construct(Frame $frame, $expectedInfo)
     {
-        $this->_frame = $frame;
+        $this->frame = $frame;
         parent::__construct(sprintf('Unexpected response received. %s', $expectedInfo));
     }
 
@@ -45,7 +45,6 @@ class UnexpectedResponseException extends StompException
      */
     public function getFrame()
     {
-        return $this->_frame;
+        return $this->frame;
     }
-
 }

@@ -27,7 +27,7 @@ class StompASyncTest extends PHPUnit_Framework_TestCase
     /**
      * Prepares the environment before running a test.
      */
-    protected function setUp ()
+    protected function setUp()
     {
         parent::setUp();
 
@@ -37,7 +37,7 @@ class StompASyncTest extends PHPUnit_Framework_TestCase
     /**
      * Cleans up the environment after running a test.
      */
-    protected function tearDown ()
+    protected function tearDown()
     {
         $this->Stomp->disconnect();
         $this->Stomp = null;
@@ -64,4 +64,3 @@ class StompASyncTest extends PHPUnit_Framework_TestCase
         $this->Stomp->ack($frame);
     }
 }
-

@@ -35,14 +35,14 @@ class Connection
      *
      * @var array[]
      */
-    private $_hosts = array();
+    private $hosts = array();
 
     /**
      * Connection timeout in seconds.
      *
      * @var integer
      */
-    private $_connect_timeout;
+    private $connect_timeout;
 
     /**
      * Connection read wait timeout.
@@ -52,14 +52,14 @@ class Connection
      *
      * @var array
      */
-    private $_read_timeout = array(60, 0);
+    private $read_timeout = array(60, 0);
 
     /**
      * Connection options.
      *
      * @var array
      */
-    private $_params = array(
+    private $params = array(
         'randomize' => false, // connect to one host from list in random order
     );
 
@@ -68,14 +68,14 @@ class Connection
      *
      * @var resource
      */
-    private $_connection = null;
+    private $connection = null;
 
     /**
      * Connected host info.
      *
      * @var array
      */
-    private $_activeHost = array();
+    private $activeHost = array();
 
     /**
      * Stream Context used for client connection
@@ -84,14 +84,14 @@ class Connection
      *
      * @var array
      */
-    private $_context = array();
+    private $context = array();
 
     /**
      * Frame parser
      *
      * @var Parser
      */
-    private $_parser;
+    private $parser;
 
     /**
      * Initialize connection
@@ -106,11 +106,11 @@ class Connection
      * @param array   $context stream context
      * @throws ConnectionException
      */
-    public function __construct ($brokerUri, $connectionTimeout = 1, array $context = array())
+    public function __construct($brokerUri, $connectionTimeout = 1, array $context = array())
     {
-        $this->_parser = new Parser();
-        $this->_connect_timeout = $connectionTimeout;
-        $this->_context = $context;
+        $this->parser = new Parser();
+        $this->connect_timeout = $connectionTimeout;
+        $this->context = $context;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
             $scheme = $matches[2];
@@ -119,20 +119,20 @@ class Connection
 
             if ($options) {
                 parse_str($options, $connectionOptions);
-                $this->_params = $connectionOptions + $this->_params;
+                $this->params = $connectionOptions + $this->params;
             }
 
             if ($scheme != "failover") {
-                $this->_parseUrl($brokerUri);
+                $this->parseUrl($brokerUri);
             } else {
                 $urls = explode(",", $hosts);
                 foreach ($urls as $url) {
-                    $this->_parseUrl($url);
+                    $this->parseUrl($url);
                 }
             }
         }
 
-        if (empty($this->_hosts)) {
+        if (empty($this->hosts)) {
             throw new ConnectionException("Bad Broker URL {$brokerUri}. Check used scheme!");
         }
     }
@@ -144,10 +144,10 @@ class Connection
      * @param string $url Broker URL
      * @return void
      */
-    private function _parseUrl ($url)
+    private function parseUrl($url)
     {
         $parsed = parse_url($url);
-        array_push($this->_hosts, $parsed + array('port' => '61613', 'scheme' => 'tcp'));
+        array_push($this->hosts, $parsed + array('port' => '61613', 'scheme' => 'tcp'));
     }
 
     /**
@@ -156,9 +156,9 @@ class Connection
      * @param array $timeout 0 => seconds, 1 => milliseconds
      * @return void
      */
-    public function setReadTimeout (array $timeout)
+    public function setReadTimeout(array $timeout)
     {
-        $this->_read_timeout = $timeout;
+        $this->read_timeout = $timeout;
     }
 
     /**
@@ -169,7 +169,7 @@ class Connection
      */
     public function setContext(array $context)
     {
-        $this->_context = $context;
+        $this->context = $context;
     }
 
     /**
@@ -178,10 +178,10 @@ class Connection
      * @return boolean
      * @throws ConnectionException
      */
-    public function connect ()
+    public function connect()
     {
         if (!$this->isConnected()) {
-            $this->_connection = $this->_getConnection();
+            $this->connection = $this->getConnection();
         }
         return true;
     }
@@ -194,13 +194,13 @@ class Connection
      * @return resource (stream)
      * @throws ConnectionException
      */
-    protected function _getConnection ()
+    protected function getConnection()
     {
-        $hosts = $this->_getHostList();
+        $hosts = $this->getHostList();
 
         while ($host = array_shift($hosts)) {
             try {
-                return $this->_connect($host);
+                return $this->connectSocket($host);
             } catch (ConnectionException $connectionException) {
                 if (empty($hosts)) {
                     throw new ConnectionException("Could not connect to a broker", array(), $connectionException);
@@ -214,10 +214,10 @@ class Connection
      *
      * @return array
      */
-    protected function _getHostList ()
+    protected function getHostList()
     {
-        $hosts = array_values($this->_hosts);
-        if ($this->_params['randomize']) {
+        $hosts = array_values($this->hosts);
+        if ($this->params['randomize']) {
             shuffle($hosts);
         }
         return $hosts;
@@ -230,13 +230,20 @@ class Connection
      * @return resource (stream)
      * @throws ConnectionException if connection setup fails
      */
-    protected function _connect (array $host)
+    protected function connectSocket(array $host)
     {
-        $this->_activeHost = $host;
+        $this->activeHost = $host;
         $errNo = null;
         $errStr = null;
-        $context = stream_context_create($this->_context);
-        $socket = @stream_socket_client($host['scheme'] . '://' . $host['host'] . ':' . $host['port'], $errNo, $errStr, $this->_connect_timeout, STREAM_CLIENT_CONNECT, $context);
+        $context = stream_context_create($this->context);
+        $socket = @stream_socket_client(
+            $host['scheme'] . '://' . $host['host'] . ':' . $host['port'],
+            $errNo,
+            $errStr,
+            $this->connect_timeout,
+            STREAM_CLIENT_CONNECT,
+            $context
+        );
 
         if (!is_resource($socket)) {
             throw new ConnectionException(sprintf('Failed to connect. (%s: %s)', $errNo, $errStr), $host);
@@ -251,9 +258,9 @@ class Connection
      *
      * @return boolean
      */
-    public function isConnected ()
+    public function isConnected()
     {
-        return ($this->_connection && is_resource($this->_connection));
+        return ($this->connection && is_resource($this->connection));
     }
 
     /**
@@ -261,13 +268,13 @@ class Connection
      *
      * @return void
      */
-    public function diconnect ()
+    public function diconnect()
     {
         if ($this->isConnected()) {
-            stream_socket_shutdown($this->_connection, STREAM_SHUT_RDWR);
+            stream_socket_shutdown($this->connection, STREAM_SHUT_RDWR);
         }
-        $this->_connection = null;
-        $this->_activeHost = array();
+        $this->connection = null;
+        $this->activeHost = array();
     }
 
 
@@ -278,14 +285,14 @@ class Connection
      * @return boolean
      * @throws ConnectionException
      */
-    public function writeFrame (Frame $stompFrame)
+    public function writeFrame(Frame $stompFrame)
     {
         if (!$this->isConnected()) {
-            throw new ConnectionException('Not connected to any server.', $this->_activeHost);
+            throw new ConnectionException('Not connected to any server.', $this->activeHost);
         }
         $data = $stompFrame->__toString();
-        if (!@fwrite($this->_connection, $data, strlen($data))) {
-            throw new ConnectionException('Was not possible to write frame!', $this->_activeHost);
+        if (!@fwrite($this->connection, $data, strlen($data))) {
+            throw new ConnectionException('Was not possible to write frame!', $this->activeHost);
         }
         return true;
     }
@@ -296,23 +303,23 @@ class Connection
      * @return Frame|False when no frame to read
      * @throws ConnectionException
      */
-    public function readFrame ()
+    public function readFrame()
     {
-        if ($this->_parser->hasBufferedFrames()) {
-            return $this->_parser->getFrame();
+        if ($this->parser->hasBufferedFrames()) {
+            return $this->parser->getFrame();
         }
         if (!$this->hasDataToRead()) {
             return false;
         }
 
         do {
-            $read = @fgets($this->_connection, 1024);
+            $read = @fgets($this->connection, 1024);
             if ($read === false || $read === '') {
-                throw new ConnectionException('Was not possible to read data from stream.', $this->_activeHost);
+                throw new ConnectionException('Was not possible to read data from stream.', $this->activeHost);
             }
-            $this->_parser->addData($read);
-        } while (!$this->_parser->parse());
-        $frame = $this->_parser->getFrame();
+            $this->parser->addData($read);
+        } while (!$this->parser->parse());
+        $frame = $this->parser->getFrame();
         if ($frame->isErrorFrame()) {
             throw new ErrorFrameException($frame);
         }
@@ -328,19 +335,19 @@ class Connection
      * @throws ConnectionException
      * @see Connection::setReadTimeout()
      */
-    public function hasDataToRead ()
+    public function hasDataToRead()
     {
         if (!$this->isConnected()) {
-            throw new ConnectionException('Not connected to any server.', $this->_activeHost);
+            throw new ConnectionException('Not connected to any server.', $this->activeHost);
         }
 
-        $read = array($this->_connection);
+        $read = array($this->connection);
         $write = null;
         $except = null;
-        $hasStreamInfo = @stream_select($read, $write, $except, $this->_read_timeout[0], $this->_read_timeout[1]);
+        $hasStreamInfo = @stream_select($read, $write, $except, $this->read_timeout[0], $this->read_timeout[1]);
 
         if ($hasStreamInfo === false) {
-            throw new ConnectionException('Check failed to determine if the socket is readable.', $this->_activeHost);
+            throw new ConnectionException('Check failed to determine if the socket is readable.', $this->activeHost);
         }
         return !empty($read);
     }

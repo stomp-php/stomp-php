@@ -26,18 +26,19 @@ class MissingReceiptException extends StompException
      *
      * @var Frame
      */
-    private $_receiptId;
+    private $receiptId;
 
     /**
      *
      * @param string $receiptId
      */
-    function __construct($receiptId)
+    public function __construct($receiptId)
     {
-        $this->_receiptId = $receiptId;
+        $this->receiptId = $receiptId;
         parent::__construct(
             sprintf(
-                'Missing receipt Frame for id "%s". Maybe the queue server is under heavy load. Try to increase timeouts.',
+                'Missing receipt Frame for id "%s". Maybe the queue server is under heavy load. ' .
+                'Try to increase timeouts.',
                 $receiptId
             )
         );
@@ -50,7 +51,6 @@ class MissingReceiptException extends StompException
      */
     public function getReceiptId()
     {
-        return $this->_receiptId;
+        return $this->receiptId;
     }
-
 }

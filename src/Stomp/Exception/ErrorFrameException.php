@@ -26,15 +26,15 @@ class ErrorFrameException extends StompException
      *
      * @var Frame
      */
-    private $_frame;
+    private $frame;
 
     /**
      *
      * @param Frame $frame
      */
-    function __construct(Frame $frame)
+    public function __construct(Frame $frame)
     {
-        $this->_frame = $frame;
+        $this->frame = $frame;
         parent::__construct(
             sprintf('Error "%s"', $frame->headers['message'])
         );
@@ -46,6 +46,6 @@ class ErrorFrameException extends StompException
      */
     public function getFrame()
     {
-        return $this->_frame;
+        return $this->frame;
     }
 }

@@ -32,7 +32,7 @@ class RabbitMq extends Protocol
      *
      * @param Protocol $base
      */
-    function __construct(Protocol $base)
+    public function __construct(Protocol $base)
     {
         parent::__construct($base->getPrefetchSize(), $base->getClientId());
     }
@@ -46,7 +46,7 @@ class RabbitMq extends Protocol
      * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getSubscribeFrame ($destination, array $headers = array(), $durable = false)
+    public function getSubscribeFrame($destination, array $headers = array(), $durable = false)
     {
         $frame = parent::getSubscribeFrame($destination, $headers);
         $frame->setHeader('prefetch-count', $this->getPrefetchSize());
@@ -65,7 +65,7 @@ class RabbitMq extends Protocol
      * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getUnsubscribeFrame ($destination, array $headers = array(), $durable = false)
+    public function getUnsubscribeFrame($destination, array $headers = array(), $durable = false)
     {
         $frame = parent::getUnsubscribeFrame($destination, $headers);
         $this->addClientId($frame);

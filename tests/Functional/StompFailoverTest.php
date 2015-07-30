@@ -30,28 +30,26 @@ class StompFailoverTest extends PHPUnit_Framework_TestCase
     /**
      * Prepares the environment before running a test.
      */
-    protected function setUp ()
+    protected function setUp()
     {
         parent::setUp();
-
 
         $this->Stomp = new Stomp('failover://(tcp://localhost:61614,tcp://localhost:61613)?randomize=false');
     }
     /**
      * Cleans up the environment after running a test.
      */
-    protected function tearDown ()
+    protected function tearDown()
     {
-		$this->Stomp->disconnect();
+        $this->Stomp->disconnect();
         $this->Stomp = null;
         parent::tearDown();
     }
     /**
      * Tests Stomp->connect()
      */
-    public function testFailoverConnect ()
+    public function testFailoverConnect()
     {
         $this->assertTrue($this->Stomp->connect());
     }
 }
-
