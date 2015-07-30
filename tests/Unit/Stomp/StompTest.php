@@ -89,7 +89,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult($receiptFrame);
 
-        $waitForReceipt = new ReflectionMethod($stomp, '_waitForReceipt');
+        $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
         $waitForReceipt->setAccessible(true);
 
         // expect a receipt for another id
@@ -125,7 +125,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult(false);
         $stomp->setReceiptWait(0);
 
-        $waitForReceipt = new ReflectionMethod($stomp, '_waitForReceipt');
+        $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
         $waitForReceipt->setAccessible(true);
 
         // MuT
@@ -385,7 +385,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $stomp = new Stomp($connection);
 
 
-        $waitForReceipt = new ReflectionMethod($stomp, '_waitForReceipt');
+        $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
         $waitForReceipt->setAccessible(true);
 
         $result = $waitForReceipt->invoke($stomp, 'my-id');

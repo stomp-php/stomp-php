@@ -28,7 +28,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     public function testBrokerUriParseFailover()
     {
         $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)');
-        $getHostList = new ReflectionMethod($connection, '_getHostList');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
         $list = $getHostList->invoke($connection);
@@ -40,7 +40,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     public function testBrokerUriParseRandom()
     {
         $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)?randomize=true');
-        $getHostList = new ReflectionMethod($connection, '_getHostList');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
         $arrayHash = function (array $array) {
@@ -74,7 +74,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     public function testBrokerUriParseSimple()
     {
         $connection = new Connection('tcp://host1');
-        $getHostList = new ReflectionMethod($connection, '_getHostList');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
         $hostlist = $getHostList->invoke($connection);
@@ -87,7 +87,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     public function testBrokerUriParseSpecificPort()
     {
         $connection = new Connection('tcp://host1:55');
-        $getHostList = new ReflectionMethod($connection, '_getHostList');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
         $hostlist = $getHostList->invoke($connection);
@@ -108,7 +108,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     public function testConnectionSetupTriesFullHostListBeforeGivingUp()
     {
         $connection = $this->getMockBuilder('\Stomp\Connection')
-            ->setMethods(array('_connect'))
+            ->setMethods(array('connectSocket'))
             ->setConstructorArgs(array('failover://(tcp://host1,tcp://host2,tcp://host3)'))
             ->getMock();
 
@@ -117,7 +117,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         );
 
         $test = $this;
-        $connection->expects($this->exactly(3))->method('_connect')->will(
+        $connection->expects($this->exactly(3))->method('connectSocket')->will(
             $this->returnCallback(
                 function ($host) use (&$expectedHosts, $test) {
                     $current = array_shift($expectedHosts);
