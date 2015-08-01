@@ -12,7 +12,6 @@ namespace Stomp\Tests\Unit\Stomp;
 use Exception;
 use Stomp\Connection;
 use Stomp\Frame;
-use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
@@ -23,7 +22,7 @@ use ReflectionMethod;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ConnectionTest extends PHPUnit_Framework_TestCase
+class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testBrokerUriParseFailover()
     {

@@ -10,7 +10,6 @@
 namespace Stomp\Tests\Functional;
 
 use Stomp\Stomp;
-use PHPUnit_Framework_TestCase;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -21,7 +20,7 @@ use PHPUnit_Framework_TestCase;
  * @author Michael Caplan <mcaplan@labnet.net>
  * @version $Revision: 35 $
  */
-class StompFailoverTest extends PHPUnit_Framework_TestCase
+class StompFailoverTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Stomp

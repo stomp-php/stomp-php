@@ -9,7 +9,6 @@
 
 namespace Stomp\Tests\Unit\Stomp;
 
-use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
 use Stomp\Connection;
 use Stomp\Exception\UnexpectedResponseException;
@@ -25,7 +24,7 @@ use Stomp\Stomp;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class StompTest extends PHPUnit_Framework_TestCase
+class StompTest extends \PHPUnit_Framework_TestCase
 {
     public function testConnectWillThrowExceptionIfUnexpectedFrameArrives()
     {

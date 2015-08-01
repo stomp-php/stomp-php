@@ -10,7 +10,6 @@
 namespace Stomp\Tests\Functional;
 
 use Stomp\Stomp;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Stomp test case.
@@ -18,7 +17,7 @@ use PHPUnit_Framework_TestCase;
  * @package Stomp
  * @author Mark R. <mark+gh@mark.org.il>
   */
-class StompSyncTest extends PHPUnit_Framework_TestCase
+class StompSyncTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Stomp
