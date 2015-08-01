@@ -80,7 +80,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
 
     /**
-     * @expectedException Stomp\Exception\StompException
+     * @expectedException \Stomp\Exception\StompException
      */
     public function testWaitForReceiptWillThrowExceptionOnIdMissmatch()
     {
@@ -89,7 +89,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult($receiptFrame);
 
-        $waitForReceipt = new ReflectionMethod($stomp, '_waitForReceipt');
+        $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
         $waitForReceipt->setAccessible(true);
 
         // expect a receipt for another id
@@ -117,7 +117,7 @@ class StompTest extends PHPUnit_Framework_TestCase
 
 
     /**
-     * @expectedException Stomp\Exception\MissingReceiptException
+     * @expectedException \Stomp\Exception\MissingReceiptException
      * @expectedExceptionMessage my-expected-receive-id
      */
     public function testWaitForReceiptWillThrowExceptionIfConnectionReadTimeoutOccurs()
@@ -125,7 +125,7 @@ class StompTest extends PHPUnit_Framework_TestCase
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult(false);
         $stomp->setReceiptWait(0);
 
-        $waitForReceipt = new ReflectionMethod($stomp, '_waitForReceipt');
+        $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
         $waitForReceipt->setAccessible(true);
 
         // MuT
@@ -174,14 +174,17 @@ class StompTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($frame->command, $lastSendFrame->command, 'Send must not change frame command.');
         $this->assertEquals(
             'correct-destination',
-            $lastSendFrame->headers['destination'], 'Send must override destination header.'
+            $lastSendFrame->headers['destination'],
+            'Send must override destination header.'
         );
         $this->assertEquals(
             'myvalue',
-            $lastSendFrame->headers['myheader'], 'Send must keep headers from given frame.'
+            $lastSendFrame->headers['myheader'],
+            'Send must keep headers from given frame.'
         );
         $this->assertTrue(
-            $lastSyncState, 'Send must pass sync state.'
+            $lastSyncState,
+            'Send must pass sync state.'
         );
     }
 
@@ -204,18 +207,22 @@ class StompTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('SEND', $lastSendFrame->command, 'Send must set SEND as frame command, if frame was text.');
         $this->assertEquals(
             'correct-destination',
-            $lastSendFrame->headers['destination'], 'Send must override destination header.'
+            $lastSendFrame->headers['destination'],
+            'Send must override destination header.'
         );
         $this->assertEquals(
             'myvalue',
-            $lastSendFrame->headers['myheader'], 'Send must keep headers from given frame.'
+            $lastSendFrame->headers['myheader'],
+            'Send must keep headers from given frame.'
         );
         $this->assertEquals(
             'body',
-            $lastSendFrame->body, 'Send must set message as Frame body.'
+            $lastSendFrame->body,
+            'Send must set message as Frame body.'
         );
         $this->assertFalse(
-            $lastSyncState, 'Send must pass sync state.'
+            $lastSyncState,
+            'Send must pass sync state.'
         );
     }
 
@@ -241,7 +248,11 @@ class StompTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('passcode', $lastSendFrame->headers, 'Expected passcode data.');
 
         $this->assertEquals('myUser', $lastSendFrame->headers['login'], 'Expected login data from constructor.');
-        $this->assertEquals('myPassword', $lastSendFrame->headers['passcode'], 'Expected passcode data from constructor.');
+        $this->assertEquals(
+            'myPassword',
+            $lastSendFrame->headers['passcode'],
+            'Expected passcode data from constructor.'
+        );
     }
 
     public function testLoginDataFromConstructorIsIgnoredIfLoginDataPassedToConnect()
@@ -265,7 +276,11 @@ class StompTest extends PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('passcode', $lastSendFrame->headers, 'Expected passcode data.');
 
         $this->assertEquals('myUserFromConnect', $lastSendFrame->headers['login'], 'Expected login data from connect.');
-        $this->assertEquals('myPasswordFromConnect', $lastSendFrame->headers['passcode'], 'Expected passcode data from connect.');
+        $this->assertEquals(
+            'myPasswordFromConnect',
+            $lastSendFrame->headers['passcode'],
+            'Expected passcode data from connect.'
+        );
     }
 
     /**
@@ -286,8 +301,8 @@ class StompTest extends PHPUnit_Framework_TestCase
             ->method('sendFrame')
             ->will(
                 $this->returnCallback(
-                    function (Frame $frame, $sync) use (&$lastSendFrame, &$lastSyncState)
-                    {
+                    function (Frame $frame, $sync) use (&$lastSendFrame, &$lastSyncState) {
+                    
                         $lastSendFrame = $frame;
                         $lastSyncState = $sync;
                     }
@@ -367,28 +382,29 @@ class StompTest extends PHPUnit_Framework_TestCase
                 )
             );
 
-       $stomp = new Stomp($connection);
+        $stomp = new Stomp($connection);
 
 
-       $waitForReceipt = new ReflectionMethod($stomp, '_waitForReceipt');
-       $waitForReceipt->setAccessible(true);
+        $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
+        $waitForReceipt->setAccessible(true);
 
-       $result = $waitForReceipt->invoke($stomp, 'my-id');
+        $result = $waitForReceipt->invoke($stomp, 'my-id');
 
-       $this->assertTrue($result, 'Wait for receipt must return true if correct receipt was received');
+        $this->assertTrue($result, 'Wait for receipt must return true if correct receipt was received');
 
-       $receivedFrames = array(
+        $receivedFrames = array(
            $stomp->readFrame(),
            $stomp->readFrame(),
            $stomp->readFrame(),
-       );
+        );
 
-       foreach ($expectedFrames as $index => $frame) {
-           $this->assertEquals(
-               $frame, $receivedFrames[$index],
-               'Frame must be the correct Frame from queued up frames in given order. (FIFO)'
+        foreach ($expectedFrames as $index => $frame) {
+            $this->assertEquals(
+                $frame,
+                $receivedFrames[$index],
+                'Frame must be the correct Frame from queued up frames in given order. (FIFO)'
             );
-       }
+        }
     }
 
     public function testAckWillUseMessageAsMessageIdForAckFrame()
@@ -416,8 +432,8 @@ class StompTest extends PHPUnit_Framework_TestCase
             ->method('sendFrame')
             ->will(
                 $this->returnCallback(
-                    function (Frame $frame, $sync) use (&$lastSendFrame, &$lastSyncState)
-                    {
+                    function (Frame $frame, $sync) use (&$lastSendFrame, &$lastSyncState) {
+                    
                         $lastSendFrame = $frame;
                         $lastSyncState = $sync;
                     }
@@ -428,16 +444,21 @@ class StompTest extends PHPUnit_Framework_TestCase
         $stomp->ack('my-message-id', 'my-transaction-id');
 
         $this->assertEquals(
-            'my-message-id', $lastSendFrame->headers['message-id'],
+            'my-message-id',
+            $lastSendFrame->headers['message-id'],
             'Ack must set param message as message-id if no frame was given!'
         );
     }
 
-    function testGetConnectionReturnsUsedConnection()
+    public function testGetConnectionReturnsUsedConnection()
     {
         $connection = new Connection('tcp://myhost');
         $stomp = new Stomp($connection);
 
-        $this->assertSame($connection, $stomp->getConnection(), 'getConnection must return passed connection instance.');
+        $this->assertSame(
+            $connection,
+            $stomp->getConnection(),
+            'getConnection must return passed connection instance.'
+        );
     }
 }

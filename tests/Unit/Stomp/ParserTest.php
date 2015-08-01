@@ -24,7 +24,6 @@ class ParserTest extends PHPUnit_Framework_TestCase
 {
     public function testParseFrameTransformsToMapIfJmsMapHeaderIsSet()
     {
-
         $body = json_encode(array('var' => 'value'));
         $msg = "CMD\nheader1:value1\ntransformation:jms-map-json\n\n" . $body . "\x00";
 
@@ -50,5 +49,4 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('var', $result->body);
         $this->assertEquals('value1', $result->headers['header1']);
     }
-
 }

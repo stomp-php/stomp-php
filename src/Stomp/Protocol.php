@@ -28,14 +28,14 @@ class Protocol
      *
      * @var int
      */
-    private $_prefetchSize = 1;
+    private $prefetchSize = 1;
 
-	/**
+    /**
      * Client id used for durable subscriptions
      *
      * @var string
      */
-	private $_clientId = null;
+    private $clientId = null;
 
     /**
      * Setup stomp protocol with configuration.
@@ -43,10 +43,10 @@ class Protocol
      * @param integer $prefetchSize
      * @param integer $clientId
      */
-    public function __construct ($prefetchSize, $clientId)
+    public function __construct($prefetchSize, $clientId)
     {
-        $this->_prefetchSize = $prefetchSize;
-        $this->_clientId = $clientId;
+        $this->prefetchSize = $prefetchSize;
+        $this->clientId = $clientId;
     }
 
     /**
@@ -56,7 +56,7 @@ class Protocol
      * @param string $passcode
      * @return Frame
      */
-    public final function getConnectFrame ($login = '', $passcode = '')
+    final public function getConnectFrame($login = '', $passcode = '')
     {
         $frame = new Frame("CONNECT");
 
@@ -64,9 +64,9 @@ class Protocol
             $frame->addHeaders(compact('login', 'passcode'));
         }
 
-		if ($this->hasClientId()) {
+        if ($this->hasClientId()) {
             $frame->setHeader('client-id', $this->getClientId());
-		}
+        }
         return $frame;
     }
 
@@ -78,7 +78,7 @@ class Protocol
      * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getSubscribeFrame ($destination, array $headers = array(), $durable = false)
+    public function getSubscribeFrame($destination, array $headers = array(), $durable = false)
     {
         $frame = new Frame('SUBSCRIBE');
         $frame->setHeader('ack', 'client');
@@ -96,7 +96,7 @@ class Protocol
      * @param boolean $durable durable subscription
      * @return Frame
      */
-    public function getUnsubscribeFrame ($destination, array $headers = array(), $durable = false)
+    public function getUnsubscribeFrame($destination, array $headers = array(), $durable = false)
     {
         $frame = new Frame('UNSUBSCRIBE');
         $frame->addHeaders($headers);
@@ -110,7 +110,7 @@ class Protocol
      * @param string $transactionId
      * @return Frame
      */
-    public function getBeginFrame ($transactionId = null)
+    public function getBeginFrame($transactionId = null)
     {
         $frame = new Frame('BEGIN');
         if ($transactionId) {
@@ -125,7 +125,7 @@ class Protocol
      * @param string $transactionId
      * @return Frame
      */
-    public function getCommitFrame ($transactionId = null)
+    public function getCommitFrame($transactionId = null)
     {
         $frame = new Frame('COMMIT');
         if ($transactionId) {
@@ -140,7 +140,7 @@ class Protocol
      * @param string $transactionId
      * @return Frame
      */
-    public function getAbortFrame ($transactionId = null)
+    public function getAbortFrame($transactionId = null)
     {
         $frame = new Frame('ABORT');
         if ($transactionId) {
@@ -156,7 +156,7 @@ class Protocol
      * @param string $transactionId
      * @return Frame
      */
-    public function getAckFrame ($messageId, $transactionId = null)
+    public function getAckFrame($messageId, $transactionId = null)
     {
         $frame = new Frame('ACK');
         if ($transactionId) {
@@ -185,9 +185,9 @@ class Protocol
      *
      * @return integer
      */
-    public function getPrefetchSize ()
+    public function getPrefetchSize()
     {
-        return $this->_prefetchSize;
+        return $this->prefetchSize;
     }
 
     /**
@@ -195,9 +195,9 @@ class Protocol
      *
      * @return boolean
      */
-    public function hasClientId ()
+    public function hasClientId()
     {
-        return (boolean) $this->_clientId;
+        return (boolean) $this->clientId;
     }
 
     /**
@@ -205,9 +205,9 @@ class Protocol
      *
      * @return string
      */
-    public function getClientId ()
+    public function getClientId()
     {
-        return $this->_clientId;
+        return $this->clientId;
     }
 
     /**
@@ -216,7 +216,7 @@ class Protocol
      * @param Frame $frame
      * @return void
      */
-    protected function addClientId (Frame $frame)
+    protected function addClientId(Frame $frame)
     {
         if ($this->hasClientId()) {
             $frame->setHeader('id', $this->getClientId());

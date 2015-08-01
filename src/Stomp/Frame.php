@@ -32,7 +32,7 @@ class Frame
      * @param string $body
      * @throws StompException
      */
-    public function __construct ($command = null, array $headers = array(), $body = null)
+    public function __construct($command = null, array $headers = array(), $body = null)
     {
         $this->command = $command;
         $this->headers = $headers ?: array();
@@ -69,7 +69,7 @@ class Frame
      *
      * @return string
      */
-    public function getMessageId ()
+    public function getMessageId()
     {
         return isset($this->headers['message-id']) ? $this->headers['message-id'] : null;
     }
@@ -79,7 +79,7 @@ class Frame
      *
      * @return boolean
      */
-    public function isErrorFrame ()
+    public function isErrorFrame()
     {
         return ($this->command == 'ERROR');
     }

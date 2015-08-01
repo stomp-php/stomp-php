@@ -29,7 +29,7 @@ class Map extends Frame
      * @param Frame|string $msg
      * @param array $headers
      */
-    function __construct ($msg, array $headers = array())
+    public function __construct($msg, array $headers = array())
     {
         if ($msg instanceof Frame) {
             parent::__construct($msg->command, $msg->headers, $msg->body);

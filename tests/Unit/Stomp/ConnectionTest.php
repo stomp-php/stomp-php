@@ -25,75 +25,76 @@ use ReflectionMethod;
  */
 class ConnectionTest extends PHPUnit_Framework_TestCase
 {
-   public function testBrokerUriParseFailover()
-   {
-       $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)');
-       $getHostList = new ReflectionMethod($connection, '_getHostList');
-       $getHostList->setAccessible(true);
+    public function testBrokerUriParseFailover()
+    {
+        $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
+        $getHostList->setAccessible(true);
 
-       $list = $getHostList->invoke($connection);
+        $list = $getHostList->invoke($connection);
 
-       $this->assertEquals('host1', $list[0]['host'], 'List is not in expected order.');
-       $this->assertEquals('host2', $list[1]['host'], 'List is not in expected order.');
-   }
-
-   public function testBrokerUriParseRandom()
-   {
-       $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)?randomize=true');
-       $getHostList = new ReflectionMethod($connection, '_getHostList');
-       $getHostList->setAccessible(true);
-
-       $arrayHash = function (array $array) {
-           $hash = '';
-           foreach ($array as $host) {
-               $hash .= $host['host'];
-           }
-           return $hash;
-       };
-
-       $calls = array(
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-       );
-
-
-       $orders = array_unique($calls);
-       $this->assertCount(
-           2, $orders,
-           'Hostlist should be returned in random order. Expected 2 possible orders for given host list.'
-        );
-   }
-
-   public function testBrokerUriParseSimple()
-   {
-       $connection = new Connection('tcp://host1');
-       $getHostList = new ReflectionMethod($connection, '_getHostList');
-       $getHostList->setAccessible(true);
-
-       $hostlist = $getHostList->invoke($connection);
-       $host = array_shift($hostlist);
-       $this->assertEquals('tcp', $host['scheme']);
-       $this->assertEquals('host1', $host['host']);
-       $this->assertEquals(61613, $host['port'], 'Default port must be set!');
+        $this->assertEquals('host1', $list[0]['host'], 'List is not in expected order.');
+        $this->assertEquals('host2', $list[1]['host'], 'List is not in expected order.');
     }
 
-   public function testBrokerUriParseSpecificPort()
-   {
-       $connection = new Connection('tcp://host1:55');
-       $getHostList = new ReflectionMethod($connection, '_getHostList');
-       $getHostList->setAccessible(true);
+    public function testBrokerUriParseRandom()
+    {
+        $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)?randomize=true');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
+        $getHostList->setAccessible(true);
 
-       $hostlist = $getHostList->invoke($connection);
-       $host = array_shift($hostlist);
-       $this->assertEquals('tcp', $host['scheme']);
-       $this->assertEquals('host1', $host['host']);
-       $this->assertEquals(55, $host['port']);
+        $arrayHash = function (array $array) {
+            $hash = '';
+            foreach ($array as $host) {
+                $hash .= $host['host'];
+            }
+            return $hash;
+        };
+
+        $calls = array(
+           $arrayHash($getHostList->invoke($connection)),
+           $arrayHash($getHostList->invoke($connection)),
+           $arrayHash($getHostList->invoke($connection)),
+           $arrayHash($getHostList->invoke($connection)),
+           $arrayHash($getHostList->invoke($connection)),
+           $arrayHash($getHostList->invoke($connection)),
+           $arrayHash($getHostList->invoke($connection)),
+           $arrayHash($getHostList->invoke($connection)),
+        );
+
+
+        $orders = array_unique($calls);
+        $this->assertCount(
+            2,
+            $orders,
+            'Hostlist should be returned in random order. Expected 2 possible orders for given host list.'
+        );
+    }
+
+    public function testBrokerUriParseSimple()
+    {
+        $connection = new Connection('tcp://host1');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
+        $getHostList->setAccessible(true);
+
+        $hostlist = $getHostList->invoke($connection);
+        $host = array_shift($hostlist);
+        $this->assertEquals('tcp', $host['scheme']);
+        $this->assertEquals('host1', $host['host']);
+        $this->assertEquals(61613, $host['port'], 'Default port must be set!');
+    }
+
+    public function testBrokerUriParseSpecificPort()
+    {
+        $connection = new Connection('tcp://host1:55');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
+        $getHostList->setAccessible(true);
+
+        $hostlist = $getHostList->invoke($connection);
+        $host = array_shift($hostlist);
+        $this->assertEquals('tcp', $host['scheme']);
+        $this->assertEquals('host1', $host['host']);
+        $this->assertEquals(55, $host['port']);
     }
 
     /**
@@ -104,11 +105,10 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         new Connection('-');
     }
 
-
     public function testConnectionSetupTriesFullHostListBeforeGivingUp()
     {
         $connection = $this->getMockBuilder('\Stomp\Connection')
-            ->setMethods(array('_connect'))
+            ->setMethods(array('connectSocket'))
             ->setConstructorArgs(array('failover://(tcp://host1,tcp://host2,tcp://host3)'))
             ->getMock();
 
@@ -117,7 +117,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         );
 
         $test = $this;
-        $connection->expects($this->exactly(3))->method('_connect')->will(
+        $connection->expects($this->exactly(3))->method('connectSocket')->will(
             $this->returnCallback(
                 function ($host) use (&$expectedHosts, $test) {
                     $current = array_shift($expectedHosts);
@@ -161,5 +161,4 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $connection = new Connection('tcp://localhost');
         $connection->writeFrame(new Frame());
     }
-
 }

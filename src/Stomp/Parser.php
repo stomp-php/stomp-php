@@ -32,16 +32,16 @@ class Parser
     /**
      * Frames that have been parsed and queued up.
      *
-     * @var Frames[]
+     * @var Frame[]
      */
-    private $_frames = array();
+    private $frames = array();
 
     /**
      * Current buffer for new frames.
      *
      * @var string
      */
-    private $_buffer = '';
+    private $buffer = '';
 
     /**
      * Add data to parse.
@@ -51,7 +51,7 @@ class Parser
      */
     public function addData($data)
     {
-        $this->_buffer .= $data;
+        $this->buffer .= $data;
     }
 
     /**
@@ -61,7 +61,7 @@ class Parser
      */
     public function hasBufferedFrames()
     {
-        return !empty($this->_frames);
+        return !empty($this->frames);
     }
 
     /**
@@ -71,7 +71,7 @@ class Parser
      */
     public function getFrame()
     {
-        return array_shift($this->_frames);
+        return array_shift($this->frames);
     }
 
     /**
@@ -84,14 +84,14 @@ class Parser
     public function parse()
     {
         $offset = 0;
-        $len = strlen($this->_buffer);
-        while (($offset < $len) && (($frameEnd = strpos($this->_buffer, self::FRAME_END, $offset)) !== false)) {
-            $frameSource = substr($this->_buffer, $offset, $frameEnd - $offset);
+        $len = strlen($this->buffer);
+        while (($offset < $len) && (($frameEnd = strpos($this->buffer, self::FRAME_END, $offset)) !== false)) {
+            $frameSource = substr($this->buffer, $offset, $frameEnd - $offset);
             $offset = $frameEnd + strlen(self::FRAME_END);
-            $this->_frames[] = $this->parseToFrame($frameSource);
+            $this->frames[] = $this->parseToFrame($frameSource);
         }
         if ($offset > 0) {
-            $this->_buffer = substr($this->_buffer, $offset);
+            $this->buffer = substr($this->buffer, $offset);
         }
         return $offset > 0;
     }
@@ -124,6 +124,4 @@ class Parser
         }
         return $frame;
     }
-
-
 }

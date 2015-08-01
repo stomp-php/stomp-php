@@ -31,14 +31,14 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
     private $Stomp;
     private $broker = 'tcp://127.0.0.1:61613';
     private $queue = '/queue/test';
-	private $topic = '/topic/test';
+    private $topic = '/topic/test';
     private $login = 'guest';
     private $password = 'guest';
 
     /**
      * Prepares the environment before running a test.
      */
-    protected function setUp ()
+    protected function setUp()
     {
         parent::setUp();
 
@@ -49,7 +49,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
     /**
      * Cleans up the environment after running a test.
      */
-    protected function tearDown ()
+    protected function tearDown()
     {
         $this->Stomp = null;
         parent::tearDown();
@@ -85,10 +85,11 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
 
         $this->Stomp->setReadTimeout(60);
     }
+
     /**
      * Tests Stomp->ack()
      */
-    public function testAck ()
+    public function testAck()
     {
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
@@ -104,7 +105,6 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->Stomp->disconnect();
 
         for ($y = 0; $y < 100; $y += 10) {
-
             $this->Stomp->connect($this->login, $this->password);
 
             $this->Stomp->subscribe($this->queue, array('ack' => 'client','activemq.prefetchSize' => 1 ));
@@ -112,8 +112,16 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
             for ($x = $y; $x < $y + 10; ++$x) {
                 $frame = $this->Stomp->readFrame();
                 $this->assertTrue($frame instanceof \Stomp\Frame);
-                $this->assertArrayHasKey($frame->body, $messages, $frame->body . ' is not in the list of messages to ack');
-                $this->assertEquals('sent', $messages[$frame->body], $frame->body . ' has been marked acked, but has been received again.');
+                $this->assertArrayHasKey(
+                    $frame->body,
+                    $messages,
+                    $frame->body . ' is not in the list of messages to ack'
+                );
+                $this->assertEquals(
+                    'sent',
+                    $messages[$frame->body],
+                    $frame->body . ' has been marked acked, but has been received again.'
+                );
                 $messages[$frame->body] = 'acked';
 
                 $this->assertTrue($this->Stomp->ack($frame), "Unable to ack {$frame->headers['message-id']}");
@@ -132,8 +140,13 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
             }
         }
 
-        $this->assertEquals(0, count($un_acked_messages), 'Remaining messages to ack' . var_export($un_acked_messages, true));
+        $this->assertEquals(
+            0,
+            count($un_acked_messages),
+            'Remaining messages to ack' . var_export($un_acked_messages, true)
+        );
     }
+
     /**
      * Tests Stomp->abort()
      */
@@ -157,15 +170,16 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
     /**
      * Tests Stomp->connect()
      */
-    public function testConnect ()
+    public function testConnect()
     {
         $this->assertTrue($this->Stomp->connect($this->login, $this->password));
         $this->assertTrue($this->Stomp->isConnected());
     }
+
     /**
      * Tests Stomp->disconnect()
      */
-    public function testDisconnect ()
+    public function testDisconnect()
     {
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
@@ -174,30 +188,33 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->Stomp->disconnect();
         $this->assertFalse($this->Stomp->isConnected());
     }
+
     /**
      * Tests Stomp->getSessionId()
      */
-    public function testGetSessionId ()
+    public function testGetSessionId()
     {
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
         }
         $this->assertNotNull($this->Stomp->getSessionId());
     }
+
     /**
      * Tests Stomp->isConnected()
      */
-    public function testIsConnected ()
+    public function testIsConnected()
     {
         $this->Stomp->connect($this->login, $this->password);
         $this->assertTrue($this->Stomp->isConnected());
         $this->Stomp->disconnect();
         $this->assertFalse($this->Stomp->isConnected());
     }
+
     /**
      * Tests Stomp->readFrame()
      */
-    public function testReadFrame ()
+    public function testReadFrame()
     {
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
@@ -210,10 +227,11 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
     }
+
     /**
      * Tests Stomp->send()
      */
-    public function testSend ()
+    public function testSend()
     {
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
@@ -226,10 +244,11 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
     }
+
     /**
      * Tests Stomp->subscribe()
      */
-    public function testSubscribe ()
+    public function testSubscribe()
     {
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
@@ -254,7 +273,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
 
         $this->Stomp->subscribe($this->queue, array('transformation' => 'jms-map-json'));
         $msg = $this->Stomp->readFrame();
-        $this->assertTrue($msg instanceOf \Stomp\Message\Map);
+        $this->assertTrue($msg instanceof \Stomp\Message\Map);
         $this->assertEquals($msg->map, $body);
         $this->Stomp->ack($msg);
         $this->Stomp->disconnect();
@@ -282,7 +301,7 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
     /**
      * Tests Stomp->unsubscribe()
      */
-    public function testUnsubscribe ()
+    public function testUnsubscribe()
     {
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
@@ -291,16 +310,18 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->unsubscribe($this->queue));
     }
 
-	public function testDurable() {
+    public function testDurable()
+    {
         $this->markTestSkipped('This test is not compatible to an active mq env.');
-		$this->subscribe();
-		sleep(2);
-		$this->produce();
-		sleep(2);
-		$this->consume();
-	}
+        $this->subscribe();
+        sleep(2);
+        $this->produce();
+        sleep(2);
+        $this->consume();
+    }
 
-    protected function subscribe() {
+    protected function subscribe()
+    {
         $consumer = new Stomp($this->broker);
         $consumer->sync = true;
         $consumer->clientId = "test";
@@ -310,30 +331,31 @@ class StompRabbitTest extends PHPUnit_Framework_TestCase
         $consumer->disconnect();
     }
 
-	protected function produce() {
-		$producer = new Stomp($this->broker);
+    protected function produce()
+    {
+        $producer = new Stomp($this->broker);
         $producer->sync = true;
         $producer->connect($this->login, $this->password);
         $producer->send($this->topic, "test message", array('persistent'=>'true'));
-		$producer->disconnect();
-	}
+        $producer->disconnect();
+    }
 
 
-	protected function consume() {
-		$consumer2 = new Stomp($this->broker);
+    protected function consume()
+    {
+        $consumer2 = new Stomp($this->broker);
         $consumer2->sync = true;
-		$consumer2->clientId = "test";
-		$consumer2->setReadTimeout(1);
+        $consumer2->clientId = "test";
+        $consumer2->setReadTimeout(1);
         $consumer2->connect($this->login, $this->password);
-		$consumer2->subscribe($this->topic,  array('persistent' => 'true'));
+        $consumer2->subscribe($this->topic, array('persistent' => 'true'));
 
         $frame = $consumer2->readFrame();
-		$this->assertEquals($frame->body, "test message");
-		if ($frame != null) {
-			$consumer2->ack($frame);
-		}
+        $this->assertEquals($frame->body, "test message");
+        if ($frame != null) {
+            $consumer2->ack($frame);
+        }
 
-		$consumer2->disconnect();
-	}
+        $consumer2->disconnect();
+    }
 }
-

@@ -31,7 +31,7 @@ class ActiveMq extends Protocol
      *
      * @param Protocol $base
      */
-    function __construct(Protocol $base)
+    public function __construct(Protocol $base)
     {
         parent::__construct($base->getPrefetchSize(), $base->getClientId());
     }
@@ -62,5 +62,4 @@ class ActiveMq extends Protocol
         }
         return $frame;
     }
-
 }

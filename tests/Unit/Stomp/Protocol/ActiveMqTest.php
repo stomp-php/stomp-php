@@ -23,7 +23,7 @@ use PHPUnit_Framework_TestCase;
  */
 class ActiveMqTest extends PHPUnit_Framework_TestCase
 {
-    function testSubscribeFrameHasNoDurableHeaderFieldByDefault()
+    public function testSubscribeFrameHasNoDurableHeaderFieldByDefault()
     {
         $base = new Protocol(1, 'my-client');
         $activeMq = new ActiveMq($base);
@@ -32,7 +32,7 @@ class ActiveMqTest extends PHPUnit_Framework_TestCase
         $this->assertArrayNotHasKey('activemq.subscriptionName', $frame->headers);
     }
 
-    function testSubscribeFrameHasDurableHeaderFieldByForDurableSubscription()
+    public function testSubscribeFrameHasDurableHeaderFieldByForDurableSubscription()
     {
         $base = new Protocol(1, 'my-client');
         $activeMq = new ActiveMq($base);
@@ -42,7 +42,7 @@ class ActiveMqTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('my-client', $frame->headers['activemq.subscriptionName']);
     }
 
-    function testSubscribeFrameHasPrefetchSizeKey()
+    public function testSubscribeFrameHasPrefetchSizeKey()
     {
         $base = new Protocol(10, 'my-client');
         $activeMq = new ActiveMq($base);
