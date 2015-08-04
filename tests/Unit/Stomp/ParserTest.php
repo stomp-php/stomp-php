@@ -10,7 +10,6 @@
 namespace Stomp\Tests\Unit\Stomp;
 
 use Stomp\Parser;
-use PHPUnit_Framework_TestCase;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -20,7 +19,7 @@ use PHPUnit_Framework_TestCase;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ParserTest extends PHPUnit_Framework_TestCase
+class ParserTest extends \PHPUnit_Framework_TestCase
 {
     public function testParseFrameTransformsToMapIfJmsMapHeaderIsSet()
     {

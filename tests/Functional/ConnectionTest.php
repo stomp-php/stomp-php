@@ -13,7 +13,6 @@ use Stomp\Connection;
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\ErrorFrameException;
 use Stomp\Frame;
-use PHPUnit_Framework_TestCase;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -22,7 +21,7 @@ use PHPUnit_Framework_TestCase;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ConnectionTest extends PHPUnit_Framework_TestCase
+class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testReadFrameThrowsExceptionIfStreamIsBroken()
     {

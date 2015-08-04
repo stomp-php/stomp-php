@@ -10,9 +10,8 @@
 namespace Stomp\Tests\Unit\Stomp;
 
 use Stomp\Frame;
-use PHPUnit_Framework_TestCase;
 
-class FrameTest extends PHPUnit_Framework_TestCase
+class FrameTest extends \PHPUnit_Framework_TestCase
 {
     /** @test */
     public function shouldConvertFrameToString()
