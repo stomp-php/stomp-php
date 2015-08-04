@@ -15,7 +15,11 @@
     <filter>
         <blacklist>
             <directory>vendor</directory>
+            <directory>examples</directory>
         </blacklist>
+        <whitelist>
+            <directory>src</directory>
+        </whitelist>
     </filter>
     <testsuites>
         <testsuite name="stomp-php Functional Test Suite">
