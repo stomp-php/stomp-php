@@ -46,7 +46,7 @@ class ActiveMq extends Protocol
      */
     public function getSubscribeFrame($destination, array $headers = array(), $durable = false)
     {
-        $frame = parent::getSubscribeFrame($destination, $headers);
+        $frame = parent::getSubscribeFrame($destination, $headers, $durable);
         $frame->setHeader('activemq.prefetchSize', $this->getPrefetchSize());
         if ($durable) {
             $frame->setHeader('activemq.subscriptionName', $this->getClientId());
