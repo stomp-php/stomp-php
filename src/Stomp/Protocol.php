@@ -86,7 +86,7 @@ class Protocol
         $frame->setHeader('destination', $destination);
         $this->addClientId($frame);
         if ($durable) {
-            $frame->setHeader('durable', 'true');
+            $frame->setHeader('persistent', 'true');
         }
         return $frame;
     }
