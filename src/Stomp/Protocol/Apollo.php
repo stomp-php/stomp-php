@@ -15,19 +15,16 @@ use Stomp\Protocol;
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
- * ActiveMq Stomp dialect.
+ * ActiveMq Apollo Stomp dialect.
  *
  *
  * @package Stomp
- * @author Hiram Chirino <hiram@hiramchirino.com>
- * @author Dejan Bosanac <dejan@nighttale.net>
- * @author Michael Caplan <mcaplan@labnet.net>
- * @author Jens Radtke <swefl.oss@fin-sn.de>
+ * @author András Rutkai <riskawarrior@live.com>
  */
-class ActiveMq extends Protocol
+class Apollo extends Protocol
 {
     /**
-     * Configure a ActiveMq protocol.
+     * Configure Apollo protocol.
      *
      * @param Protocol $base
      */
@@ -46,10 +43,9 @@ class ActiveMq extends Protocol
      */
     public function getSubscribeFrame($destination, array $headers = array(), $durable = false)
     {
-        $frame = parent::getSubscribeFrame($destination, $headers);
-        $frame->setHeader('activemq.prefetchSize', $this->getPrefetchSize());
-        if ($durable) {
-            $frame->setHeader('activemq.subscriptionName', $this->getClientId());
+        $frame = parent::getSubscribeFrame($destination, $headers, $durable);
+        if ($this->hasClientId() && $durable) {
+            $frame->setHeader('persistent', 'true');
         }
         return $frame;
     }
@@ -57,8 +53,11 @@ class ActiveMq extends Protocol
     public function getUnsubscribeFrame($destination, array $headers = array(), $durable = false)
     {
         $frame = parent::getUnsubscribeFrame($destination, $headers, $durable);
-        if ($this->hasClientId() && $durable) {
-            $frame->setHeader('activemq.subscriptionName', $this->getClientId());
+        if ($this->hasClientId()) {
+            $this->addClientId($frame);
+            if ($durable) {
+                $frame->setHeader('persistent', 'true');
+            }
         }
         return $frame;
     }
