@@ -29,6 +29,6 @@ class Bytes extends Message
     public function __construct($body, array $headers = array())
     {
         parent::__construct($body, $headers);
-        $this->headers['content-length'] = count(unpack("c*", $body));
+        $this->headers['content-length'] = count(unpack('c*', $body));
     }
 }

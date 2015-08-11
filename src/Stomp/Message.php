@@ -21,6 +21,6 @@ class Message extends Frame
 {
     public function __construct($body, array $headers = array())
     {
-        parent::__construct("SEND", $headers, $body);
+        parent::__construct('SEND', $headers, $body);
     }
 }

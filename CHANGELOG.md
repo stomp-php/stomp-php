@@ -8,10 +8,10 @@ Changelog stomp-php
 ----------------
 
 - fixed travis ci setup
-- added more unit tests (removed ssl unti tests, they don't depend on stomp client)
+- added more unit tests (removed ssl unit tests, they don't depend on stomp client)
 - refactoring extracted Connection, Parser, Protocol, ActiveMq, RabbitMq, ConnectionException, ErrorFrameException, UnexpectedResponseException
 - fixed dead loops caused by connection exceptions
-- removed the posibillity to auto-reconnect outside the connect process (it's quite intransparent and can lead to much more problems than expected)
+- removed the possibility to auto-reconnect outside the connect process (it's quite intransparent and can lead to much more problems than expected)
 - added a read buffer seen at https://github.com/camronlevanger/stomp-php/commit/8bca4a55b5db8493f543c7f2d1db13d42455e19d
 
 2.2.1
@@ -22,7 +22,7 @@ Changelog stomp-php
 2.2.2
 -----
 - This is the last version which is compatible to original fork!
-- all sync operations will throw an exception if they are left unconfimred (https://github.com/fin-sn-de/stomp-php/issues/2)
+- all sync operations will throw an exception if they are left unconfirmed (https://github.com/fin-sn-de/stomp-php/issues/2)
 
 2.2.3
 -----
@@ -38,6 +38,6 @@ Changelog stomp-php
 - This version aims to cover all current forks from https://github.com/dejanb/stomp-php.
 - moved to namespace `Stomp`
 - changed back to `fgets` (https://github.com/dejanb/stomp-php/pull/22)
-- upated travis-ci config
+- updated travis-ci config
 - merged unit tests for `Stomp\Frame` (https://github.com/chuhlomin/stomp-php/)
 - use stream_socket_client (https://github.com/dejanb/stomp-php/pull/25)

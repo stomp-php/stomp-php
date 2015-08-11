@@ -11,6 +11,7 @@ namespace Stomp\Tests\Unit\Stomp;
 
 use ReflectionMethod;
 use Stomp\Connection;
+use Stomp\Exception\MissingReceiptException;
 use Stomp\Exception\UnexpectedResponseException;
 use Stomp\Exception\ConnectionException;
 use Stomp\Frame;
@@ -62,7 +63,6 @@ class StompTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\Stomp\Protocol\RabbitMq', $stomp->getProtocol(), 'Unexpected Protocol.');
     }
 
-
     public function testConnectWillDetermineSessionIdAndUsesActiveMqAsDefaultDialect()
     {
         $connectFrame = new Frame('CONNECTED');
@@ -95,7 +95,6 @@ class StompTest extends \PHPUnit_Framework_TestCase
         $waitForReceipt->invoke($stomp, 'your-id');
     }
 
-
     public function testCalculateReceiptWaitEnd()
     {
 
@@ -116,7 +115,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
 
 
     /**
-     * @expectedException \Stomp\Exception\MissingReceiptException
+     * @expectedException MissingReceiptException
      * @expectedExceptionMessage my-expected-receive-id
      */
     public function testWaitForReceiptWillThrowExceptionIfConnectionReadTimeoutOccurs()
@@ -343,15 +342,14 @@ class StompTest extends \PHPUnit_Framework_TestCase
         try {
             $stomp->setReceiptWait(0);
             $stomp->sendFrame(new Frame(), true);
-        } catch (\Stomp\Exception\MissingReceiptException $ex) {
+        } catch (MissingReceiptException $ex) {
             // is allowed, since we send no receipt...
         }
 
+        /** @var Frame $lastWriteFrame */
         $this->assertInstanceOf('\Stomp\Frame', $lastWriteFrame);
         $this->assertArrayHasKey('receipt', $lastWriteFrame->headers, 'Written frame should have a "receipt" header.');
-
     }
-
 
     public function testWaitForReceiptWillQueueUpFramesWithNoReceiptCommand()
     {
@@ -420,6 +418,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
                     new Frame('CONNECTED', array('session' => 'id', 'server' => 'activemq'))
                 )
             );
+        /** @var Stomp|\PHPUnit_Framework_MockObject_MockObject $stomp */
         $stomp = $this->getMockBuilder('\Stomp\Stomp')
             ->setMethods(array('sendFrame'))
             ->setConstructorArgs(array($connection))
@@ -432,7 +431,6 @@ class StompTest extends \PHPUnit_Framework_TestCase
             ->will(
                 $this->returnCallback(
                     function (Frame $frame, $sync) use (&$lastSendFrame, &$lastSyncState) {
-                    
                         $lastSendFrame = $frame;
                         $lastSyncState = $sync;
                     }
@@ -441,6 +439,8 @@ class StompTest extends \PHPUnit_Framework_TestCase
 
         $stomp->connect();
         $stomp->ack('my-message-id', 'my-transaction-id');
+
+        /** @var Frame $lastSendFrame */
 
         $this->assertEquals(
             'my-message-id',

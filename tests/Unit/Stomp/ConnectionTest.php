@@ -11,6 +11,7 @@ namespace Stomp\Tests\Unit\Stomp;
 
 use Exception;
 use Stomp\Connection;
+use Stomp\Exception\ConnectionException;
 use Stomp\Frame;
 use ReflectionMethod;
 
@@ -106,6 +107,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testConnectionSetupTriesFullHostListBeforeGivingUp()
     {
+        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
         $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('connectSocket'))
             ->setConstructorArgs(array('failover://(tcp://host1,tcp://host2,tcp://host3)'))
@@ -121,7 +123,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
                 function ($host) use (&$expectedHosts, $test) {
                     $current = array_shift($expectedHosts);
                     $test->assertEquals($current, $host['host'], 'Wrong host given to connect.');
-                    throw new \Stomp\Exception\ConnectionException('Connection failed.', $host);
+                    throw new ConnectionException('Connection failed.', $host);
                 }
             )
         );

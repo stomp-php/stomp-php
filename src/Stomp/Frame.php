@@ -94,11 +94,11 @@ class Frame
         $data = $this->command . "\n";
 
         foreach ($this->headers as $name => $value) {
-            $data .= $name . ":" . $value . "\n";
+            $data .= $name . ':' . $value . "\n";
         }
 
         $data .= "\n";
         $data .= $this->body;
-        return $data .= "\x00";
+        return $data . "\x00";
     }
 }

@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -27,20 +27,21 @@ require __DIR__.'/../vendor/autoload.php';
 // include a library
 
 use Stomp\Stomp;
+
 // make a connection
-$con = new Stomp("failover://(tcp://localhost:61614,ssl://localhost:61612)?randomize=false");
+$con = new Stomp('failover://(tcp://localhost:61614,ssl://localhost:61612)?randomize=false');
 // connect
 $con->connect();
 // send a message to the queue
-$con->send("/queue/test", "test");
+$con->send('/queue/test', 'test');
 echo "Sent message with body 'test'\n";
 // subscribe to the queue
-$con->subscribe("/queue/test");
+$con->subscribe('/queue/test');
 // receive a message from the queue
 $msg = $con->readFrame();
 
 // do what you want with the message
-if ( $msg != null) {
+if ($msg != null) {
     echo "Received message with body '$msg->body'\n";
     // mark the message as received in the queue
     $con->ack($msg);
@@ -50,4 +51,3 @@ if ( $msg != null) {
 
 // disconnect
 $con->disconnect();
-?>

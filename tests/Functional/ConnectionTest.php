@@ -25,6 +25,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testReadFrameThrowsExceptionIfStreamIsBroken()
     {
+        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
         $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('hasDataToRead', 'connectSocket'))
             ->setConstructorArgs(array('tcp://host'))
@@ -47,6 +48,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testReadFrameThrowsExceptionIfErrorFrameIsReceived()
     {
+        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
         $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('hasDataToRead', 'connectSocket'))
             ->setConstructorArgs(array('tcp://host'))
@@ -74,12 +76,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testWriteFrameThrowsExceptionIfConnectionIsBroken()
     {
+        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
         $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('connectSocket'))
             ->setConstructorArgs(array('tcp://host'))
             ->getMock();
-
-
 
         $name = tempnam(sys_get_temp_dir(), 'stomp');
         $fp = fopen($name, 'r');
@@ -99,6 +100,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testHasDataToReadThrowsExceptionIfConnectionIsBroken()
     {
+        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
         $connection = $this->getMockBuilder('\Stomp\Connection')
             ->setMethods(array('isConnected', 'connectSocket'))
             ->setConstructorArgs(array('tcp://host'))
@@ -120,7 +122,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             );
 
         $connection->connect();
-        $connected = true;
+
         fclose($fp);
         try {
             $connection->readFrame();
@@ -144,10 +146,11 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
                 $ex->getPrevious(),
                 'There should be a previous exception.'
             );
+            /** @var ConnectionException $prev */
             $prev = $ex->getPrevious();
-            $hostinfo = $prev->getConnectionInfo();
-            $this->assertEquals('0.0.0.1', $hostinfo['host']);
-            $this->assertEquals('15', $hostinfo['port']);
+            $hostInfo = $prev->getConnectionInfo();
+            $this->assertEquals('0.0.0.1', $hostInfo['host']);
+            $this->assertEquals('15', $hostInfo['port']);
 
         }
     }

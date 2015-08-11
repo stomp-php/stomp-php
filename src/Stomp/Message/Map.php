@@ -35,7 +35,7 @@ class Map extends Frame
             parent::__construct($msg->command, $msg->headers, $msg->body);
             $this->map = json_decode($msg->body, true);
         } else {
-            parent::__construct("SEND", $headers, $msg);
+            parent::__construct('SEND', $headers, $msg);
             $this->headers['transformation'] = 'jms-map-json';
             $this->body = json_encode($msg);
         }

@@ -26,6 +26,7 @@ class StompFailoverTest extends \PHPUnit_Framework_TestCase
      * @var Stomp
      */
     private $Stomp;
+
     /**
      * Prepares the environment before running a test.
      */
@@ -35,6 +36,7 @@ class StompFailoverTest extends \PHPUnit_Framework_TestCase
 
         $this->Stomp = new Stomp('failover://(tcp://localhost:61614,tcp://localhost:61613)?randomize=false');
     }
+
     /**
      * Cleans up the environment after running a test.
      */
@@ -44,6 +46,7 @@ class StompFailoverTest extends \PHPUnit_Framework_TestCase
         $this->Stomp = null;
         parent::tearDown();
     }
+
     /**
      * Tests Stomp->connect()
      */

@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -21,25 +21,27 @@ require __DIR__.'/../vendor/autoload.php';
 // include a library
 use Stomp\Stomp;
 use Stomp\Message\Map;
+
 // make a connection
-$con = new Stomp("tcp://localhost:61613");
+$con = new Stomp('tcp://localhost:61613');
 // connect
 $con->connect();
 // send a message to the queue
-$body = array("city"=>"Belgrade", "name"=>"Dejan");
+$body = array('city' => 'Belgrade', 'name' => 'Dejan');
 $header = array();
 $header['transformation'] = 'jms-map-json';
 $mapMessage = new Map($body, $header);
-$con->send("/queue/test", $mapMessage);
-echo "Sending array: ";
+$con->send('/queue/test', $mapMessage);
+echo 'Sending array: ';
 print_r($body);
 
-$con->subscribe("/queue/test", array('transformation' => 'jms-map-json'));
+$con->subscribe('/queue/test', array('transformation' => 'jms-map-json'));
+/** @var Map $msg */
 $msg = $con->readFrame();
 
 // extract
-if ( $msg != null) {
-    echo "Received array: ";
+if ($msg != null) {
+    echo 'Received array: ';
     print_r($msg->map);
     // mark the message as received in the queue
     $con->ack($msg);
@@ -49,4 +51,3 @@ if ( $msg != null) {
 
 // disconnect
 $con->disconnect();
-?>
