@@ -58,7 +58,7 @@ class Protocol
      */
     final public function getConnectFrame($login = '', $passcode = '')
     {
-        $frame = new Frame("CONNECT");
+        $frame = new Frame('CONNECT');
 
         if ($login || $passcode) {
             $frame->addHeaders(compact('login', 'passcode'));
@@ -175,7 +175,7 @@ class Protocol
     {
         $frame = new Frame('DISCONNECT');
         if ($this->hasClientId()) {
-            $frame->setHeader("client-id", $this->getClientId());
+            $frame->setHeader('client-id', $this->getClientId());
         }
         return $frame;
     }

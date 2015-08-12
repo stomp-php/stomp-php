@@ -71,7 +71,7 @@ class Stomp
     private $sessionId;
 
     /**
-     * Frames that have been readed but not processed yet.
+     * Frames that have been read but not processed yet.
      *
      * @var Frame[]
      */
@@ -147,7 +147,7 @@ class Stomp
             if ($frame->command != 'CONNECTED') {
                 throw new UnexpectedResponseException($frame, 'Expected a CONNECTED Frame!');
             }
-            $this->sessionId = $frame->headers["session"];
+            $this->sessionId = $frame->headers['session'];
             if (isset($frame->headers['server']) && false !== stristr(trim($frame->headers['server']), 'rabbitmq')) {
                 $this->brokerVendor = 'RMQ';
                 $this->protocol = new RabbitMq($this->protocol);
@@ -156,7 +156,7 @@ class Stomp
             }
             return true;
         }
-        throw new ConnectionException("Connection not acknowledged");
+        throw new ConnectionException('Connection not acknowledged');
     }
 
     /**
@@ -327,11 +327,13 @@ class Stomp
     {
         return $this->sendFrame($this->protocol->getCommitFrame($transactionId), $sync);
     }
+
     /**
      * Roll back a transaction in progress
      *
      * @param string $transactionId
      * @param boolean $sync Perform request synchronously
+     * @return bool
      */
     public function abort($transactionId = null, $sync = null)
     {
@@ -358,7 +360,7 @@ class Stomp
     /**
      * Read response frame from server
      *
-     * @return Frame False when no frame to read
+     * @return Frame|false when no frame to read
      */
     public function readFrame()
     {
@@ -376,7 +378,7 @@ class Stomp
                 if ($this->protocol) {
                     $this->sendFrame($this->protocol->getDisconnectFrame(), false);
                 }
-                $this->connection->diconnect();
+                $this->connection->disconnect();
             }
         } catch (StompException $ex) {
             // nothing!
@@ -398,7 +400,7 @@ class Stomp
     }
 
     /**
-     * Graceful object desruction
+     * Graceful object destruction
      *
      */
     public function __destruct()

@@ -119,9 +119,8 @@ class Parser
         $frame = new Frame($command, $headers, trim($body));
         if (isset($frame->headers['transformation']) && $frame->headers['transformation'] == 'jms-map-json') {
             return new Map($frame);
-        } else {
-            return $frame;
         }
+
         return $frame;
     }
 }

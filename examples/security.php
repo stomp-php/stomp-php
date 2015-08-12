@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -29,23 +29,23 @@ use Stomp\Stomp;
 use Stomp\Exception\StompException;
 
 // make a connection
-$con = new Stomp("tcp://localhost:61613");
+$con = new Stomp('tcp://localhost:61613');
 // use sync operations
 $con->sync = true;
 // connect
 try {
-    $con->connect("dejan", "test");
+    $con->connect('dejan', 'test');
 } catch (StompException $e) {
     echo "dejan cannot connect\n";
     echo $e->getMessage() . "\n";
     echo $e->getDetails() . "\n\n\n";
 }
 
-$con->connect("guest", "password");
+$con->connect('guest', 'password');
 
 // send a message to the queue
 try {
-    $con->send("/queue/test", "test");
+    $con->send('/queue/test', 'test');
     echo "Guest sent message with body 'test'\n";
 } catch (StompException $e) {
     echo "guest cannot send\n";
@@ -56,13 +56,11 @@ try {
 $con->disconnect();
 
 
-$con->connect("system", "manager");
+$con->connect('system', 'manager');
 
 // send a message to the queue
-$con->send("/queue/test", "test");
+$con->send('/queue/test', 'test');
 echo "System manager sent message with body 'test'\n";
 
 // disconnect
 $con->disconnect();
-
-?>

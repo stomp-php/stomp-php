@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 /**
  *
  * Copyright (C) 2009 Progress Software, Inc. All rights reserved.
@@ -21,23 +21,24 @@ require __DIR__.'/../vendor/autoload.php';
 // include a library
 use Stomp\Stomp;
 use Stomp\Message\Bytes;
+
 // make a connection
-$con = new Stomp("tcp://localhost:61613");
+$con = new Stomp('tcp://localhost:61613');
 // connect
 $con->connect();
 // send a message to the queue
-$body = "test";
+$body = 'test';
 $bytesMessage = new Bytes($body);
-$con->send("/queue/test", $bytesMessage);
-echo "Sending message: ";
+$con->send('/queue/test', $bytesMessage);
+echo 'Sending message: ';
 print_r($body . "\n");
 
-$con->subscribe("/queue/test");
+$con->subscribe('/queue/test');
 $msg = $con->readFrame();
 
 // extract
-if ( $msg != null) {
-    echo "Received message: ";
+if ($msg != null) {
+    echo 'Received message: ';
     print_r($msg->body . "\n");
     // mark the message as received in the queue
     $con->ack($msg);
@@ -47,4 +48,3 @@ if ( $msg != null) {
 
 // disconnect
 $con->disconnect();
-?>

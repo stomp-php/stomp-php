@@ -42,7 +42,7 @@ class Connection
      *
      * @var integer
      */
-    private $connect_timeout;
+    private $connectTimeout;
 
     /**
      * Connection read wait timeout.
@@ -52,7 +52,7 @@ class Connection
      *
      * @var array
      */
-    private $read_timeout = array(60, 0);
+    private $readTimeout = array(60, 0);
 
     /**
      * Connection options.
@@ -60,7 +60,7 @@ class Connection
      * @var array
      */
     private $params = array(
-        'randomize' => false, // connect to one host from list in random order
+        'randomize' => false // connect to one host from list in random order
     );
 
     /**
@@ -109,7 +109,7 @@ class Connection
     public function __construct($brokerUri, $connectionTimeout = 1, array $context = array())
     {
         $this->parser = new Parser();
-        $this->connect_timeout = $connectionTimeout;
+        $this->connectTimeout = $connectionTimeout;
         $this->context = $context;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
@@ -122,10 +122,10 @@ class Connection
                 $this->params = $connectionOptions + $this->params;
             }
 
-            if ($scheme != "failover") {
+            if ($scheme != 'failover') {
                 $this->parseUrl($brokerUri);
             } else {
-                $urls = explode(",", $hosts);
+                $urls = explode(',', $hosts);
                 foreach ($urls as $url) {
                     $this->parseUrl($url);
                 }
@@ -139,7 +139,7 @@ class Connection
 
 
     /**
-     * Parce a broker URL
+     * Parse a broker URL
      *
      * @param string $url Broker URL
      * @return void
@@ -158,7 +158,7 @@ class Connection
      */
     public function setReadTimeout(array $timeout)
     {
-        $this->read_timeout = $timeout;
+        $this->readTimeout = $timeout;
     }
 
     /**
@@ -240,7 +240,7 @@ class Connection
             $host['scheme'] . '://' . $host['host'] . ':' . $host['port'],
             $errNo,
             $errStr,
-            $this->connect_timeout,
+            $this->connectTimeout,
             STREAM_CLIENT_CONNECT,
             $context
         );
@@ -268,7 +268,7 @@ class Connection
      *
      * @return void
      */
-    public function diconnect()
+    public function disconnect()
     {
         if ($this->isConnected()) {
             stream_socket_shutdown($this->connection, STREAM_SHUT_RDWR);
@@ -300,8 +300,9 @@ class Connection
     /**
      * Try to read a frame from the server.
      *
-     * @return Frame|False when no frame to read
+     * @return Frame|false when no frame to read
      * @throws ConnectionException
+     * @throws ErrorFrameException
      */
     public function readFrame()
     {
@@ -344,7 +345,7 @@ class Connection
         $read = array($this->connection);
         $write = null;
         $except = null;
-        $hasStreamInfo = @stream_select($read, $write, $except, $this->read_timeout[0], $this->read_timeout[1]);
+        $hasStreamInfo = @stream_select($read, $write, $except, $this->readTimeout[0], $this->readTimeout[1]);
 
         if ($hasStreamInfo === false) {
             throw new ConnectionException('Check failed to determine if the socket is readable.', $this->activeHost);

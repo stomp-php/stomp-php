@@ -53,7 +53,6 @@ class StompSyncTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
 
-
         $this->Stomp->setReadTimeout(5);
 
         $frame = $this->Stomp->readFrame();
@@ -65,7 +64,6 @@ class StompSyncTest extends \PHPUnit_Framework_TestCase
         $this->Stomp->ack($frame);
     }
 
-
     public function testCommitTransaction()
     {
         $this->assertTrue($this->Stomp->connect());
@@ -75,12 +73,10 @@ class StompSyncTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->Stomp->subscribe('/queue/test'));
 
-
         $frame = $this->Stomp->readFrame();
         $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
         $this->Stomp->ack($frame);
     }
-
 
     public function testAbortTransaction()
     {

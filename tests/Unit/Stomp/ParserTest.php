@@ -9,6 +9,7 @@
 
 namespace Stomp\Tests\Unit\Stomp;
 
+use Stomp\Message\Map;
 use Stomp\Parser;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
@@ -31,6 +32,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $parser->parse();
         $result = $parser->getFrame();
         $this->assertInstanceOf('\Stomp\Message\Map', $result);
+        /** @var Map $result */
         $this->assertEquals('value', $result->map['var']);
     }
 

@@ -16,13 +16,14 @@ use Stomp\Stomp;
  *
  * @package Stomp
  * @author Mark R. <mark+gh@mark.org.il>
-  */
+ */
 class StompASyncTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Stomp
      */
     private $Stomp;
+
     /**
      * Prepares the environment before running a test.
      */
@@ -33,6 +34,7 @@ class StompASyncTest extends \PHPUnit_Framework_TestCase
         $this->Stomp = new Stomp('tcp://localhost:61613');
         $this->Stomp->sync = false;
     }
+
     /**
      * Cleans up the environment after running a test.
      */

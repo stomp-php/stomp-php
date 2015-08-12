@@ -9,6 +9,7 @@
 
 namespace Stomp\Tests\Functional;
 
+use Stomp\Frame;
 use Stomp\Message\Bytes;
 use Stomp\Message\Map;
 use Stomp\Stomp;
@@ -73,7 +74,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
 
         $frame = $this->Stomp->readFrame();
 
-        $this->assertTrue($frame instanceof \Stomp\Frame, 'Frame expected');
+        $this->assertTrue($frame instanceof Frame, 'Frame expected');
 
         $this->Stomp->ack($frame);
 
@@ -107,7 +108,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
 
             for ($x = $y; $x < $y + 10; ++$x) {
                 $frame = $this->Stomp->readFrame();
-                $this->assertTrue($frame instanceof \Stomp\Frame);
+                $this->assertTrue($frame instanceof Frame);
                 $this->assertArrayHasKey(
                     $frame->body,
                     $messages,
@@ -217,7 +218,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
         $this->Stomp->send($this->queue, 'testReadFrame');
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof \Stomp\Frame);
+        $this->assertTrue($frame instanceof Frame);
         $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
@@ -234,7 +235,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend'));
         $this->Stomp->subscribe($this->queue);
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof \Stomp\Frame);
+        $this->assertTrue($frame instanceof Frame);
         $this->assertEquals('testSend', $frame->body, 'Body of test frame does not match sent message');
         $this->Stomp->ack($frame);
         $this->Stomp->unsubscribe($this->queue);
@@ -268,7 +269,9 @@ class StompTest extends \PHPUnit_Framework_TestCase
 
         $this->Stomp->subscribe($this->queue, array('transformation' => 'jms-map-json'));
         $msg = $this->Stomp->readFrame();
-        $this->assertTrue($msg instanceof \Stomp\Message\Map);
+        $this->assertTrue($msg instanceof Map);
+
+        /** @var Map $msg */
         $this->assertEquals($msg->map, $body);
         $this->Stomp->ack($msg);
         $this->Stomp->disconnect();
@@ -282,7 +285,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $body = "test";
+        $body = 'test';
         $mapMessage = new Bytes($body);
         $this->Stomp->send($this->queue, $mapMessage);
 
@@ -318,8 +321,8 @@ class StompTest extends \PHPUnit_Framework_TestCase
     {
         $producer = new Stomp($this->broker);
         $producer->sync = false;
-        $producer->connect("system", "manager");
-        $producer->send($this->topic, "test message", array('persistent'=>'true'));
+        $producer->connect('system', 'manager');
+        $producer->send($this->topic, 'test message', array('persistent' => 'true'));
         $producer->disconnect();
     }
 
@@ -327,8 +330,8 @@ class StompTest extends \PHPUnit_Framework_TestCase
     {
         $consumer = new Stomp($this->broker);
         $consumer->sync = false;
-        $consumer->clientId = "test";
-        $consumer->connect("system", "manager");
+        $consumer->clientId = 'test';
+        $consumer->connect('system', 'manager');
         $consumer->subscribe($this->topic, null, null, true);
 
         $consumer->disconnect();
@@ -338,13 +341,13 @@ class StompTest extends \PHPUnit_Framework_TestCase
     {
         $consumer2 = new Stomp($this->broker);
         $consumer2->sync = false;
-        $consumer2->clientId = "test";
+        $consumer2->clientId = 'test';
         $consumer2->setReadTimeout(1);
-        $consumer2->connect("system", "manager");
+        $consumer2->connect('system', 'manager');
         $consumer2->subscribe($this->topic, null, null, true);
 
         $frame = $consumer2->readFrame();
-        $this->assertEquals($frame->body, "test message");
+        $this->assertEquals($frame->body, 'test message');
         if ($frame != null) {
             $consumer2->ack($frame);
         }
