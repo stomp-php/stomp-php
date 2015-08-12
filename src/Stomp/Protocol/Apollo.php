@@ -19,7 +19,7 @@ use Stomp\Protocol;
  *
  *
  * @package Stomp
- * @author Andr·s Rutkai <riskawarrior@live.com>
+ * @author Andr√°s Rutkai <riskawarrior@live.com>
  */
 class Apollo extends Protocol
 {
