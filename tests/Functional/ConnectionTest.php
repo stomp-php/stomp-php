@@ -122,7 +122,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             );
 
         $connection->connect();
-
+        // simulate active connection (reference)
+        $connected = true;
         fclose($fp);
         try {
             $connection->readFrame();

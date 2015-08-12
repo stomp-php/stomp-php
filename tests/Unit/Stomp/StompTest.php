@@ -115,7 +115,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
 
 
     /**
-     * @expectedException MissingReceiptException
+     * @expectedException Stomp\Exception\MissingReceiptException
      * @expectedExceptionMessage my-expected-receive-id
      */
     public function testWaitForReceiptWillThrowExceptionIfConnectionReadTimeoutOccurs()
@@ -300,7 +300,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
             ->will(
                 $this->returnCallback(
                     function (Frame $frame, $sync) use (&$lastSendFrame, &$lastSyncState) {
-                    
+
                         $lastSendFrame = $frame;
                         $lastSyncState = $sync;
                     }
