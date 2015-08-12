@@ -14,6 +14,7 @@ use Stomp\Exception\MissingReceiptException;
 use Stomp\Exception\StompException;
 use Stomp\Exception\UnexpectedResponseException;
 use Stomp\Protocol\ActiveMq;
+use Stomp\Protocol\Apollo;
 use Stomp\Protocol\RabbitMq;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
@@ -151,6 +152,8 @@ class Stomp
             if (isset($frame->headers['server']) && false !== stristr(trim($frame->headers['server']), 'rabbitmq')) {
                 $this->brokerVendor = 'RMQ';
                 $this->protocol = new RabbitMq($this->protocol);
+            } elseif (isset($frame->headers['server']) && false !== stristr(trim($frame->headers['server']), 'apache-apollo')) {
+                $this->protocol = new Apollo($this->protocol);
             } else {
                 $this->protocol = new ActiveMq($this->protocol);
             }
