@@ -34,9 +34,9 @@ Just add
 
 to your project composer.json.
 
-## Quick start
+## Documentation
 
-
+See our [wiki](https://github.com/stomp-php/stomp-php/wiki).
 
 ## Running Examples
 
@@ -52,10 +52,6 @@ You can start by running
 
 Also, be sure to check comments in the particular examples for some special
 configuration steps (if needed).
-
-## Documentation
-
-See our [wiki](https://github.com/stomp-php/stomp-php/wiki)
 
 ## Step by Step: Certificate based Authentication
 
