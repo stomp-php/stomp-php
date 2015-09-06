@@ -32,14 +32,14 @@ $consumer->clientId = 'test';
 // connect
 $producer->connect();
 $consumer->connect();
-// subscribe to the topic
-$consumer->subscribe('/topic/test');
 
-sleep(1);
+// subscribe to the topic
+$consumer->subscribe('/topic/test', null, true, true);
+
 
 // send a message to the topic
-$producer->send('/topic/test', 'test', array('persistent' => 'true'));
-echo "Message 'test' sent to topic\n";
+$producer->send('/topic/test', 'test-1');
+echo "Message 'test-1' sent to topic\n";
 
 // receive a message from the topic
 $msg = $consumer->readFrame();
@@ -52,7 +52,7 @@ if ($msg != null) {
     echo "Failed to receive a message\n";
 }
 
-sleep(1);
+
 
 // disconnect durable consumer
 $consumer->unsubscribe('/topic/test');
@@ -60,16 +60,16 @@ $consumer->disconnect();
 echo "Disconnecting consumer\n";
 
 // send a message while consumer is disconnected
-// note: only persistent messages will be redelivered to the durable consumer
-$producer->send('/topic/test', 'test1', array('persistent' => 'true'));
-echo "Message 'test1' sent to topic\n";
+$producer->send('/topic/test', 'test-2');
+echo "Message 'test-2' sent to topic\n";
 
 
 // reconnect the durable consumer
 $consumer = new Stomp('tcp://localhost:61613');
 $consumer->clientId = 'test';
-$consumer->connect();
-$consumer->subscribe('/topic/test');
+//$consumer->connect('guest','guest');
+$consumer->connect('admin', 'password');
+$consumer->subscribe('/topic/test', null, true, true);
 echo "Reconnecting consumer\n";
 
 // receive a message from the topic
@@ -84,6 +84,17 @@ if ($msg != null) {
 }
 
 // disconnect
-$consumer->unsubscribe('/topic/test');
+if ($consumer->getProtocol() instanceof \Stomp\Protocol\ActiveMq) {
+    // activeMq Way
+    $consumer->unsubscribe('/topic/test');
+    $consumer->unsubscribe('/topic/test', null, true, true);
+} else {
+    // default (apollo way)
+    $consumer->unsubscribe('/topic/test', null, true, true);
+}
+
+// this message will never be seen, since no durable subscriber is present
+$producer->send('/topic/test', 'test-3');
+
 $consumer->disconnect();
 $producer->disconnect();
