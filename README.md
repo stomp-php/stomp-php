@@ -1,6 +1,6 @@
 # Stomp PHP
 
-This project is a PHP [Stomp](http://stomp.github.com) Client that besides it implements the Stomp protocol fully, 
+This project is a PHP [Stomp](http://stomp.github.com) Client that besides it implements the Stomp protocol fully,
 adds some ActiveMQ specific features that could make your messaging from PHP easier.
 
 [![Build Status](https://travis-ci.org/stomp-php/stomp-php.svg?branch=master)](https://travis-ci.org/stomp-php/stomp-php)
@@ -13,7 +13,7 @@ The last php-5.3 compatible version is 3.0.0.
 
 ## Installing
 
-The source is PSR-0 compliant. So just download the source and add the Namespace "Stomp" to your autoloader 
+The source is PSR-0 compliant. So just download the source and add the Namespace "Stomp" to your autoloader
 configuration with the path pointing to src/.
 
 As an alternate you have the possibility to make use of composer to manage your project dependencies.
@@ -48,7 +48,7 @@ you have installed this library properly and you have started ActiveMQ broker
 You can start by running
 
     cd examples
-    php first.php
+    php connectivity.php
 
 Also, be sure to check comments in the particular examples for some special
 configuration steps (if needed).

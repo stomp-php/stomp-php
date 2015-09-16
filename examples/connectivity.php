@@ -17,19 +17,14 @@ require __DIR__ . '/../vendor/autoload.php';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- To successfully run this example, you must first start the broker with stomp+ssl enabled.
- You can do that by executing:
- $ ${ACTIVEMQ_HOME}/bin/activemq xbean:activemq-connectivity.xml
- Then you can execute this example with:
- $ php connectivity.php
-*/
+
+
 // include a library
 
 use Stomp\Stomp;
 
 // make a connection
-$con = new Stomp('failover://(tcp://localhost:61614,ssl://localhost:61612)?randomize=false');
+$con = new Stomp('failover://(tcp://localhost:61614,ssl://localhost:61612,tcp://localhost:61613)?randomize=false');
 // connect
 $con->connect();
 // send a message to the queue
