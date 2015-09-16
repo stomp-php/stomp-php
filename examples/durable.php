@@ -67,7 +67,6 @@ echo "Message 'test-2' sent to topic\n";
 // reconnect the durable consumer
 $consumer = new Stomp('tcp://localhost:61613');
 $consumer->clientId = 'test';
-//$consumer->connect('guest','guest');
 $consumer->connect('admin', 'password');
 $consumer->subscribe('/topic/test', null, true, true);
 echo "Reconnecting consumer\n";
