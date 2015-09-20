@@ -239,7 +239,7 @@ class Stomp
                     $this->unprocessedFrames[] = $frame;
                 }
             }
-            if (microtime(true) > $stopAfter) {
+            if (microtime(true) >= $stopAfter) {
                 break;
             }
         }
