@@ -36,7 +36,7 @@ class Stomp
      *
      * @var boolean
      */
-    public $sync = false;
+    public $sync = true;
 
     /**
      * Default prefetch size
