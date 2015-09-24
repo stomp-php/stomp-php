@@ -9,7 +9,7 @@ adds some ActiveMQ specific features that could make your messaging from PHP eas
 
 This fork is not compatible to the original stomp from https://github.com/dejanb/stomp-php.
 The last compatible version is 2.2.2.
-The last php-5.3 compatible version is 3.0.0.
+The last `php-5.3` compatible version is `3.0.0`.
 
 ## Installing
 
@@ -21,18 +21,14 @@ As an alternate you have the possibility to make use of composer to manage your 
 Just add
 
 ```json
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/stomp-php/stomp-php"
-        }
-    ],
     "require": {
         "stomp-php/stomp-php": "3.0.0"
     }
 ```
 
 to your project composer.json.
+
+Or simply run `composer require stomp-php/stomp-php` in your project home.
 
 ## Documentation
 
