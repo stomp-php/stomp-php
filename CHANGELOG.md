@@ -41,3 +41,5 @@ Changelog stomp-php
 - updated travis-ci config
 - merged unit tests for `Stomp\Frame` (https://github.com/chuhlomin/stomp-php/)
 - use stream_socket_client (https://github.com/dejanb/stomp-php/pull/25)
+- enable sync mode by default (https://github.com/stomp-php/stomp-php/pull/19)
+- updated documentation (https://github.com/stomp-php/stomp-php/wiki)
