@@ -2,3 +2,5 @@ nbproject
 composer.lock
 composer.phar
 vendor
+/.idea
+stomp-php.iml
