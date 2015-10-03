@@ -1,11 +1,11 @@
 A simple PHP [Stomp](http://stomp.github.com) Client
 
-[![Build Status](https://travis-ci.org/fin-sn-de/stomp-php.svg?branch=master)](https://travis-ci.org/fin-sn-de/stomp-php)
+[![Build Status](https://travis-ci.org/stomp-php/stomp-php.svg?branch=master)](https://travis-ci.org/stomp-php/stomp-php)
 
 Version choice
 --------------
 This fork is not compatible to the original stomp from https://github.com/dejanb/stomp-php.
-This is caused since the original fork is mostly outdated. The last compatible version is 2.2.2.
+This is caused since the original fork is mostly outdated. The last compatible version is `2.2.2`.
 
 Installing
 ----------
@@ -13,18 +13,9 @@ Installing
 composer.json
 
 ```json
- "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/jh-ism-online-webmaster/stomp-php"
-        }
-    ]
-```
-
-```json
     "require": {
-        "jh-ism-online-webmaster/stomp-php": "2.2.2"
-    },
+        "stomp-php/stomp-php": "2.2.2"
+    }
 ```
 
 Running Examples

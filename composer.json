@@ -1,5 +1,5 @@
 {
-    "name": "fusesource/stomp-php",
+    "name": "stomp-php/stomp-php",
     "description": "stomp support for PHP",
     "keywords": ["messaging", "stomp", "jms", "activemq"],
     "homepage": "http://github.com/dejanb/stomp-php",
@@ -23,5 +23,8 @@
         "psr-0": {
             "FuseSource": "src/"
         }
+    },
+    "replace": {
+        "fusesource/stomp-php":"2.1.*"
     }
 }
