@@ -43,3 +43,7 @@ Changelog stomp-php
 - use stream_socket_client (https://github.com/dejanb/stomp-php/pull/25)
 - enable sync mode by default (https://github.com/stomp-php/stomp-php/pull/19)
 - updated documentation (https://github.com/stomp-php/stomp-php/wiki)
+
+WIP
+---
+- Updated function testsuite for different brokers (amq,aplo,rabbit), update travis-ci.

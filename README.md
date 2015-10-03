@@ -66,13 +66,20 @@ https://github.com/rethab/php-stomp-cert-example
 
 ## Tests
 
-The tests at the moment need a running instance of activeMQ listening on the
-default STOMP Port 61613.
-
 To run the tests you first need to fetch the dependencies for the test suite
 via composer:
 
     $ php composer.phar install
+
+The functional testsuite is divided into three broker versions.
+Currently it's running on `ActiveMq` (Port 61010), `Apollo` (61020), `RabbitMq` (61030).
+Apollo should be configured to use admin:password and RabbitMq to guest:guest.
+While ActiveMq must be configured to use no login at all.
+
+You can setup all brokers by running `travis/bin/ci/setup.sh`. Stop them by `travis/bin/ci/stop.sh`.
+Used version can be configured at `travis/(BROKER)_VERSION`.
+
+If you only like to run the functional generic tests, ensure Apollo is configured. 
 
 ## Licence
 

@@ -153,12 +153,14 @@ class Connection
     /**
      * Set the read timeout
      *
-     * @param array $timeout 0 => seconds, 1 => milliseconds
+     * @param integer $seconds      seconds
+     * @param integer $milliseconds milliseconds
      * @return void
      */
-    public function setReadTimeout(array $timeout)
+    public function setReadTimeout($seconds, $milliseconds = 0)
     {
-        $this->readTimeout = $timeout;
+        $this->readTimeout[0] = $seconds;
+        $this->readTimeout[1] = $milliseconds;
     }
 
     /**

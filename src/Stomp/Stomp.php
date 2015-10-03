@@ -149,10 +149,12 @@ class Stomp
                 throw new UnexpectedResponseException($frame, 'Expected a CONNECTED Frame!');
             }
             $this->sessionId = $frame->headers['session'];
-            if (isset($frame->headers['server']) && false !== stristr(trim($frame->headers['server']), 'rabbitmq')) {
+            $server = isset($frame->headers['server']) ? trim($frame->headers['server']) : false;
+            if ($server && false !== stristr($server, 'rabbitmq')) {
                 $this->brokerVendor = 'RMQ';
                 $this->protocol = new RabbitMq($this->protocol);
-            } elseif (isset($frame->headers['server']) && false !== stristr(trim($frame->headers['server']), 'apache-apollo')) {
+            } elseif ($server && false !== stristr($server, 'apache-apollo')
+            ) {
                 $this->protocol = new Apollo($this->protocol);
             } else {
                 $this->protocol = new ActiveMq($this->protocol);
@@ -451,11 +453,11 @@ class Stomp
      * @param int $milliseconds Milliseconds to wait for a frame
      * @return void
      *
-     * @deprecated use $client->getConnection()
+     * @deprecated use $client->getConnection()->setReadTimeout()
      */
     public function setReadTimeout($seconds, $milliseconds = 0)
     {
-        $this->connection->setReadTimeout(array($seconds, $milliseconds));
+        $this->connection->setReadTimeout($seconds, $milliseconds);
     }
 
 

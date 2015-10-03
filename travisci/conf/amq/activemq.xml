@@ -29,7 +29,7 @@
     </bean>
 
    <!-- Allows accessing the server log -->
-    <bean id="logQuery" class="org.fusesource.insight.log.log4j.Log4jLogQuery"
+    <bean id="logQuery" class="io.fabric8.insight.log.log4j.Log4jLogQuery"
           lazy-init="false" scope="singleton"
           init-method="start" destroy-method="stop">
     </bean>
@@ -46,11 +46,11 @@
                     <!-- The constantPendingMessageLimitStrategy is used to prevent
                          slow topic consumers to block producers and affect other consumers
                          by limiting the number of messages that are retained
-                       For more information, see:
+                         For more information, see:
 
                          http://activemq.apache.org/slow-consumer-handling.html
 
-                  -->
+                    -->
                   <pendingMessageLimitStrategy>
                     <constantPendingMessageLimitStrategy limit="1000"/>
                   </pendingMessageLimitStrategy>
@@ -87,17 +87,17 @@
             The systemUsage controls the maximum amount of space the broker will
             use before disabling caching and/or slowing down producers. For more information, see:
             http://activemq.apache.org/producer-flow-control.html
-        -->
+          -->
           <systemUsage>
             <systemUsage>
                 <memoryUsage>
                     <memoryUsage percentOfJvmHeap="70" />
                 </memoryUsage>
                 <storeUsage>
-                    <storeUsage limit="100 gb"/>
+                    <storeUsage limit="2 gb"/>
                 </storeUsage>
                 <tempUsage>
-                    <tempUsage limit="50 gb"/>
+                    <tempUsage limit="1 gb"/>
                 </tempUsage>
             </systemUsage>
         </systemUsage>
@@ -109,9 +109,10 @@
             http://activemq.apache.org/configuring-transports.html
         -->
         <transportConnectors>
-            <transportConnector name="openwire" uri="tcp://0.0.0.0:61616"/>
-            <transportConnector name="stomp" uri="stomp://0.0.0.0:61613?transport.closeAsync=false"/>
-            <transportConnector name="stomp+ssl" uri="stomp+ssl://0.0.0.0:61612?transport.closeAsync=false"/>
+            <transportConnector name="stomp" uri="stomp://0.0.0.0:61010?transport.closeAsync=false&amp;maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            <!--
+            <transportConnector name="stomp+ssl" uri="stomp+ssl://0.0.0.0:61011?transport.closeAsync=false&amp;maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600"/>
+            -->
         </transportConnectors>
 
         <!-- destroy the spring context on shutdown to stop jetty -->

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-AMQ_VERSION="5.10.2"
+AMQ_VERSION=$1
+
 wget http://mirror.netcologne.de/apache.org/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz
 tar -xzf apache-activemq-${AMQ_VERSION}-bin.tar.gz
 

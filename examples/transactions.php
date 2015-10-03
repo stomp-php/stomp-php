@@ -25,7 +25,7 @@ use Stomp\Stomp;
 $con = new Stomp('tcp://localhost:61613');
 // connect
 $con->connect();
-$con->setReadTimeout(1);
+$con->getConnection()->setReadTimeout(1);
 
 // subscribe to the queue
 $con->subscribe('/queue/transactions', array('ack' => 'client', 'activemq.prefetchSize' => 1));

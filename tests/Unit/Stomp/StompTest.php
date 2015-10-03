@@ -11,9 +11,9 @@ namespace Stomp\Tests\Unit\Stomp;
 
 use ReflectionMethod;
 use Stomp\Connection;
+use Stomp\Exception\ConnectionException;
 use Stomp\Exception\MissingReceiptException;
 use Stomp\Exception\UnexpectedResponseException;
-use Stomp\Exception\ConnectionException;
 use Stomp\Frame;
 use Stomp\Stomp;
 
@@ -115,7 +115,7 @@ class StompTest extends \PHPUnit_Framework_TestCase
 
 
     /**
-     * @expectedException Stomp\Exception\MissingReceiptException
+     * @expectedException \Stomp\Exception\MissingReceiptException
      * @expectedExceptionMessage my-expected-receive-id
      */
     public function testWaitForReceiptWillThrowExceptionIfConnectionReadTimeoutOccurs()

@@ -26,7 +26,7 @@ use Stomp\Stomp;
 $producer = new Stomp('tcp://localhost:61613');
 // create a consumer
 $consumer = new Stomp('tcp://localhost:61613');
-$consumer->setReadTimeout(1);
+$consumer->getConnection()->setReadTimeout(1);
 // set clientId on a consumer to make it durable
 $consumer->clientId = 'test';
 // connect
