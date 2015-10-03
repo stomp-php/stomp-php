@@ -7,9 +7,10 @@ adds some ActiveMQ specific features that could make your messaging from PHP eas
 
 ## Version choice
 
-This fork is not compatible to the original stomp from https://github.com/dejanb/stomp-php.
-The last compatible version is 2.2.2.
-The last `php-5.3` compatible version is `3.0.0`.
+- For new projects you should use version `3.0.0` which is the last `php-5.3` compatible.
+- For running projects with `fusesource/stomp-php@2.x` clients you can use version `2.2.2`.
+- All version newer that `2.x` won't be compatible with `fusesource/stomp-php`. (https://github.com/dejanb/stomp-php.)  
+
 
 ## Installing
 
@@ -29,6 +30,16 @@ Just add
 to your project composer.json.
 
 Or simply run `composer require stomp-php/stomp-php` in your project home.
+
+## Replace
+
+If you used `fusesource/stomp-php` before, you can use our `2.x` versions.
+
+```json
+    "require": {
+        "stomp-php/stomp-php": "2.*"
+    }
+```
 
 ## Documentation
 
