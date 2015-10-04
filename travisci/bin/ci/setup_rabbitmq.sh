@@ -1,14 +1,20 @@
 #!/bin/bash
 
 RABBIT_VERSION=$1
+CONFIG_PATH=$2
+EXTRACT_PATH=$3
 
-wget https://www.rabbitmq.com/releases/rabbitmq-server/v${RABBIT_VERSION}/rabbitmq-server-generic-unix-${RABBIT_VERSION}.tar.gz
+cd "$EXTRACT_PATH"
+
+if [ ! -e "$EXTRACT_PATH/rabbitmq-server-generic-unix-${RABBIT_VERSION}.tar.gz" ]; then
+    wget "https://www.rabbitmq.com/releases/rabbitmq-server/v${RABBIT_VERSION}/rabbitmq-server-generic-unix-${RABBIT_VERSION}.tar.gz"
+fi
+
+if [ ! -d "$EXTRACT_PATH/rabbitmq_server-${RABBIT_VERSION}" ]; then
+    tar -xzf "rabbitmq-server-generic-unix-${RABBIT_VERSION}.tar.gz"
+    cp "$CONFIG_PATH/rabbit/enabled_plugins" "$EXTRACT_PATH/rabbitmq_server-${RABBIT_VERSION}/etc/rabbitmq/enabled_plugins"
+    cp "$CONFIG_PATH/rabbit/rabbitmq.config" "$EXTRACT_PATH/rabbitmq_server-${RABBIT_VERSION}/etc/rabbitmq/rabbitmq.config"
+fi
 
 
-tar -xzf rabbitmq-server-generic-unix-${RABBIT_VERSION}.tar.gz
-
-
-cp travisci/conf/rabbit/enabled_plugins ./rabbitmq_server-${RABBIT_VERSION}/etc/rabbitmq/enabled_plugins
-cp travisci/conf/rabbit/rabbitmq.config ./rabbitmq_server-${RABBIT_VERSION}/etc/rabbitmq/rabbitmq.config
-
-./rabbitmq_server-${RABBIT_VERSION}/sbin/rabbitmq-server -detached
+"$EXTRACT_PATH/rabbitmq_server-${RABBIT_VERSION}/sbin/rabbitmq-server" -detached

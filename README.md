@@ -79,6 +79,8 @@ While ActiveMq must be configured to use no login at all.
 You can setup all brokers by running `travis/bin/ci/setup.sh`. Stop them by `travis/bin/ci/stop.sh`.
 Used version can be configured at `travis/(BROKER)_VERSION`.
 
+You can use `travis/bin/ci/clean.sh` to reset the test environment.
+
 If you only like to run the functional generic tests, ensure Apollo is configured. 
 
 ## Licence

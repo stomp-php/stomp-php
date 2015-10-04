@@ -1,11 +1,20 @@
 #!/bin/bash
 
 AMQ_VERSION=$1
+CONFIG_PATH=$2
+EXTRACT_PATH=$3
 
-wget http://mirror.netcologne.de/apache.org/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz
-tar -xzf apache-activemq-${AMQ_VERSION}-bin.tar.gz
+cd "$EXTRACT_PATH"
 
-cp travisci/conf/amq/activemq.xml apache-activemq-${AMQ_VERSION}/conf/activemq.xml
+if [ ! -e "$EXTRACT_PATH/apache-activemq-${AMQ_VERSION}-bin.tar.gz" ]; then
+    wget "http://mirror.netcologne.de/apache.org/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz"
+fi
+
+if [ ! -d "$EXTRACT_PATH/apache-activemq-${AMQ_VERSION}" ]; then
+    tar -xzf "apache-activemq-${AMQ_VERSION}-bin.tar.gz"
+    cp "$CONFIG_PATH/amq/activemq.xml" "apache-activemq-${AMQ_VERSION}/conf/activemq.xml"
+fi
 
 
-./apache-activemq-${AMQ_VERSION}/bin/activemq start
+
+"$EXTRACT_PATH/apache-activemq-${AMQ_VERSION}/bin/activemq" start
