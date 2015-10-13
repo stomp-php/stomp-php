@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Tests\Functional;
+namespace Stomp\Tests\Functional\Generic;
 
 use Stomp\Stomp;
 
@@ -18,7 +18,6 @@ use Stomp\Stomp;
  *
  * @package Stomp
  * @author Michael Caplan <mcaplan@labnet.net>
- * @version $Revision: 35 $
  */
 class StompFailoverTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,7 +33,9 @@ class StompFailoverTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->Stomp = new Stomp('failover://(tcp://localhost:61614,tcp://localhost:61613)?randomize=false');
+        $this->Stomp = new Stomp(
+            'failover://(tcp://localhost:61614,tcp://localhost:61613,tcp://localhost:61020)?randomize=false'
+        );
     }
 
     /**
@@ -52,6 +53,6 @@ class StompFailoverTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailoverConnect()
     {
-        $this->assertTrue($this->Stomp->connect());
+        $this->assertTrue($this->Stomp->connect('admin', 'password'));
     }
 }

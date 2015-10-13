@@ -38,7 +38,6 @@ try {
 } catch (StompException $e) {
     echo "dejan cannot connect\n";
     echo $e->getMessage() . "\n";
-    echo $e->getDetails() . "\n\n\n";
 }
 
 $con->connect('guest', 'password');
@@ -50,7 +49,6 @@ try {
 } catch (StompException $e) {
     echo "guest cannot send\n";
     echo $e->getMessage() . "\n";
-    echo $e->getDetails() . "\n\n\n";
 }
 // disconnect
 $con->disconnect();

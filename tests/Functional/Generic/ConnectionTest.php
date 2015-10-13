@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Tests\Functional;
+namespace Stomp\Tests\Functional\Generic;
 
 use Stomp\Connection;
 use Stomp\Exception\ConnectionException;

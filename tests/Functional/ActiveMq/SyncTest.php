@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Tests\Functional;
+namespace Stomp\Tests\Functional\ActiveMq;
 
 use Stomp\Stomp;
 
@@ -17,7 +17,7 @@ use Stomp\Stomp;
  * @package Stomp
  * @author Mark R. <mark+gh@mark.org.il>
   */
-class StompSyncTest extends \PHPUnit_Framework_TestCase
+class SyncTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Stomp
@@ -30,7 +30,7 @@ class StompSyncTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->Stomp = new Stomp('tcp://localhost:61613');
+        $this->Stomp = new Stomp('tcp://localhost:61010');
         $this->Stomp->sync = true;
     }
     /**
@@ -53,7 +53,7 @@ class StompSyncTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
 
-        $this->Stomp->setReadTimeout(5);
+        $this->Stomp->getConnection()->setReadTimeout(5);
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
@@ -67,6 +67,7 @@ class StompSyncTest extends \PHPUnit_Framework_TestCase
     public function testCommitTransaction()
     {
         $this->assertTrue($this->Stomp->connect());
+        $this->Stomp->sync = true;
         $this->assertTrue($this->Stomp->begin('my-id'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1', array('transaction' => 'my-id')));
         $this->assertTrue($this->Stomp->commit('my-id'));
@@ -87,7 +88,7 @@ class StompSyncTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->Stomp->subscribe('/queue/test'));
 
-        $this->Stomp->getConnection()->setReadTimeout(array(1, 0));
+        $this->Stomp->getConnection()->setReadTimeout(1, 0);
 
         $frame = $this->Stomp->readFrame();
         $this->assertFalse($frame);

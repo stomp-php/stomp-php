@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Tests\Functional;
+namespace Stomp\Tests\Functional\ActiveMq;
 
 use Stomp\Stomp;
 
@@ -17,7 +17,7 @@ use Stomp\Stomp;
  * @package Stomp
  * @author Mark R. <mark+gh@mark.org.il>
  */
-class StompASyncTest extends \PHPUnit_Framework_TestCase
+class ASyncTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Stomp
@@ -30,8 +30,7 @@ class StompASyncTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-
-        $this->Stomp = new Stomp('tcp://localhost:61613');
+        $this->Stomp = new Stomp('tcp://localhost:61010');
         $this->Stomp->sync = false;
     }
 
