@@ -44,6 +44,10 @@ Changelog stomp-php
 - enable sync mode by default (https://github.com/stomp-php/stomp-php/pull/19)
 - updated documentation (https://github.com/stomp-php/stomp-php/wiki)
 
+3.0.1
+-----
+- changed back to `fread`, FrameParser should handle more than one Frame (https://github.com/stomp-php/stomp-php/issues/21) 
+
 WIP
 ---
 - Updated function testsuite for different brokers (amq,aplo,rabbit), update travis-ci.

@@ -5,3 +5,4 @@ vendor
 /.idea
 /travisci/tmp
 stomp-php.iml
+/.project

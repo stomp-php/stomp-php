@@ -316,7 +316,7 @@ class Connection
         }
 
         do {
-            $read = @fgets($this->connection, 1024);
+            $read = @fread($this->connection, 1024);
             if ($read === false || $read === '') {
                 throw new ConnectionException('Was not possible to read data from stream.', $this->activeHost);
             }
