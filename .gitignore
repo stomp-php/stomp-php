@@ -2,3 +2,8 @@ nbproject
 composer.lock
 composer.phar
 vendor
+/.idea/
+/.project
+/stomp-php.iml
+/travisci/tmp/
+
