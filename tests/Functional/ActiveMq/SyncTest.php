@@ -53,7 +53,7 @@ class SyncTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
 
-        $this->Stomp->getConnection()->setReadTimeout(5);
+        $this->Stomp->getConnection()->setReadTimeout(0, 500000);
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
@@ -88,7 +88,7 @@ class SyncTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->Stomp->subscribe('/queue/test'));
 
-        $this->Stomp->getConnection()->setReadTimeout(1, 0);
+        $this->Stomp->getConnection()->setReadTimeout(0, 500000);
 
         $frame = $this->Stomp->readFrame();
         $this->assertFalse($frame);

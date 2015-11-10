@@ -65,7 +65,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect($this->login, $this->password);
         }
 
-        $this->Stomp->getConnection()->setReadTimeout(5);
+        $this->Stomp->getConnection()->setReadTimeout(0, 500000);
 
         $this->assertFalse($this->Stomp->getConnection()->hasDataToRead(), 'Has frame to read when non expected');
 
@@ -82,8 +82,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->Stomp->ack($frame);
 
         $this->Stomp->disconnect();
-
-        $this->Stomp->getConnection()->setReadTimeout(60);
     }
 
     /**
@@ -151,7 +149,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testAbort()
     {
-        $this->Stomp->getConnection()->setReadTimeout(1);
+        $this->Stomp->getConnection()->setReadTimeout(0, 500000);
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect($this->login, $this->password);
         }
@@ -346,7 +344,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $consumer2 = new Stomp($this->broker);
         $consumer2->sync = true;
         $consumer2->clientId = 'test';
-        $consumer2->getConnection()->setReadTimeout(1);
+        $consumer2->getConnection()->setReadTimeout(0, 500000);
         $consumer2->connect($this->login, $this->password);
         $consumer2->subscribe($this->topic, array('persistent' => 'true'));
 

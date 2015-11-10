@@ -46,8 +46,9 @@ Changelog stomp-php
 
 3.0.1
 -----
-- changed back to `fread`, FrameParser should handle more than one Frame (https://github.com/stomp-php/stomp-php/issues/21) 
-
-WIP
----
+- changed back to `fread`, FrameParser should handle more than one Frame (https://github.com/stomp-php/stomp-php/issues/21)
+ 
+3.0.2
+-----
+- changed to `stream_read_line` (https://github.com/stomp-php/stomp-php/issues/23, https://gist.github.com/arjenm/4ae508767b1af73c63f5)
 - Updated function testsuite for different brokers (amq,aplo,rabbit), update travis-ci.

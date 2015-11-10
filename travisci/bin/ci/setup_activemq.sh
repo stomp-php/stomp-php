@@ -7,7 +7,7 @@ EXTRACT_PATH=$3
 cd "$EXTRACT_PATH"
 
 if [ ! -e "$EXTRACT_PATH/apache-activemq-${AMQ_VERSION}-bin.tar.gz" ]; then
-    wget "http://mirror.netcologne.de/apache.org/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz"
+    wget "http://archive.apache.org/dist/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz"
 fi
 
 if [ ! -d "$EXTRACT_PATH/apache-activemq-${AMQ_VERSION}" ]; then
