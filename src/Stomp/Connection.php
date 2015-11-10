@@ -315,13 +315,27 @@ class Connection
             return false;
         }
 
+        // See if there are newlines waiting to be processed (some brokers send empty lines as heartbeat)
+        $this->gobbleNewLines();
+
         do {
-            $read = @fread($this->connection, 1024);
+            $read = @stream_get_line($this->connection, 8192, Parser::FRAME_END);
             if ($read === false || $read === '') {
                 throw new ConnectionException('Was not possible to read data from stream.', $this->activeHost);
             }
+
             $this->parser->addData($read);
+
+            // Include zero-byte back at the end
+            if (strlen($read) != 8192) {
+                $this->parser->addData(Parser::FRAME_END);
+            }
+
         } while (!$this->parser->parse());
+
+        // See if there are newlines after the \0
+        $this->gobbleNewLines();
+
         $frame = $this->parser->getFrame();
         if ($frame->isErrorFrame()) {
             throw new ErrorFrameException($frame);
@@ -329,6 +343,12 @@ class Connection
         return $frame;
     }
 
+
+    public function readRaw()
+    {
+        $data = fread($this->connection, 1);
+        return $data;
+    }
     /**
      * Check if connection has new data which can be read.
      *
@@ -344,14 +364,49 @@ class Connection
             throw new ConnectionException('Not connected to any server.', $this->activeHost);
         }
 
+        return $this->connectionHasDataToRead($this->readTimeout[0], $this->readTimeout[1]);
+    }
+
+    /**
+     * Read any newline left in the data to read.
+     *
+     * Newlines will not be added to the parser, if this method encounters a different character or result,
+     * it'll add that to the parser's data buffer and abort.
+     */
+    private function gobbleNewLines()
+    {
+        // Only test the stream, return immediately if nothing is left
+        while ($this->connectionHasDataToRead(0, 0) && ($data = @fread($this->connection, 1)) !== false) {
+            // If its not a newline, it indicates a new messages has been added,
+            // so add that to the data-buffer of the parser.
+            if ($data !== "\n" && $data !== "\r") {
+                $this->parser->addData($data);
+                break;
+            }
+        }
+    }
+
+    /**
+     * See if the connection has data left.
+     *
+     * If both timeout-parameters are set to 0, it will return immediately.
+     *
+     * @param int $timeoutSec Second-timeout part
+     * @param int $timeoutMicros Microsecond-timeout part
+     * @return bool
+     * @throws ConnectionException
+     */
+    private function connectionHasDataToRead($timeoutSec, $timeoutMicros)
+    {
         $read = array($this->connection);
         $write = null;
         $except = null;
-        $hasStreamInfo = @stream_select($read, $write, $except, $this->readTimeout[0], $this->readTimeout[1]);
+        $hasStreamInfo = @stream_select($read, $write, $except, $timeoutSec, $timeoutMicros);
 
         if ($hasStreamInfo === false) {
             throw new ConnectionException('Check failed to determine if the socket is readable.', $this->activeHost);
         }
+
         return !empty($read);
     }
 }

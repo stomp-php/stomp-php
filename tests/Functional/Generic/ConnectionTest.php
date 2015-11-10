@@ -42,7 +42,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $connection->readFrame();
             $this->fail('Expected a exception!');
         } catch (ConnectionException $excpetion) {
-            $this->assertContains('Was not possible to read data from stream.', $excpetion->getMessage());
+            $this->assertContains('Check failed to determine if the socket is readable.', $excpetion->getMessage());
         }
     }
 

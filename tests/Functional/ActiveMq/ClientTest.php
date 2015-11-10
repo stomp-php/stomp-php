@@ -41,6 +41,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
 
         $this->Stomp = new Stomp($this->broker);
+        $this->Stomp->getConnection()->setReadTimeout(0, 400000);
     }
     /**
      * Cleans up the environment after running a test.
@@ -76,8 +77,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
 
-        $this->Stomp->getConnection()->setReadTimeout(5);
-
         $this->assertFalse($this->Stomp->getConnection()->hasDataToRead(), 'Has frame to read when non expected');
 
         $this->Stomp->send($this->queue, 'testHasFrameToRead');
@@ -93,8 +92,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->Stomp->ack($frame);
 
         $this->Stomp->disconnect();
-
-        $this->Stomp->getConnection()->setReadTimeout(60);
     }
 
     /**
@@ -163,7 +160,6 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testAbort()
     {
-        $this->Stomp->getConnection()->setReadTimeout(1);
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
@@ -356,7 +352,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $consumer2 = new Stomp($this->broker);
         $consumer2->sync = false;
         $consumer2->clientId = 'test';
-        $consumer2->getConnection()->setReadTimeout(1);
+        $consumer2->getConnection()->setReadTimeout(0, 500000);
         $consumer2->connect('system', 'manager');
         $consumer2->subscribe($this->topic, null, null, true);
 
