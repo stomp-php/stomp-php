@@ -50,5 +50,6 @@ Changelog stomp-php
  
 3.0.2
 -----
-- changed to `stream_read_line` (https://github.com/stomp-php/stomp-php/issues/23, https://gist.github.com/arjenm/4ae508767b1af73c63f5)
+- changed to `stream_read_line` (https://github.com/stomp-php/stomp-php/issues/24, https://gist.github.com/arjenm/4ae508767b1af73c63f5)
+- add support for `content-length` header (https://github.com/stomp-php/stomp-php/issues/23, https://gist.github.com/arjenm/7bab3a10f6d2460c7891)
 - Updated function testsuite for different brokers (amq,aplo,rabbit), update travis-ci.
