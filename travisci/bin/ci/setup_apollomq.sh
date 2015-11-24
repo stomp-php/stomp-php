@@ -7,7 +7,7 @@ EXTRACT_PATH=$3
 cd "$EXTRACT_PATH"
 
 if [ ! -e "$EXTRACT_PATH/apache-apollo-${APLO_VERSION}-unix-distro.tar.gz" ]; then
-    wget "http://mirror.netcologne.de/apache.org/activemq/activemq-apollo/${APLO_VERSION}/apache-apollo-${APLO_VERSION}-unix-distro.tar.gz"
+    wget "http://archive.apache.org/dist/activemq/activemq-apollo/${APLO_VERSION}/apache-apollo-${APLO_VERSION}-unix-distro.tar.gz"
 
 fi
 

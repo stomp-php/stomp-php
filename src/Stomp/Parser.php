@@ -85,7 +85,7 @@ class Parser
     {
         $offset = 0;
         $len = strlen($this->buffer);
-        while (($offset < $len) && (($frameEnd = strpos($this->buffer, self::FRAME_END, $offset)) !== false)) {
+        while (($offset < $len) && (($frameEnd = $this->getFrameEnd($offset)) !== false)) {
             $frameSource = substr($this->buffer, $offset, $frameEnd - $offset);
             $offset = $frameEnd + strlen(self::FRAME_END);
             $this->frames[] = $this->parseToFrame($frameSource);
@@ -122,5 +122,46 @@ class Parser
         }
 
         return $frame;
+    }
+
+    /**
+     * Test for the frame-end in the current buffer.
+     *
+     * @param int $offset
+     * @return bool|int
+     */
+    private function getFrameEnd($offset)
+    {
+        // newer stomp version allows \r\n as eol instead of \n
+        $endMarkers = array("\n\n", "\r\n\r\n");
+        $headerEnd = false;
+        $activeMarker = false;
+        foreach ($endMarkers as $marker) {
+            $activeMarker = $marker;
+            if (($headerEnd = strpos($this->buffer, $activeMarker, $offset)) !== false) {
+                break;
+            }
+        }
+
+        // No headers yet, so no full frame
+        if ($headerEnd === false) {
+            return false;
+        }
+
+        $headers = substr($this->buffer, $offset, $headerEnd);
+
+        // See if there is a content-length header
+        if (preg_match('_(?:^|\n)\s*content-length\s*:\s*([0-9]+)\s*(?:\n|$)_i', $headers, $matches)) {
+            $frameEnd = $offset + $headerEnd + strlen($activeMarker) + $matches[1];
+
+            if ($frameEnd > strlen($this->buffer)) {
+                return false;
+            }
+
+            return $frameEnd;
+        }
+
+        // No content-length, search for first 0-byte
+        return strpos($this->buffer, self::FRAME_END, $offset);
     }
 }

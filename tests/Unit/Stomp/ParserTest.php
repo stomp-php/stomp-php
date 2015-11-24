@@ -50,4 +50,19 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('var', $result->body);
         $this->assertEquals('value1', $result->headers['header1']);
     }
+
+    public function testParseFrameTransformsToFrameZeroByteContent()
+    {
+        $body = "var\x00var\x002";
+        $msg = "CMD\nheader1:value1\ncontent-length:" . strlen($body) . "\n\n" . $body . "\x00";
+
+        $parser = new Parser();
+        $parser->addData($msg);
+        $parser->parse();
+        $result = $parser->getFrame();
+
+        $this->assertInstanceOf('\Stomp\Frame', $result);
+        $this->assertEquals($body, $result->body);
+        $this->assertEquals('value1', $result->headers['header1']);
+    }
 }
