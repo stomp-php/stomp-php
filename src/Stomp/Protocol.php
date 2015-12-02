@@ -54,15 +54,18 @@ class Protocol
      *
      * @param string $login
      * @param string $passcode
+     * @param string[] $headers
      * @return Frame
      */
-    final public function getConnectFrame($login = '', $passcode = '')
+    final public function getConnectFrame($login = '', $passcode = '', $headers = array())
     {
         $frame = new Frame('CONNECT');
 
         if ($login || $passcode) {
             $frame->addHeaders(compact('login', 'passcode'));
         }
+
+        $frame->addHeaders($headers);
 
         if ($this->hasClientId()) {
             $frame->setHeader('client-id', $this->getClientId());

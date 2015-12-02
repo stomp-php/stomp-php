@@ -130,10 +130,11 @@ class Stomp
      *
      * @param string $login
      * @param string $passcode
+     * @param string[] $headers
      * @return boolean
      * @throws StompException
      */
-    public function connect($login = null, $passcode = null)
+    public function connect($login = null, $passcode = null, $headers = array())
     {
         if ($login !== null) {
             $this->login = $login;
@@ -143,7 +144,7 @@ class Stomp
         }
         $this->connection->connect();
         $this->protocol = new Protocol($this->prefetchSize, $this->clientId);
-        $this->sendFrame($this->protocol->getConnectFrame($this->login, $this->passcode), false);
+        $this->sendFrame($this->protocol->getConnectFrame($this->login, $this->passcode, $headers), false);
         if ($frame = $this->connection->readFrame()) {
             if ($frame->command != 'CONNECTED') {
                 throw new UnexpectedResponseException($frame, 'Expected a CONNECTED Frame!');
