@@ -57,3 +57,7 @@ Changelog stomp-php
 3.0.3
 -----
  - allow to pass headers on `connect` (https://github.com/stomp-php/stomp-php/pull/27)
+
+3.0.4
+-----
+ - stomp won't call `disconnect` on `connection` when host fails (https://github.com/stomp-php/stomp-php/issues/28, https://gist.github.com/arjenm/f603b982f3ff701f3462)

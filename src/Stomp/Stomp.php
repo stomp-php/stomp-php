@@ -384,11 +384,15 @@ class Stomp
                 if ($this->protocol) {
                     $this->sendFrame($this->protocol->getDisconnectFrame(), false);
                 }
-                $this->connection->disconnect();
             }
         } catch (StompException $ex) {
             // nothing!
         }
+
+        if ($this->connection) {
+            $this->connection->disconnect();
+        }
+
         $this->sessionId = null;
         $this->subscriptions = array();
         $this->unprocessedFrames = array();
