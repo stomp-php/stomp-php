@@ -13,6 +13,7 @@ use ReflectionMethod;
 use Stomp\Connection;
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\MissingReceiptException;
+use Stomp\Exception\StompException;
 use Stomp\Exception\UnexpectedResponseException;
 use Stomp\Frame;
 use Stomp\Stomp;
@@ -27,6 +28,19 @@ use Stomp\Stomp;
  */
 class StompTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * Used to avoid destructor calls within single tests
+     *
+     * @var Stomp
+     */
+    private static $stomp;
+
+    public static function tearDownAfterClass()
+    {
+        self::$stomp = null;
+        parent::tearDownAfterClass();
+    }
+
     public function testConnectWillThrowExceptionIfUnexpectedFrameArrives()
     {
         $frame = new Frame('FAIL');
@@ -459,5 +473,41 @@ class StompTest extends \PHPUnit_Framework_TestCase
             $stomp->getConnection(),
             'getConnection must return passed connection instance.'
         );
+    }
+
+    public function testDisconnectWillCallConnectionDisconnectEvenWhenWriteFails()
+    {
+        $connection = $this->getMockBuilder('\Stomp\Connection')
+            ->disableOriginalConstructor()
+            ->setMethods(array('disconnect', 'readFrame', 'writeFrame', 'isConnected'))
+            ->getMock();
+
+        $connection->expects($this->any())->method('isConnected')->willReturn(true);
+
+        $connection
+            ->expects($this->once())
+            ->method('readFrame')
+            ->will(
+                $this->returnValue(
+                    new Frame('CONNECTED', array('session' => 'id', 'server' => 'activemq'))
+                )
+            );
+
+
+        $connection->expects($this->once())->method('disconnect');
+        $stomp = new Stomp($connection);
+        $stomp->connect();
+
+        $connection
+            ->expects($this->once())
+            ->method('writeFrame')
+            ->will(
+                $this->throwException(new StompException('Test: Writing frame failed.'))
+            );
+        $stomp->disconnect();
+
+        // ensure that instance is not destroyed before mock assertions are done
+        // (calling destruct would invoke disconnect outside current test)
+        self::$stomp = $stomp;
     }
 }
