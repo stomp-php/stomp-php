@@ -110,8 +110,8 @@ class Parser
         $command = null;
         foreach ($header as $v) {
             if (isset($command)) {
-                list ($name, $value) = explode(':', $v, 2);
-                $headers[$name] = $value;
+                $headerRow = explode(':', $v, 2);
+                $headers[$headerRow[0]] = isset($headerRow[1]) ? $headerRow[1] : true;
             } else {
                 $command = $v;
             }

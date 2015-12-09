@@ -61,3 +61,7 @@ Changelog stomp-php
 3.0.4
 -----
  - stomp won't call `disconnect` on `connection` when host fails (https://github.com/stomp-php/stomp-php/issues/28, https://gist.github.com/arjenm/f603b982f3ff701f3462)
+ 
+3.0.5
+-----
+ - do not error when received header value is null (https://github.com/stomp-php/stomp-php/issues/30)
