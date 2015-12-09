@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp;
+namespace Stomp\Transport;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -19,7 +19,7 @@ namespace Stomp;
  */
 class Message extends Frame
 {
-    public function __construct($body, array $headers = array())
+    public function __construct($body, array $headers = [])
     {
         parent::__construct('SEND', $headers, $body);
     }

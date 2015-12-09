@@ -7,9 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Message;
-
-use Stomp\Frame;
+namespace Stomp\Transport;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -29,14 +27,14 @@ class Map extends Frame
      * @param Frame|string $msg
      * @param array $headers
      */
-    public function __construct($msg, array $headers = array())
+    public function __construct($msg, array $headers = [])
     {
         if ($msg instanceof Frame) {
             parent::__construct($msg->command, $msg->headers, $msg->body);
             $this->map = json_decode($msg->body, true);
         } else {
             parent::__construct('SEND', $headers, $msg);
-            $this->headers['transformation'] = 'jms-map-json';
+            $this['transformation'] = 'jms-map-json';
             $this->body = json_encode($msg);
         }
     }

@@ -9,9 +9,9 @@
 
 namespace Stomp\Tests\Unit\Protocol;
 
-use Stomp\Protocol;
-use Stomp\Protocol\ActiveMq;
 use PHPUnit_Framework_TestCase;
+use Stomp\Broker\ActiveMq\ActiveMq;
+use Stomp\Protocol\Protocol;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -25,30 +25,28 @@ class ActiveMqTest extends PHPUnit_Framework_TestCase
 {
     public function testSubscribeFrameHasNoDurableHeaderFieldByDefault()
     {
-        $base = new Protocol(1, 'my-client');
-        $activeMq = new ActiveMq($base);
+        $activeMq = new ActiveMq('my-client');
 
         $frame = $activeMq->getSubscribeFrame('/my/target');
-        $this->assertArrayNotHasKey('activemq.subscriptionName', $frame->headers);
+        $this->assertArrayNotHasKey('activemq.subscriptionName', $frame);
     }
 
     public function testSubscribeFrameHasDurableHeaderFieldByForDurableSubscription()
     {
-        $base = new Protocol(1, 'my-client');
-        $activeMq = new ActiveMq($base);
+        $activeMq = new ActiveMq('my-client');
 
-        $frame = $activeMq->getSubscribeFrame('/my/target', array(), true);
-        $this->assertArrayHasKey('activemq.subscriptionName', $frame->headers);
-        $this->assertEquals('my-client', $frame->headers['activemq.subscriptionName']);
+        $frame = $activeMq->getSubscribeFrame('/my/target', null, 'auto', null, true);
+        $this->assertArrayHasKey('activemq.subscriptionName', $frame);
+        $this->assertEquals('my-client', $frame['activemq.subscriptionName']);
     }
 
     public function testSubscribeFrameHasPrefetchSizeKey()
     {
-        $base = new Protocol(10, 'my-client');
-        $activeMq = new ActiveMq($base);
+        $activeMq = new ActiveMq('my-client');
+        $activeMq->setPrefetchSize(10);
 
         $frame = $activeMq->getSubscribeFrame('/my/target');
-        $this->assertArrayHasKey('activemq.prefetchSize', $frame->headers);
-        $this->assertEquals(10, $frame->headers['activemq.prefetchSize']);
+        $this->assertArrayHasKey('activemq.prefetchSize', $frame);
+        $this->assertEquals(10, $frame['activemq.prefetchSize']);
     }
 }

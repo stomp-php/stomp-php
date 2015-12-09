@@ -27,15 +27,15 @@ $con = new Stomp('tcp://localhost:61613');
 // connect
 $con->connect();
 // send a message to the queue
-$body = array('city' => 'Belgrade', 'name' => 'Dejan');
-$header = array();
+$body = ['city' => 'Belgrade', 'name' => 'Dejan'];
+$header = [];
 $header['transformation'] = 'jms-map-json';
 $mapMessage = new Map($body, $header);
 $con->send('/queue/test', $mapMessage);
 echo 'Sending array: ';
 print_r($body);
 
-$con->subscribe('/queue/test', array('transformation' => 'jms-map-json'));
+$con->subscribe('/queue/test', ['transformation' => 'jms-map-json']);
 /** @var Map $msg */
 $msg = $con->readFrame();
 

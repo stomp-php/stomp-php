@@ -9,7 +9,7 @@
 
 namespace Stomp\Exception;
 
-use Stomp\Frame;
+use Stomp\Transport\Frame;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 

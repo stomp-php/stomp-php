@@ -3,6 +3,6 @@ composer.lock
 composer.phar
 vendor
 /.idea
+/.project
 /travisci/tmp
 stomp-php.iml
-/.project

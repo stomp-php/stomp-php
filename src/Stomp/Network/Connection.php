@@ -7,10 +7,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp;
+namespace Stomp\Network;
 
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\ErrorFrameException;
+use Stomp\Transport\Frame;
+use Stomp\Transport\Parser;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -35,7 +37,7 @@ class Connection
      *
      * @var array[]
      */
-    private $hosts = array();
+    private $hosts = [];
 
     /**
      * Connection timeout in seconds.
@@ -52,16 +54,16 @@ class Connection
      *
      * @var array
      */
-    private $readTimeout = array(60, 0);
+    private $readTimeout = [60, 0];
 
     /**
      * Connection options.
      *
      * @var array
      */
-    private $params = array(
+    private $params = [
         'randomize' => false // connect to one host from list in random order
-    );
+    ];
 
     /**
      * Active connection resource.
@@ -75,7 +77,7 @@ class Connection
      *
      * @var array
      */
-    private $activeHost = array();
+    private $activeHost = [];
 
     /**
      * Stream Context used for client connection
@@ -84,7 +86,7 @@ class Connection
      *
      * @var array
      */
-    private $context = array();
+    private $context = [];
 
     /**
      * Frame parser
@@ -92,6 +94,13 @@ class Connection
      * @var Parser
      */
     private $parser;
+
+    /**
+     * Host connected to.
+     *
+     * @var String
+     */
+    private $host;
 
     /**
      * Initialize connection
@@ -106,7 +115,7 @@ class Connection
      * @param array   $context stream context
      * @throws ConnectionException
      */
-    public function __construct($brokerUri, $connectionTimeout = 1, array $context = array())
+    public function __construct($brokerUri, $connectionTimeout = 1, array $context = [])
     {
         $this->parser = new Parser();
         $this->connectTimeout = $connectionTimeout;
@@ -147,20 +156,20 @@ class Connection
     private function parseUrl($url)
     {
         $parsed = parse_url($url);
-        array_push($this->hosts, $parsed + array('port' => '61613', 'scheme' => 'tcp'));
+        array_push($this->hosts, $parsed + ['port' => '61613', 'scheme' => 'tcp']);
     }
 
     /**
      * Set the read timeout
      *
      * @param integer $seconds      seconds
-     * @param integer $milliseconds milliseconds
+     * @param integer $microseconds microseconds (1μs = 0.000001s)
      * @return void
      */
-    public function setReadTimeout($seconds, $milliseconds = 0)
+    public function setReadTimeout($seconds, $microseconds = 0)
     {
         $this->readTimeout[0] = $seconds;
-        $this->readTimeout[1] = $milliseconds;
+        $this->readTimeout[1] = $microseconds;
     }
 
     /**
@@ -205,7 +214,7 @@ class Connection
                 return $this->connectSocket($host);
             } catch (ConnectionException $connectionException) {
                 if (empty($hosts)) {
-                    throw new ConnectionException("Could not connect to a broker", array(), $connectionException);
+                    throw new ConnectionException("Could not connect to a broker", [], $connectionException);
                 }
             }
         }
@@ -251,6 +260,7 @@ class Connection
             throw new ConnectionException(sprintf('Failed to connect. (%s: %s)', $errNo, $errStr), $host);
         }
 
+        $this->host = $host['host'];
         return $socket;
     }
 
@@ -276,14 +286,14 @@ class Connection
             stream_socket_shutdown($this->connection, STREAM_SHUT_RDWR);
         }
         $this->connection = null;
-        $this->activeHost = array();
+        $this->activeHost = [];
     }
 
 
     /**
      * Write frame to server.
      *
-     * @param Frame $stompFrame
+     * @param \Stomp\Transport\Frame $stompFrame
      * @return boolean
      * @throws ConnectionException
      */
@@ -302,7 +312,7 @@ class Connection
     /**
      * Try to read a frame from the server.
      *
-     * @return Frame|false when no frame to read
+     * @return \Stomp\Transport\Frame|false when no frame to read
      * @throws ConnectionException
      * @throws ErrorFrameException
      */
@@ -343,12 +353,6 @@ class Connection
         return $frame;
     }
 
-
-    public function readRaw()
-    {
-        $data = fread($this->connection, 1);
-        return $data;
-    }
     /**
      * Check if connection has new data which can be read.
      *
@@ -398,7 +402,7 @@ class Connection
      */
     private function connectionHasDataToRead($timeoutSec, $timeoutMicros)
     {
-        $read = array($this->connection);
+        $read = [$this->connection];
         $write = null;
         $except = null;
         $hasStreamInfo = @stream_select($read, $write, $except, $timeoutSec, $timeoutMicros);
@@ -408,5 +412,21 @@ class Connection
         }
 
         return !empty($read);
+    }
+
+    /**
+     * @return \Stomp\Transport\Parser
+     */
+    public function getParser()
+    {
+        return $this->parser;
+    }
+
+    /**
+     * @return String
+     */
+    public function getHost()
+    {
+        return $this->host;
     }
 }

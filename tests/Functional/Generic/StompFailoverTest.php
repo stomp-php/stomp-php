@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Functional\Generic;
 
-use Stomp\Stomp;
+use Stomp\Client;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -22,7 +22,7 @@ use Stomp\Stomp;
 class StompFailoverTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Stomp
+     * @var Client
      */
     private $Stomp;
 
@@ -33,9 +33,10 @@ class StompFailoverTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->Stomp = new Stomp(
+        $this->Stomp = new Client(
             'failover://(tcp://localhost:61614,tcp://localhost:61613,tcp://localhost:61020)?randomize=false'
         );
+        $this->Stomp->setLogin('admin', 'password');
     }
 
     /**
@@ -53,6 +54,6 @@ class StompFailoverTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailoverConnect()
     {
-        $this->assertTrue($this->Stomp->connect('admin', 'password'));
+        $this->assertTrue($this->Stomp->connect());
     }
 }

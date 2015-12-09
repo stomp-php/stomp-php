@@ -7,13 +7,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Tests\Unit\Stomp;
+namespace Stomp\Tests\Unit\Stomp\Network;
 
 use Exception;
-use Stomp\Connection;
-use Stomp\Exception\ConnectionException;
-use Stomp\Frame;
 use ReflectionMethod;
+use Stomp\Exception\ConnectionException;
+use Stomp\Network\Connection;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -27,7 +26,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testBrokerUriParseFailover()
     {
-        $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)');
+        $connection = new \Stomp\Network\Connection('failover://(tcp://host1:61614,ssl://host2:61612)');
         $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
@@ -51,7 +50,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             return $hash;
         };
 
-        $calls = array(
+        $calls = [
            $arrayHash($getHostList->invoke($connection)),
            $arrayHash($getHostList->invoke($connection)),
            $arrayHash($getHostList->invoke($connection)),
@@ -60,7 +59,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
            $arrayHash($getHostList->invoke($connection)),
            $arrayHash($getHostList->invoke($connection)),
            $arrayHash($getHostList->invoke($connection)),
-        );
+        ];
 
 
         $orders = array_unique($calls);
@@ -86,7 +85,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testBrokerUriParseSpecificPort()
     {
-        $connection = new Connection('tcp://host1:55');
+        $connection = new \Stomp\Network\Connection('tcp://host1:55');
         $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
@@ -108,14 +107,14 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testConnectionSetupTriesFullHostListBeforeGivingUp()
     {
         /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
-        $connection = $this->getMockBuilder('\Stomp\Connection')
-            ->setMethods(array('connectSocket'))
-            ->setConstructorArgs(array('failover://(tcp://host1,tcp://host2,tcp://host3)'))
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['connectSocket'])
+            ->setConstructorArgs(['failover://(tcp://host1,tcp://host2,tcp://host3)'])
             ->getMock();
 
-        $expectedHosts = array(
+        $expectedHosts = [
             'host1', 'host2', 'host3'
-        );
+        ];
 
         $test = $this;
         $connection->expects($this->exactly(3))->method('connectSocket')->will(
@@ -160,6 +159,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testWriteFrameThrowsExceptionIfNotConnected()
     {
         $connection = new Connection('tcp://localhost');
-        $connection->writeFrame(new Frame());
+        $connection->writeFrame(new \Stomp\Transport\Frame());
     }
 }

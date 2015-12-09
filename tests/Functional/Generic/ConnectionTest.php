@@ -9,10 +9,10 @@
 
 namespace Stomp\Tests\Functional\Generic;
 
-use Stomp\Connection;
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\ErrorFrameException;
-use Stomp\Frame;
+use Stomp\Network\Connection;
+use Stomp\Transport\Frame;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -26,9 +26,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testReadFrameThrowsExceptionIfStreamIsBroken()
     {
         /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
-        $connection = $this->getMockBuilder('\Stomp\Connection')
-            ->setMethods(array('hasDataToRead', 'connectSocket'))
-            ->setConstructorArgs(array('tcp://host'))
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['hasDataToRead', 'connectSocket'])
+            ->setConstructorArgs(['tcp://host'])
             ->getMock();
 
         $fp = tmpfile();
@@ -48,10 +48,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testReadFrameThrowsExceptionIfErrorFrameIsReceived()
     {
-        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
-        $connection = $this->getMockBuilder('\Stomp\Connection')
-            ->setMethods(array('hasDataToRead', 'connectSocket'))
-            ->setConstructorArgs(array('tcp://host'))
+        /** @var \Stomp\Network\Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['hasDataToRead', 'connectSocket'])
+            ->setConstructorArgs(['tcp://host'])
             ->getMock();
 
         $fp = tmpfile();
@@ -76,10 +76,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testWriteFrameThrowsExceptionIfConnectionIsBroken()
     {
-        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
-        $connection = $this->getMockBuilder('\Stomp\Connection')
-            ->setMethods(array('connectSocket'))
-            ->setConstructorArgs(array('tcp://host'))
+        /** @var \Stomp\Network\Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['connectSocket'])
+            ->setConstructorArgs(['tcp://host'])
             ->getMock();
 
         $name = tempnam(sys_get_temp_dir(), 'stomp');
@@ -100,10 +100,10 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testHasDataToReadThrowsExceptionIfConnectionIsBroken()
     {
-        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
-        $connection = $this->getMockBuilder('\Stomp\Connection')
-            ->setMethods(array('isConnected', 'connectSocket'))
-            ->setConstructorArgs(array('tcp://host'))
+        /** @var \Stomp\Network\Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['isConnected', 'connectSocket'])
+            ->setConstructorArgs(['tcp://host'])
             ->getMock();
 
         $fp = tmpfile();
@@ -143,7 +143,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $this->assertContains('Could not connect to a broker', $ex->getMessage());
 
             $this->assertInstanceOf(
-                'Stomp\Exception\ConnectionException',
+                ConnectionException::class,
                 $ex->getPrevious(),
                 'There should be a previous exception.'
             );

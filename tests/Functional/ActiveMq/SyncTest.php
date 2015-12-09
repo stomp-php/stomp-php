@@ -9,7 +9,8 @@
 
 namespace Stomp\Tests\Functional\ActiveMq;
 
-use Stomp\Stomp;
+use Stomp\Client;
+use Stomp\LegacyStomp;
 
 /**
  * Stomp test case.
@@ -20,7 +21,11 @@ use Stomp\Stomp;
 class SyncTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Stomp
+     * @var LegacyStomp
+     */
+    private $legacy;
+    /**
+     * @var Client
      */
     private $Stomp;
     /**
@@ -30,8 +35,9 @@ class SyncTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->Stomp = new Stomp('tcp://localhost:61010');
-        $this->Stomp->sync = true;
+        $this->Stomp = new Client('tcp://localhost:61010');
+        $this->Stomp->setSync(true);
+        $this->legacy = new LegacyStomp($this->Stomp);
     }
     /**
      * Cleans up the environment after running a test.
@@ -49,7 +55,7 @@ class SyncTest extends \PHPUnit_Framework_TestCase
     public function testSyncSub()
     {
         $this->assertTrue($this->Stomp->connect());
-        $this->assertTrue($this->Stomp->subscribe('/queue/test'));
+        $this->assertTrue($this->legacy->subscribe('/queue/test'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
 
@@ -57,36 +63,36 @@ class SyncTest extends \PHPUnit_Framework_TestCase
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
-        $this->Stomp->ack($frame);
+        $this->legacy->ack($frame);
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals('test 2', $frame->body, 'test 2 not received!');
-        $this->Stomp->ack($frame);
+        $this->legacy->ack($frame);
     }
 
     public function testCommitTransaction()
     {
         $this->assertTrue($this->Stomp->connect());
-        $this->Stomp->sync = true;
-        $this->assertTrue($this->Stomp->begin('my-id'));
-        $this->assertTrue($this->Stomp->send('/queue/test', 'test 1', array('transaction' => 'my-id')));
-        $this->assertTrue($this->Stomp->commit('my-id'));
+        $this->Stomp->setSync(true);
+        $this->assertTrue($this->legacy->begin('my-id'));
+        $this->assertTrue($this->Stomp->send('/queue/test', 'test 1', ['transaction' => 'my-id']));
+        $this->assertTrue($this->legacy->commit('my-id'));
 
-        $this->assertTrue($this->Stomp->subscribe('/queue/test'));
+        $this->assertTrue($this->legacy->subscribe('/queue/test'));
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
-        $this->Stomp->ack($frame);
+        $this->legacy->ack($frame);
     }
 
     public function testAbortTransaction()
     {
         $this->assertTrue($this->Stomp->connect());
-        $this->assertTrue($this->Stomp->begin('my-id'));
-        $this->assertTrue($this->Stomp->send('/queue/test', 'test t-id', array('transaction' => 'my-id')));
-        $this->assertTrue($this->Stomp->abort('my-id'));
+        $this->assertTrue($this->legacy->begin('my-id'));
+        $this->assertTrue($this->Stomp->send('/queue/test', 'test t-id', ['transaction' => 'my-id']));
+        $this->assertTrue($this->legacy->abort('my-id'));
 
-        $this->assertTrue($this->Stomp->subscribe('/queue/test'));
+        $this->assertTrue($this->legacy->subscribe('/queue/test'));
 
         $this->Stomp->getConnection()->setReadTimeout(0, 500000);
 

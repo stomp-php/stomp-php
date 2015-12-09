@@ -28,12 +28,12 @@ $con->connect();
 $con->getConnection()->setReadTimeout(1);
 
 // subscribe to the queue
-$con->subscribe('/queue/transactions', array('ack' => 'client', 'activemq.prefetchSize' => 1));
+$con->subscribe('/queue/transactions', ['ack' => 'client', 'activemq.prefetchSize' => 1]);
 
 // try to send some messages
 $con->begin('tx1');
 for ($i = 1; $i < 3; $i++) {
-    $con->send('/queue/transactions', $i, array('transaction' => 'tx1'));
+    $con->send('/queue/transactions', $i, ['transaction' => 'tx1']);
 }
 // if we abort transaction, messages will not be sent
 $con->abort('tx1');
@@ -43,7 +43,7 @@ $con->begin('tx2');
 echo "Sent messages {\n";
 for ($i = 1; $i < 5; $i++) {
     echo "\t$i\n";
-    $con->send('/queue/transactions', $i, array('transaction' => 'tx2'));
+    $con->send('/queue/transactions', $i, ['transaction' => 'tx2']);
 }
 echo "}\n";
 // they will be available for consumers after commit
@@ -51,7 +51,7 @@ $con->commit('tx2');
 
 // try to receive some messages
 $con->begin('tx3');
-$messages = array();
+$messages = [];
 for ($i = 1; $i < 3; $i++) {
     $msg = $con->readFrame();
     array_push($messages, $msg);

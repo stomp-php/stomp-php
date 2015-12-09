@@ -7,9 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Message;
-
-use Stomp\Message;
+namespace Stomp\Transport;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -26,9 +24,15 @@ class Bytes extends Message
      * @param string $body
      * @param array $headers
      */
-    public function __construct($body, array $headers = array())
+    public function __construct($body, array $headers = [])
     {
         parent::__construct($body, $headers);
-        $this->headers['content-length'] = count(unpack('c*', $body));
+        $this->headers['content-type'] = 'application/octet-stream';
+        $this->expectLengthHeader(true);
+    }
+
+    protected function getBodySize()
+    {
+        return count(unpack('c*', $this->getBody()));
     }
 }

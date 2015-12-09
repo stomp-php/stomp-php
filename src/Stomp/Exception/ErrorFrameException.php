@@ -9,7 +9,7 @@
 
 namespace Stomp\Exception;
 
-use Stomp\Frame;
+use Stomp\Transport\Frame;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -36,7 +36,7 @@ class ErrorFrameException extends StompException
     {
         $this->frame = $frame;
         parent::__construct(
-            sprintf('Error "%s"', $frame->headers['message'])
+            sprintf('Error "%s"', $frame['message'])
         );
     }
 

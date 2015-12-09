@@ -9,9 +9,10 @@
 
 namespace Stomp\Tests\Functional\ApolloMq;
 
-use Stomp\Connection;
-use Stomp\Stomp;
 use PHPUnit_Framework_TestCase;
+use Stomp\Broker\Apollo\Apollo;
+use Stomp\Client;
+use Stomp\Network\Connection;
 
 /**
  * Client test for Apollo Broker
@@ -22,7 +23,7 @@ use PHPUnit_Framework_TestCase;
 class ClientTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Stomp\Stomp
+     * @var \Stomp\Client
      */
     private $client;
 
@@ -31,13 +32,14 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
         $connection = new Connection('tcp://localhost:61020');
-        $this->client = new Stomp($connection);
+        $this->client = new Client($connection);
+        $this->client->setLogin('admin', 'password');
     }
 
 
     public function testConnectOnApollo()
     {
-        $this->assertTrue($this->client->connect('admin', 'password'), 'Expected reachable broker.');
-        $this->assertInstanceOf('\Stomp\Protocol\Apollo', $this->client->getProtocol(), 'Expected a Apollo broker.');
+        $this->assertTrue($this->client->connect(), 'Expected reachable broker.');
+        $this->assertInstanceOf(Apollo::class, $this->client->getProtocol(), 'Expected a Apollo broker.');
     }
 }

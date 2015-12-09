@@ -9,8 +9,6 @@
 
 namespace Stomp\Exception;
 
-use Stomp\Frame;
-
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
@@ -23,8 +21,7 @@ use Stomp\Frame;
 class MissingReceiptException extends StompException
 {
     /**
-     *
-     * @var Frame
+     * @var string
      */
     private $receiptId;
 
