@@ -7,7 +7,8 @@ adds some ActiveMQ specific features that could make your messaging from PHP eas
 
 ## Version choice
 
-- For new projects you should use version `3.*` which is the last `php-5.3` compatible.
+- For new projects you should use version `4.*` which requires `php-5.5`.
+- For projects running older php versions you can use version `3.*` which is the last `php-5.3` compatible.
 - For running projects with `fusesource/stomp-php@2.x` clients you can use version `2.2.2`.
 - All version newer that `2.x` won't be compatible with `fusesource/stomp-php`. (https://github.com/dejanb/stomp-php.)  
 
@@ -23,7 +24,7 @@ Just add
 
 ```json
     "require": {
-        "stomp-php/stomp-php": "3.*"
+        "stomp-php/stomp-php": "4.*"
     }
 ```
 
