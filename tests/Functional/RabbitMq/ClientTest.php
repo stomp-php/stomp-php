@@ -36,11 +36,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
      * @var LegacyStomp
      */
     private $legacyStomp;
-    private $broker = 'tcp://localhost:61030';
     private $queue = '/queue/test';
     private $topic = '/topic/test';
-    private $login = 'guest';
-    private $password = 'guest';
 
     /**
      * Prepares the environment before running a test.
@@ -49,10 +46,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->stomp = new Client($this->broker);
+        $this->stomp = ClientProvider::getClient();
         $this->stomp->setSync(false);
-        $this->stomp->setVhostname('/');
-        $this->stomp->setLogin($this->login, $this->password);
         $this->legacyStomp = new LegacyStomp($this->stomp);
     }
     /**
@@ -74,7 +69,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testHasFrameToRead()
     {
         $this->stomp->connect();
-        $this->stomp->getConnection()->setReadTimeout(5);
+        $this->stomp->getConnection()->setReadTimeout(0, 750000);
 
         $this->assertFalse($this->stomp->getConnection()->hasDataToRead(), 'Has frame to read when non expected');
 
@@ -156,7 +151,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testAbort()
     {
-        $this->stomp->getConnection()->setReadTimeout(1);
+        $this->stomp->getConnection()->setReadTimeout(0, 750000);
         $this->stomp->connect();
         $this->legacyStomp->begin('tx1');
         $this->assertTrue($this->stomp->send('/queue/abort', 'testSend', ['transaction' => 'tx1']));
@@ -166,7 +161,6 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $frame = $this->stomp->readFrame();
         $this->assertFalse($frame);
         $this->legacyStomp->unsubscribe('/queue/abort');
-        $this->stomp->disconnect();
     }
 
     /**
@@ -315,19 +309,14 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testDurable()
     {
         $this->subscribe();
-        sleep(2);
         $this->produce();
-        sleep(2);
         $this->consume();
     }
 
     protected function subscribe()
     {
-        $consumer = new Client($this->broker);
-        $consumer->setSync(true);
-        $consumer->setVhostname('/');
+        $consumer = ClientProvider::getClient();
         $consumer->setClientId('test');
-        $consumer->setLogin($this->login, $this->password);
         $consumer->connect();
 
         $legacyStomp = new LegacyStomp($consumer);
@@ -338,10 +327,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     protected function produce()
     {
-        $producer = new Client($this->broker);
-        $producer->setSync(true);
-        $producer->setVhostname('/');
-        $producer->setLogin($this->login, $this->password);
+        $producer = ClientProvider::getClient();
         $producer->connect();
         $producer->send($this->topic, 'test message', ['persistent' => 'true']);
         $producer->disconnect();
@@ -350,16 +336,12 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     protected function consume()
     {
-        $consumer2 = new Client($this->broker);
-        $consumer2->setSync(true);
-        $consumer2->setVhostname('/');
-        $consumer2->setClientId('test');
-        $consumer2->getConnection()->setReadTimeout(1);
-        $consumer2->setLogin($this->login, $this->password);
-        $consumer2->connect();
-        $consumer2->getConnection()->setReadTimeout(5);
+        $consumer = ClientProvider::getClient();
+        $consumer->setClientId('test');
+        $consumer->connect();
+        $consumer->getConnection()->setReadTimeout(5);
 
-        $legacyStomp = new LegacyStomp($consumer2);
+        $legacyStomp = new LegacyStomp($consumer);
         $legacyStomp->subscribe($this->topic, 'myId', 'client-individual', null, ['persistent' => 'true']);
 
 
@@ -371,6 +353,6 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $legacyStomp->unsubscribe($this->topic, 'myId');
 
-        $consumer2->disconnect();
+        $consumer->disconnect();
     }
 }

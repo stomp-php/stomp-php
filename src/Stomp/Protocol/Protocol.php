@@ -198,12 +198,12 @@ class Protocol
         $nack = new Frame('NACK');
         $nack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
-            $ack['id'] = $frame->getMessageId();
+            $nack['id'] = $frame->getMessageId();
         } else {
-            $ack['message-id'] = $frame->getMessageId();
+            $nack['message-id'] = $frame->getMessageId();
         }
 
-        $ack['message-id'] = $frame->getMessageId();
+        $nack['message-id'] = $frame->getMessageId();
         return $nack;
     }
 

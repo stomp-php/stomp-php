@@ -35,7 +35,7 @@ class SyncTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->Stomp = new Client('tcp://localhost:61010');
+        $this->Stomp = ClientProvider::getClient();
         $this->Stomp->setSync(true);
         $this->legacy = new LegacyStomp($this->Stomp);
     }
@@ -55,7 +55,7 @@ class SyncTest extends \PHPUnit_Framework_TestCase
     public function testSyncSub()
     {
         $this->assertTrue($this->Stomp->connect());
-        $this->assertTrue($this->legacy->subscribe('/queue/test'));
+        $this->assertTrue($this->legacy->subscribe('/queue/test', 'mysubid'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
 
@@ -78,7 +78,7 @@ class SyncTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1', ['transaction' => 'my-id']));
         $this->assertTrue($this->legacy->commit('my-id'));
 
-        $this->assertTrue($this->legacy->subscribe('/queue/test'));
+        $this->assertTrue($this->legacy->subscribe('/queue/test', 'mysubid'));
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
@@ -92,7 +92,7 @@ class SyncTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send('/queue/test', 'test t-id', ['transaction' => 'my-id']));
         $this->assertTrue($this->legacy->abort('my-id'));
 
-        $this->assertTrue($this->legacy->subscribe('/queue/test'));
+        $this->assertTrue($this->legacy->subscribe('/queue/test', 'mysubid'));
 
         $this->Stomp->getConnection()->setReadTimeout(0, 500000);
 

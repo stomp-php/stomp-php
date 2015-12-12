@@ -88,7 +88,7 @@ class ConsumerState extends StateTemplate
      */
     public function send($destination, Message $message)
     {
-        $this->getClient()->send($destination, $message);
+        return $this->getClient()->send($destination, $message);
     }
 
     /**

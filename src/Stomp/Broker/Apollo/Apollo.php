@@ -10,6 +10,7 @@
 namespace Stomp\Broker\Apollo;
 
 use Stomp\Protocol\Protocol;
+use Stomp\Protocol\Version;
 use Stomp\Transport\Frame;
 
 /**
@@ -59,5 +60,29 @@ class Apollo extends Protocol
             $frame['persistent'] = 'true';
         }
         return $frame;
+    }
+
+    public function getAckFrame(Frame $frame, $transactionId = null)
+    {
+        $ack = new Frame('ACK');
+        $ack['transaction'] = $transactionId;
+        if ($this->hasVersion(Version::VERSION_1_2)) {
+            $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
+        } else {
+            $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+        }
+        return $ack;
+    }
+
+    public function getNackFrame(Frame $frame, $transactionId = null)
+    {
+        $ack = new Frame('NACK');
+        $ack['transaction'] = $transactionId;
+        if ($this->hasVersion(Version::VERSION_1_2)) {
+            $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
+        } else {
+            $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+        }
+        return $ack;
     }
 }

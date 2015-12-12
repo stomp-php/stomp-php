@@ -31,9 +31,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $connection = new Connection('tcp://localhost:61020');
-        $this->client = new Client($connection);
-        $this->client->setLogin('admin', 'password');
+        $this->client = ClientProvider::getClient();
     }
 
 

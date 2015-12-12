@@ -9,6 +9,7 @@
 
 namespace Stomp\Tests\Functional\ActiveMq;
 
+use PHPUnit_Framework_TestCase;
 use Stomp\Broker\ActiveMq\ActiveMq;
 use Stomp\Client;
 use Stomp\LegacyStomp;
@@ -25,7 +26,7 @@ use Stomp\Transport\Map;
  * @author Michael Caplan <mcaplan@labnet.net>
  * @author Dejan Bosanac <dejan@nighttale.net>
  */
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var LegacyStomp
@@ -35,7 +36,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      * @var Client
      */
     private $Stomp;
-    private $broker = 'tcp://127.0.0.1:61010';
+
     private $queue = '/queue/test';
     private $topic = '/topic/test';
 
@@ -46,7 +47,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->Stomp = new Client($this->broker);
+        $this->Stomp = ClientProvider::getClient();
         $this->legacy = new LegacyStomp($this->Stomp);
     }
     /**
@@ -79,13 +80,13 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
 
-        $this->Stomp->getConnection()->setReadTimeout(5);
+        $this->Stomp->getConnection()->setReadTimeout(0, 750000);
 
         $this->assertFalse($this->Stomp->getConnection()->hasDataToRead(), 'Has frame to read when non expected');
 
         $this->Stomp->send($this->queue, 'testHasFrameToRead');
 
-        $this->legacy->subscribe($this->queue, null, 'client');
+        $this->legacy->subscribe($this->queue, 'mysubid', 'client');
 
         $this->assertTrue($this->Stomp->getConnection()->hasDataToRead(), 'Did not have frame to read when expected');
 
@@ -121,11 +122,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         for ($y = 0; $y < 100; $y += 10) {
             $this->Stomp->connect();
 
-            $this->legacy->subscribe($this->queue, null, 'client');
+            $this->legacy->subscribe($this->queue, 'mysubid', 'client');
 
             for ($x = $y; $x < $y + 10; ++$x) {
                 $frame = $this->Stomp->readFrame();
-                $this->assertTrue($frame instanceof Frame);
+                $this->assertInstanceOf(Frame::class, $frame);
                 $this->assertArrayHasKey(
                     $frame->body,
                     $messages,
@@ -174,10 +175,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend', ["transaction" => "tx1"]));
         $this->legacy->abort("tx1");
 
-        $this->legacy->subscribe($this->queue);
+        $this->legacy->subscribe($this->queue, 'mysubid');
         $frame = $this->Stomp->readFrame();
         $this->assertFalse($frame);
-        $this->legacy->unsubscribe($this->queue);
+        $this->legacy->unsubscribe($this->queue, 'mysubid');
         $this->Stomp->disconnect();
     }
 
@@ -233,12 +234,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
         $this->Stomp->send($this->queue, 'testReadFrame');
-        $this->legacy->subscribe($this->queue, null, 'client');
+        $this->legacy->subscribe($this->queue, 'mysubid', 'client');
         $frame = $this->Stomp->readFrame();
         $this->assertTrue($frame instanceof Frame);
         $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
         $this->legacy->ack($frame);
-        $this->legacy->unsubscribe($this->queue);
+        $this->legacy->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -250,12 +251,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend'));
-        $this->legacy->subscribe($this->queue, null, 'client');
+        $this->legacy->subscribe($this->queue, 'mysubid', 'client');
         $frame = $this->Stomp->readFrame();
         $this->assertTrue($frame instanceof Frame);
         $this->assertEquals('testSend', $frame->body, 'Body of test frame does not match sent message');
         $this->legacy->ack($frame);
-        $this->legacy->unsubscribe($this->queue);
+        $this->legacy->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -266,8 +267,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->assertTrue($this->legacy->subscribe($this->queue));
-        $this->legacy->unsubscribe($this->queue);
+        $this->assertTrue($this->legacy->subscribe($this->queue, 'mysubid'));
+        $this->legacy->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -284,7 +285,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $mapMessage = new Map($body, $header);
         $this->Stomp->send($this->queue, $mapMessage);
 
-        $this->legacy->subscribe($this->queue, null, 'auto', null, ['transformation' => 'jms-map-json']);
+        $this->legacy->subscribe($this->queue, 'mysubid', 'auto', null, ['transformation' => 'jms-map-json']);
         $msg = $this->Stomp->readFrame();
         $this->assertTrue($msg instanceof Map);
 
@@ -306,7 +307,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $mapMessage = new Bytes($body);
         $this->Stomp->send($this->queue, $mapMessage);
 
-        $this->legacy->subscribe($this->queue);
+        $this->legacy->subscribe($this->queue, 'mysubid');
         $msg = $this->Stomp->readFrame();
         $this->assertEquals($msg->body, $body);
         $this->legacy->ack($msg);
@@ -321,8 +322,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->legacy->subscribe($this->queue);
-        $this->assertTrue($this->legacy->unsubscribe($this->queue));
+        $this->legacy->subscribe($this->queue, 'mysubid');
+        $this->assertTrue($this->legacy->unsubscribe($this->queue, 'mysubid'));
     }
 
     public function testDurable()
@@ -336,19 +337,18 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     protected function produce()
     {
-        $producer = new Client($this->broker);
+        $producer = ClientProvider::getClient();
         $producer->setSync(false);
-        $producer->connect('system', 'manager');
+        $producer->connect();
         $producer->send($this->topic, 'test message', ['persistent' => 'true']);
         $producer->disconnect();
     }
 
     protected function subscribe()
     {
-        $consumer = new Client($this->broker);
+        $consumer = ClientProvider::getClient();
         $consumer->setSync(false);
         $consumer->setClientId('test');
-        $consumer->setLogin('system', 'manager');
         $consumer->connect();
 
         $amq = $consumer->getProtocol();
@@ -363,11 +363,10 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     protected function consume()
     {
-        $consumer2 = new Client($this->broker);
+        $consumer2 = ClientProvider::getClient();
         $consumer2->setSync(false);
         $consumer2->setClientId('test');
         $consumer2->getConnection()->setReadTimeout(1);
-        $consumer2->setLogin('system', 'manager');
         $consumer2->connect();
 
         $amq = $consumer2->getProtocol();

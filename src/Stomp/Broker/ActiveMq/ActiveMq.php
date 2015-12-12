@@ -88,14 +88,14 @@ class ActiveMq extends Protocol
 
     public function getNackFrame(Frame $frame, $transactionId = null)
     {
-        $ack = new Frame('NACK');
-        $ack['transaction'] = $transactionId;
+        $nack = new Frame('NACK');
+        $nack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
-            $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
+            $nack['id'] = $frame['ack'] ?: $frame->getMessageId();
         } else {
-            $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+            $nack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
         }
-        return $ack;
+        return $nack;
     }
 
 

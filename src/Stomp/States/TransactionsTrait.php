@@ -76,7 +76,7 @@ trait TransactionsTrait
      */
     public function send($destination, Message $message)
     {
-        return $this->getClient()->send($destination, $message, ['transaction' => $this->transactionId]);
+        return $this->getClient()->send($destination, $message, ['transaction' => $this->transactionId], false);
     }
 
     /**
