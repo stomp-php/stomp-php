@@ -46,24 +46,13 @@ If you used `fusesource/stomp-php` before, you can use our `2.x` versions.
 
 See our [wiki](https://github.com/stomp-php/stomp-php/wiki).
 
-## Running Examples
+## Examples
 
-Examples are located in `src/examples` folder. Before running them, be sure
-you have installed this library properly and you have started ActiveMQ broker
-(recommended version 5.5.0 or above) with [Stomp connector enabled]
-(http://activemq.apache.org/stomp.html).
+Have a look at our example project https://github.com/stomp-php/stomp-php-examples.
 
-You can start by running
+## Contributing
 
-    cd examples
-    php connectivity.php
-
-Also, be sure to check comments in the particular examples for some special
-configuration steps (if needed).
-
-## Step by Step: Certificate based Authentication
-
-https://github.com/rethab/php-stomp-cert-example
+We code in `PSR2`, please use our predefined `pre_commit.sh` hook. 
 
 ## Tests
 

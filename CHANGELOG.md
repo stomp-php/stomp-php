@@ -76,3 +76,4 @@ WIP (Full Stomp 1.1 / 1.2 Support)
 - Restructure project, new Namespaces `Protocol`, `Transport`, `Network`.
 - Make Client much smaller, remove all non low level methods to `LegacyStomp`, which should be marked as deprecated.
 - Testsuite rework...
+- Move examples to https://github.com/stomp-php/stomp-php-examples.

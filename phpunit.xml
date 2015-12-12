@@ -15,7 +15,6 @@
     <filter>
         <blacklist>
             <directory>vendor</directory>
-            <directory>examples</directory>
         </blacklist>
         <whitelist>
             <directory>src</directory>
