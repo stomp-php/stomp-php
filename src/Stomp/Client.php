@@ -289,14 +289,15 @@ class Client
 
     /**
      * Graceful disconnect from the server
-     *
+     * @param bool $sync
+     * @return void
      */
-    public function disconnect()
+    public function disconnect($sync = false)
     {
         try {
             if ($this->connection && $this->connection->isConnected()) {
                 if ($this->protocol) {
-                    $this->sendFrame($this->protocol->getDisconnectFrame(), false);
+                    $this->sendFrame($this->protocol->getDisconnectFrame(), $sync);
                 }
             }
         } catch (StompException $ex) {

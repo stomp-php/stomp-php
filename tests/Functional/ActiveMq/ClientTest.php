@@ -329,9 +329,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testDurable()
     {
         $this->subscribe();
-        usleep(500000);
         $this->produce();
-        usleep(500000);
         $this->consume();
     }
 
@@ -358,7 +356,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
          */
         $consumer->sendFrame($amq->getSubscribeFrame($this->topic, 'test', 'auto', null, true));
 
-        $consumer->disconnect();
+        $consumer->disconnect(true);
     }
 
     protected function consume()
