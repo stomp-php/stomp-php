@@ -13,12 +13,15 @@ use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
 use Stomp\Broker\RabbitMq\RabbitMq;
 use Stomp\Client;
+use Stomp\Exception\ConnectionException;
 use Stomp\Exception\MissingReceiptException;
 use Stomp\Exception\StompException;
 use Stomp\Exception\UnexpectedResponseException;
 use Stomp\Network\Connection;
 use Stomp\Protocol\Protocol;
 use Stomp\Transport\Frame;
+use Stomp\Transport\Message;
+use Stomp\Transport\Parser;
 
 /* vim: set expandtab tabstop=3 shiftwidth=3: */
 
@@ -261,10 +264,11 @@ class ClientTest extends PHPUnit_Framework_TestCase
     protected function getStompMockWithSendFrameCatcher(&$lastSendFrame, &$lastSyncState)
     {
         $stomp = $this->getMockBuilder(Client::class)
-            ->setMethods(['sendFrame'])
+            ->setMethods(['sendFrame', 'isConnected'])
             ->disableOriginalConstructor()
             ->getMock();
 
+        $stomp->expects($this->any())->method('isConnected')->willReturn(true);
         $stomp->expects($this->any())
             ->method('sendFrame')
             ->will(
@@ -306,8 +310,11 @@ class ClientTest extends PHPUnit_Framework_TestCase
                     }
                 )
             );
-        $stomp = new Client($connection);
-
+        $stomp = $this->getMockBuilder(Client::class)
+            ->setConstructorArgs([$connection])
+            ->setMethods(['isConnected'])
+            ->getMock();
+        $stomp->expects($this->any())->method('isConnected')->willReturn(true);
 
         try {
             $stomp->setReceiptWait(0);
@@ -323,7 +330,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testWaitForReceiptWillQueueUpFramesWithNoReceiptCommand()
     {
-        $connection = $this->getMockBuilder(\Stomp\Network\Connection::class)
+        $connection = $this->getMockBuilder(Connection::class)
             ->setMethods(['readFrame'])
             ->disableOriginalConstructor()
             ->getMock();
@@ -349,7 +356,11 @@ class ClientTest extends PHPUnit_Framework_TestCase
                 )
             );
 
-        $stomp = new Client($connection);
+        $stomp = $this->getMockBuilder(Client::class)
+            ->setConstructorArgs([$connection])
+            ->setMethods(['isConnected'])
+            ->getMock();
+        $stomp->expects($this->any())->method('isConnected')->willReturn(true);
 
 
         $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
@@ -420,5 +431,21 @@ class ClientTest extends PHPUnit_Framework_TestCase
         // ensure that instance is not destroyed before mock assertions are done
         // (calling destruct would invoke disconnect outside current test)
         self::$stomp = $stomp;
+    }
+
+    public function testClientWillAutoConnectOnSendFrame()
+    {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['connect', 'getParser'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->once())->method('connect');
+        $connection->expects($this->any())->method('getParser')->willReturn(new Parser());
+        $client = new Client($connection);
+        try {
+            $client->sendFrame(new Message('test'));
+        } catch (ConnectionException $connectionFailed) {
+            $this->addToAssertionCount(1);
+        }
     }
 }

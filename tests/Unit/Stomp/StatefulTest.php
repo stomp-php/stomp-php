@@ -83,12 +83,13 @@ class StatefulTest extends PHPUnit_Framework_TestCase
     {
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getProtocol', 'sendFrame', 'readFrame'])
+            ->setMethods(['getProtocol', 'sendFrame', 'readFrame', 'isConnected'])
             ->getMock();
 
         $client->method('getProtocol')->willReturn(new Protocol('stateful-test-client', Version::VERSION_1_2));
         $client->method('sendFrame')->willReturn(true);
         $client->method('readFrame')->willReturn(new Message('read-frame'));
+        $client->method('isConnected')->willReturn(true);
 
         $stateful = new StatefulStomp($client);
         $setState = new ReflectionMethod($stateful, 'setState');

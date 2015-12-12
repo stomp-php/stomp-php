@@ -105,6 +105,11 @@ class Client
     private $host = null;
 
     /**
+     * @var bool
+     */
+    private $isConnecting = false;
+
+    /**
      * Constructor
      *
      * @param string|Connection $broker Broker URL or a connection
@@ -159,6 +164,10 @@ class Client
      */
     public function connect()
     {
+        if ($this->isConnected()) {
+            return true;
+        }
+        $this->isConnecting = true;
         $this->connection->connect();
         $this->connection->getParser()->legacyMode(true);
         $this->protocol = new Protocol($this->clientId);
@@ -177,6 +186,7 @@ class Client
 
             $this->sessionId = $frame['session'];
             $this->protocol = $version->getProtocol($this->clientId);
+            $this->isConnecting = false;
             return true;
         }
         throw new ConnectionException('Connection not acknowledged');
@@ -211,6 +221,9 @@ class Client
      */
     public function sendFrame(Frame $frame, $sync = null)
     {
+        if (!$this->isConnecting && !$this->isConnected()) {
+            $this->connect();
+        }
         // determine if client was configured to write sync or not
         $writeSync = $sync !== null ? $sync : $this->sync;
         if ($writeSync) {
@@ -310,6 +323,7 @@ class Client
         $this->sessionId = null;
         $this->unprocessedFrames = [];
         $this->protocol = null;
+        $this->isConnecting = false;
     }
 
     /**
