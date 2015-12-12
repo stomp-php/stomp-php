@@ -368,12 +368,13 @@ class Client
     /**
      * Get the currently used protocol.
      *
-     * Protocol is only set after calling connect().
-     *
      * @return null|\Stomp\Protocol\Protocol
      */
     public function getProtocol()
     {
+        if (!$this->isConnecting && !$this->isConnected()) {
+            $this->connect();
+        }
         return $this->protocol;
     }
 

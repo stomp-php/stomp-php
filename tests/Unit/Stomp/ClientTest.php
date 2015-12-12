@@ -74,6 +74,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $connectFrame = new Frame('CONNECTED');
         $connectFrame['session'] = '-';
         $connectFrame['server'] ='rabbitmq';
+        $connectFrame['session'] = 'session';
 
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult($connectFrame);
 
@@ -158,7 +159,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     protected function getStompWithInjectedMockedConnectionReadResult($readFrameResult)
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['readFrame', 'writeFrame', 'getParser'])
+            ->setMethods(['readFrame', 'writeFrame', 'getParser', 'isConnected', 'disconnect'])
             ->disableOriginalConstructor()
             ->getMock();
         $connection
@@ -173,6 +174,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
             ->will(
                 $this->returnValue(new \Stomp\Transport\Parser())
             );
+        $connection
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
 
         return new Client($connection);
     }
@@ -444,6 +449,23 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $client = new Client($connection);
         try {
             $client->sendFrame(new Message('test'));
+        } catch (ConnectionException $connectionFailed) {
+            $this->addToAssertionCount(1);
+        }
+    }
+
+
+    public function testClientWillAutoConnectOnGetProtocol()
+    {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['connect', 'getParser'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection->expects($this->once())->method('connect');
+        $connection->expects($this->any())->method('getParser')->willReturn(new Parser());
+        $client = new Client($connection);
+        try {
+            $client->getProtocol();
         } catch (ConnectionException $connectionFailed) {
             $this->addToAssertionCount(1);
         }
