@@ -10,7 +10,7 @@ namespace Stomp\Tests\Functional\ActiveMq;
 
 use PHPUnit_Framework_TestCase;
 use Stomp\Client;
-use Stomp\LegacyStomp;
+use Stomp\SimpleStomp;
 use Stomp\Network\Connection;
 use Stomp\Transport\Frame;
 
@@ -44,7 +44,7 @@ abstract class ActiveMqFunctionalTestCase extends PHPUnit_Framework_TestCase
         $client = $this->getClient();
         $client->getConnection()->setReadTimeout(0, 500000);
 
-        $dlq = new LegacyStomp($client);
+        $dlq = new SimpleStomp($client);
         $dlq->subscribe('ActiveMQ.DLQ', 'dlq-cleaner');
         while ($message = $dlq->read()) {
             $messages[] = $message;

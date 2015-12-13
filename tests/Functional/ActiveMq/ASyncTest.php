@@ -11,7 +11,7 @@ namespace Stomp\Tests\Functional\ActiveMq;
 
 use PHPUnit_Framework_TestCase;
 use Stomp\Client;
-use Stomp\LegacyStomp;
+use Stomp\SimpleStomp;
 
 /**
  * Stomp test case.
@@ -27,9 +27,9 @@ class ASyncTest extends PHPUnit_Framework_TestCase
     private $Stomp;
 
     /**
-     * @var LegacyStomp
+     * @var SimpleStomp
      */
-    private $legacy;
+    private $simpleStomp;
 
     /**
      * Prepares the environment before running a test.
@@ -39,7 +39,7 @@ class ASyncTest extends PHPUnit_Framework_TestCase
         parent::setUp();
         $this->Stomp = ClientProvider::getClient();
         $this->Stomp->setSync(false);
-        $this->legacy = new LegacyStomp($this->Stomp);
+        $this->simpleStomp = new SimpleStomp($this->Stomp);
     }
 
     /**
@@ -61,7 +61,7 @@ class ASyncTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
-        $this->assertTrue($this->legacy->subscribe('/queue/test', 'mysubid'));
+        $this->assertTrue($this->simpleStomp->subscribe('/queue/test', 'mysubid'));
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals($frame->body, 'test 1', 'test 1 was not received!');

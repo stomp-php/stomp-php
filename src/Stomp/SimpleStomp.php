@@ -14,7 +14,7 @@ use Stomp\Transport\Frame;
 use Stomp\Transport\Message;
 
 /**
- * Legacy Stomp Client
+ * Simple Stomp Client
  *
  * This is a legacy implementation of the old Stomp Client (Version 2-3).
  * It's an almost stateless client, only wrapping some protocol calls for you.
@@ -22,7 +22,7 @@ use Stomp\Transport\Message;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class LegacyStomp
+class SimpleStomp
 {
     /**
      * @var Client

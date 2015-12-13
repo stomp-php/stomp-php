@@ -12,7 +12,7 @@ namespace Stomp\Tests\Functional\ActiveMq;
 use PHPUnit_Framework_TestCase;
 use Stomp\Broker\ActiveMq\ActiveMq;
 use Stomp\Client;
-use Stomp\LegacyStomp;
+use Stomp\SimpleStomp;
 use Stomp\Transport\Bytes;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Map;
@@ -29,9 +29,9 @@ use Stomp\Transport\Map;
 class ClientTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var LegacyStomp
+     * @var SimpleStomp
      */
-    private $legacy;
+    private $simpleStomp;
     /**
      * @var Client
      */
@@ -48,7 +48,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         parent::setUp();
 
         $this->Stomp = ClientProvider::getClient();
-        $this->legacy = new LegacyStomp($this->Stomp);
+        $this->simpleStomp = new SimpleStomp($this->Stomp);
     }
     /**
      * Cleans up the environment after running a test.
@@ -86,7 +86,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $this->Stomp->send($this->queue, 'testHasFrameToRead');
 
-        $this->legacy->subscribe($this->queue, 'mysubid', 'client');
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
 
         $this->assertTrue($this->Stomp->getConnection()->hasDataToRead(), 'Did not have frame to read when expected');
 
@@ -94,7 +94,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($frame instanceof Frame, 'Frame expected');
 
-        $this->legacy->ack($frame);
+        $this->simpleStomp->ack($frame);
 
         $this->Stomp->disconnect();
 
@@ -122,7 +122,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         for ($y = 0; $y < 100; $y += 10) {
             $this->Stomp->connect();
 
-            $this->legacy->subscribe($this->queue, 'mysubid', 'client');
+            $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
 
             for ($x = $y; $x < $y + 10; ++$x) {
                 $frame = $this->Stomp->readFrame();
@@ -139,7 +139,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
                 );
                 $messages[$frame->body] = 'acked';
 
-                $this->legacy->ack($frame);
+                $this->simpleStomp->ack($frame);
 
             }
 
@@ -171,14 +171,14 @@ class ClientTest extends PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->legacy->begin("tx1");
+        $this->simpleStomp->begin("tx1");
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend', ["transaction" => "tx1"]));
-        $this->legacy->abort("tx1");
+        $this->simpleStomp->abort("tx1");
 
-        $this->legacy->subscribe($this->queue, 'mysubid');
+        $this->simpleStomp->subscribe($this->queue, 'mysubid');
         $frame = $this->Stomp->readFrame();
         $this->assertFalse($frame);
-        $this->legacy->unsubscribe($this->queue, 'mysubid');
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
         $this->Stomp->disconnect();
     }
 
@@ -234,12 +234,12 @@ class ClientTest extends PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
         $this->Stomp->send($this->queue, 'testReadFrame');
-        $this->legacy->subscribe($this->queue, 'mysubid', 'client');
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
         $frame = $this->Stomp->readFrame();
         $this->assertTrue($frame instanceof Frame);
         $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
-        $this->legacy->ack($frame);
-        $this->legacy->unsubscribe($this->queue, 'mysubid');
+        $this->simpleStomp->ack($frame);
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -251,12 +251,12 @@ class ClientTest extends PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend'));
-        $this->legacy->subscribe($this->queue, 'mysubid', 'client');
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
         $frame = $this->Stomp->readFrame();
         $this->assertTrue($frame instanceof Frame);
         $this->assertEquals('testSend', $frame->body, 'Body of test frame does not match sent message');
-        $this->legacy->ack($frame);
-        $this->legacy->unsubscribe($this->queue, 'mysubid');
+        $this->simpleStomp->ack($frame);
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -267,8 +267,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->assertTrue($this->legacy->subscribe($this->queue, 'mysubid'));
-        $this->legacy->unsubscribe($this->queue, 'mysubid');
+        $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid'));
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -285,13 +285,13 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $mapMessage = new Map($body, $header);
         $this->Stomp->send($this->queue, $mapMessage);
 
-        $this->legacy->subscribe($this->queue, 'mysubid', 'auto', null, ['transformation' => 'jms-map-json']);
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'auto', null, ['transformation' => 'jms-map-json']);
         $msg = $this->Stomp->readFrame();
         $this->assertTrue($msg instanceof Map);
 
         /** @var \Stomp\Transport\Map $msg */
         $this->assertEquals($msg->map, $body);
-        $this->legacy->ack($msg);
+        $this->simpleStomp->ack($msg);
         $this->Stomp->disconnect();
     }
 
@@ -307,10 +307,10 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $mapMessage = new Bytes($body);
         $this->Stomp->send($this->queue, $mapMessage);
 
-        $this->legacy->subscribe($this->queue, 'mysubid');
+        $this->simpleStomp->subscribe($this->queue, 'mysubid');
         $msg = $this->Stomp->readFrame();
         $this->assertEquals($msg->body, $body);
-        $this->legacy->ack($msg);
+        $this->simpleStomp->ack($msg);
         $this->Stomp->disconnect();
     }
 
@@ -322,8 +322,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->legacy->subscribe($this->queue, 'mysubid');
-        $this->assertTrue($this->legacy->unsubscribe($this->queue, 'mysubid'));
+        $this->simpleStomp->subscribe($this->queue, 'mysubid');
+        $this->assertTrue($this->simpleStomp->unsubscribe($this->queue, 'mysubid'));
     }
 
     public function testDurable()

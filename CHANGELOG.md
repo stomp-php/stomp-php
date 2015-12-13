@@ -66,14 +66,15 @@ Changelog stomp-php
 -----
  - do not error when received header value is null (https://github.com/stomp-php/stomp-php/issues/30)
 
-WIP (Full Stomp 1.1 / 1.2 Support)
+4.0.0 (Full Stomp 1.1 / 1.2 Support)
 ----------------------------------
 
-- Updated function testsuite for different brokers (amq,aplo,rabbit), update travis-ci.
+- Updated functional testsuite for different brokers (amq,aplo,rabbit), update travis-ci.
 - Update Parser in order to be compliant with stomp-1.2 (https://stomp.github.io/stomp-specification-1.2.html)
 - ACK Mode is now `auto` by default. 
 - Implement StateMachine Pattern `StatefulStomp`.
 - Restructure project, new Namespaces `Protocol`, `Transport`, `Network`.
-- Make Client much smaller, remove all non low level methods to `LegacyStomp`, which should be marked as deprecated.
+- Make Client much smaller, remove all non low level methods to `SimpleStomp`.
 - Testsuite rework...
 - Move examples to https://github.com/stomp-php/stomp-php-examples.
+- add utils for `ActiveMq` durable subscription and `Apollo` queue browser.

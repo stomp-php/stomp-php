@@ -10,19 +10,19 @@ namespace Stomp\Tests\Unit\Stomp;
 
 use PHPUnit_Framework_TestCase;
 use Stomp\Client;
-use Stomp\LegacyStomp;
+use Stomp\SimpleStomp;
 use Stomp\Protocol\Protocol;
 use Stomp\Protocol\Version;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Message;
 
 /**
- * LegacyStompTest
+ * SimpleStompTest
  *
  * @package Stomp\Tests\Unit\Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class LegacyStompTest extends PHPUnit_Framework_TestCase
+class SimpleStompTest extends PHPUnit_Framework_TestCase
 {
 
     public function testSendIsMappedToClient()
@@ -37,8 +37,8 @@ class LegacyStompTest extends PHPUnit_Framework_TestCase
 
         $stomp->expects($this->once())->method('send')->with($queue, $message);
 
-        $legacy = new LegacyStomp($stomp);
-        $legacy->send($queue, $message);
+        $simpleStomp = new SimpleStomp($stomp);
+        $simpleStomp->send($queue, $message);
     }
     /**
      * @param $method
@@ -64,7 +64,7 @@ class LegacyStompTest extends PHPUnit_Framework_TestCase
             ->with($expectedSendFrameParameters[0], $expectedSendFrameParameters[1])
             ->willReturn($result);
 
-        $client = new LegacyStomp($stomp);
+        $client = new SimpleStomp($stomp);
         $this->assertEquals($result, call_user_func_array([$client, $method], $parameters));
     }
 

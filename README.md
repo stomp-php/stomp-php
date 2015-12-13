@@ -1,7 +1,7 @@
 # Stomp PHP
 
 This project is a PHP [Stomp](http://stomp.github.com) Client that besides it implements the Stomp protocol fully,
-adds some ActiveMQ specific features that could make your messaging from PHP easier.
+brings some ActiveMQ and Apollo specific utils that could make your messaging from PHP easier.
 
 [![Build Status](https://travis-ci.org/stomp-php/stomp-php.svg?branch=master)](https://travis-ci.org/stomp-php/stomp-php)
 
