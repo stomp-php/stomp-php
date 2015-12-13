@@ -123,6 +123,31 @@ class ParserTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, $actual);
     }
+    public function testParserIsChunkSafe()
+    {
+        $frame = "COMMAND\nheader1:values\\c[1,2]\nheader2:value2\n\nBody\x00";
+        $frame .= "\r\n\r\n\r\n";
+        $frame .= "COMMAND2\nheader3:value2\n\nBody \x00";
+        $frame .= "\r\n\r\n";
+
+        $this->assertFalse($this->parser->parse());
+
+        $detectedFrames = [];
+        for ($i = 0; $i < strlen($frame); $i++) {
+            $this->parser->addData(substr($frame, $i, 1));
+            if ($this->parser->parse()) {
+                $detectedFrames[] = $this->parser->getFrame();
+            }
+        }
+
+
+        $expectedFrameA = new Frame('COMMAND', ['header1' => 'values:[1,2]', 'header2' => 'value2'], 'Body');
+        $expectedFrameB = new Frame('COMMAND2', ['header3' => 'value2'], 'Body ');
+
+
+        $this->assertEquals($expectedFrameA, $detectedFrames[0]);
+        $this->assertEquals($expectedFrameB, $detectedFrames[1]);
+    }
 
     public function testParseFrameTransformsToFrameZeroByteContent()
     {

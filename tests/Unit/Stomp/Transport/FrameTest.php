@@ -124,4 +124,13 @@ hello queue a^@' . "\x00",
         $expected = "SEND\nmy:var:\\multi\nline\r!\n\n\x00";
         $this->assertEquals($expected, $result);
     }
+
+    public function testFrameUnsetRemovesHeader()
+    {
+        $frame = new Frame();
+        $frame['header'] = 'value';
+        $this->assertTrue(isset($frame['header']));
+        unset($frame['header']);
+        $this->assertEquals(new Frame(), $frame);
+    }
 }

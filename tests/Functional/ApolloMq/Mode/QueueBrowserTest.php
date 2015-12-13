@@ -46,7 +46,9 @@ class QueueBrowserTest extends PHPUnit_Framework_TestCase
     public function testQueueBrowserWithStopOnEnd()
     {
         $browser = new QueueBrowser(ClientProvider::getClient(), self::$queue);
+        $this->assertFalse($browser->isActive());
         $browser->subscribe();
+        $this->assertTrue($browser->isActive());
         for ($i = 1; $i < 6; $i++) {
             $frame = $browser->read();
             $this->assertInstanceOf(Frame::class, $frame);
@@ -54,8 +56,10 @@ class QueueBrowserTest extends PHPUnit_Framework_TestCase
         }
 
         $this->assertFalse($browser->read());
+        $this->assertFalse($browser->read());
         $this->assertTrue($browser->hasReachedEnd());
         $browser->unsubscribe();
+        $this->assertEquals(self::$queue, $browser->getSubscription()->getDestination());
     }
 
     public function testQueueBrowserWithContinueListeningForNew()

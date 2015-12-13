@@ -26,7 +26,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 {
     public function testBrokerUriParseFailover()
     {
-        $connection = new \Stomp\Network\Connection('failover://(tcp://host1:61614,ssl://host2:61612)');
+        $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)');
         $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
@@ -85,7 +85,7 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
 
     public function testBrokerUriParseSpecificPort()
     {
-        $connection = new \Stomp\Network\Connection('tcp://host1:55');
+        $connection = new Connection('tcp://host1:55');
         $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
