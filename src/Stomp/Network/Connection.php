@@ -318,9 +318,6 @@ class Connection
      */
     public function readFrame()
     {
-        if ($this->parser->hasBufferedFrames()) {
-            return $this->parser->getFrame();
-        }
         if (!$this->hasDataToRead()) {
             return false;
         }

@@ -29,11 +29,11 @@ class Parser
     const FRAME_END = "\x00";
 
     /**
-     * Frames that have been parsed and queued up.
+     * Frame that has been parsed last.
      *
-     * @var Frame[]
+     * @var Frame
      */
-    private $frames = [];
+    private $frame = [];
 
     /**
      * Active Frame command
@@ -134,23 +134,13 @@ class Parser
     }
 
     /**
-     * There are frames which have been parsed.
-     *
-     * @return boolean
-     */
-    public function hasBufferedFrames()
-    {
-        return !empty($this->frames);
-    }
-
-    /**
-     * Get next parsed frame.
+     * Get parsed frame.
      *
      * @return Frame
      */
     public function getFrame()
     {
-        return array_shift($this->frames);
+        return $this->frame;
     }
 
     /**
@@ -160,7 +150,7 @@ class Parser
      */
     public function parse()
     {
-        $frameCounter = count($this->frames);
+        $this->frame = null;
         $this->offset = 0;
         $this->bufferSize = strlen($this->buffer);
         while ($this->offset < $this->bufferSize) {
@@ -183,7 +173,7 @@ class Parser
             // remove parsed buffer
             $this->buffer = substr($this->buffer, $this->offset);
         }
-        return count($this->frames) > $frameCounter;
+        return $this->frame !== null;
     }
 
     /**
@@ -235,7 +225,7 @@ class Parser
         }
 
         if ($bodySize !== null) {
-            $this->addFrame($bodySize);
+            $this->setFrame($bodySize);
             $this->offset += $bodySize + strlen(self::FRAME_END); // x00
         }
         return $bodySize !== null;
@@ -247,14 +237,14 @@ class Parser
      *
      * @param integer $bodySize
      */
-    private function addFrame($bodySize)
+    private function setFrame($bodySize)
     {
         $frame = new Frame($this->command, $this->headers, (string) substr($this->buffer, $this->offset, $bodySize));
 
         if ($frame['transformation'] == 'jms-map-json') {
-            $this->frames[] = new Map($frame);
+            $this->frame = new Map($frame);
         } else {
-            $this->frames[] = $frame;
+            $this->frame = $frame;
         }
 
         $this->expectedBodyLength = null;

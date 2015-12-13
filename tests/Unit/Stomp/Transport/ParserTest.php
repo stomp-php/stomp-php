@@ -84,29 +84,6 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function testParserRunsOnChunks()
-    {
-        $frame = "COMMAND\nheader1:values\\c[1,2]\nheader2:value2\n\nBody\x00";
-        $frame .= "\r\n\r\n\r\n";
-        $frame .= "COMMAND2\nheader3:value2\n\nBody \x00";
-        $frame .= "\r\n\r\n";
-
-        $this->assertFalse($this->parser->hasBufferedFrames());
-        for ($i = 0; $i < strlen($frame); $i++) {
-            $this->parser->addData(substr($frame, $i, 1));
-            $this->parser->parse();
-        }
-
-        $this->assertTrue($this->parser->hasBufferedFrames());
-
-        $expectedFrameA = new Frame('COMMAND', ['header1' => 'values:[1,2]', 'header2' => 'value2'], 'Body');
-        $expectedFrameB = new Frame('COMMAND2', ['header3' => 'value2'], 'Body ');
-
-
-        $this->assertEquals($expectedFrameA, $this->parser->getFrame());
-        $this->assertEquals($expectedFrameB, $this->parser->getFrame());
-    }
-
     public function testParseFrameTransformsToMapIfJmsMapHeaderIsSet()
     {
         $body = json_encode(['var' => 'value']);
