@@ -9,8 +9,8 @@
 namespace Stomp\Broker\ActiveMq\Mode;
 
 use Stomp\Broker\ActiveMq\ActiveMq;
-use Stomp\Broker\ActiveMq\Exception\NoActiveMqBroker;
 use Stomp\Broker\ActiveMq\Options;
+use Stomp\Broker\Exception\UnsupportedBrokerException;
 use Stomp\Client;
 use Stomp\Mode\AbstractMode;
 
@@ -46,13 +46,13 @@ abstract class ActiveMqMode
 
     /**
      * @return ActiveMq
-     * @throws NoActiveMqBroker
+     * @throws \Stomp\Broker\Exception\UnsupportedBrokerException
      */
     protected function getProtocol()
     {
         $protocol = $this->client->getProtocol();
         if (!$protocol instanceof ActiveMq) {
-            throw new NoActiveMqBroker($protocol);
+            throw new UnsupportedBrokerException($protocol, ActiveMq::class);
         }
         return $protocol;
     }
