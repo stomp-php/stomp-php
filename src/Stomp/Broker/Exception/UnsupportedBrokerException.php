@@ -28,6 +28,8 @@ class UnsupportedBrokerException extends StompException
      */
     public function __construct(Protocol $detectedProtocol, $expectedProtocol)
     {
-        parent::__construct('The current broker (%s) is no %s.', get_class($detectedProtocol), $expectedProtocol);
+        parent::__construct(
+            sprintf('The current broker (%s) is no %s.', get_class($detectedProtocol), $expectedProtocol)
+        );
     }
 }

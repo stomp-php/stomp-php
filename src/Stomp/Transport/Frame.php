@@ -122,6 +122,16 @@ class Frame implements ArrayAccess
     }
 
     /**
+     * Frame is in legacy mode.
+     *
+     * @return bool
+     */
+    public function isLegacyMode()
+    {
+        return $this->legacyMode;
+    }
+
+    /**
      * Command
      *
      * @return string

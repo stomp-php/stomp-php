@@ -21,14 +21,4 @@ use Exception;
 class StompException extends Exception
 {
 
-    /**
-     * Stomp server error details
-     *
-     * @deprecated use getMessage()
-     * @return string
-     */
-    public function getDetails()
-    {
-        return $this->getMessage();
-    }
 }

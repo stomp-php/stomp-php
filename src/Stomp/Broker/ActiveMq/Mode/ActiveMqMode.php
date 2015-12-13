@@ -12,7 +12,6 @@ use Stomp\Broker\ActiveMq\ActiveMq;
 use Stomp\Broker\ActiveMq\Options;
 use Stomp\Broker\Exception\UnsupportedBrokerException;
 use Stomp\Client;
-use Stomp\Mode\AbstractMode;
 
 /**
  * ActiveMqMode
