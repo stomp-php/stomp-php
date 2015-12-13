@@ -19,6 +19,7 @@ use Stomp\Exception\StompException;
 use Stomp\Exception\UnexpectedResponseException;
 use Stomp\Network\Connection;
 use Stomp\Protocol\Protocol;
+use Stomp\Protocol\Version;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Message;
 use Stomp\Transport\Parser;
@@ -98,10 +99,70 @@ class ClientTest extends PHPUnit_Framework_TestCase
     }
 
 
+    public function testMultipleCallsToConnectWontLeadToMultipleConnectTries()
+    {
+        $connectFrame = new Frame('CONNECTED');
+        $connectFrame['session'] = 'your-session-id';
+        $connectFrame['server'] = 'not-supported';
+
+        $stomp = $this->getStompWithInjectedMockedConnectionReadResult($connectFrame);
+
+        $this->assertFalse($stomp->isConnected());
+        $stomp->connect();
+        $this->assertTrue($stomp->isConnected());
+        $stomp->connect();
+        $this->assertTrue($stomp->isConnected());
+    }
+
+    public function testSyncModeIsEnabledByDefault()
+    {
+        $stomp = new Client('tcp://127.0.0.1');
+        $this->assertTrue($stomp->isSync());
+    }
+
+    public function testConnectWillUseConfiguredVersions()
+    {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['readFrame', 'writeFrame', 'getParser', 'isConnected', 'disconnect'])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $connection
+            ->expects($this->once())
+            ->method('readFrame')
+            ->will(
+                $this->returnValue(new Frame('CONNECTED'))
+            );
+        $sendFrame = null;
+        $connection
+            ->expects($this->once())
+            ->method('writeFrame')
+            ->willReturnCallback(
+                function ($frame) use (&$sendFrame) {
+                    $sendFrame = $frame;
+                }
+            );
+        $connection
+            ->expects($this->any())
+            ->method('getParser')
+            ->willReturn(new Parser());
+        $connection
+            ->expects($this->any())
+            ->method('isConnected')
+            ->willReturn(true);
+
+        $client = new Client($connection);
+        $client->setVersions([Version::VERSION_1_0, Version::VERSION_1_2]);
+        $client->connect();
+        self::$stomp = $client;
+
+        $this->assertInstanceOf(Frame::class, $sendFrame);
+        $this->assertEquals(Version::VERSION_1_0 . ',' . Version::VERSION_1_2, $sendFrame['accept-version']);
+    }
+
     /**
      * @expectedException \Stomp\Exception\StompException
      */
-    public function testWaitForReceiptWillThrowExceptionOnIdMissmatch()
+    public function testWaitForReceiptWillThrowExceptionOnIdMismatch()
     {
         $receiptFrame = new Frame('RECEIPT');
         $receiptFrame['receipt-id'] = 'not-matching-id';
@@ -153,7 +214,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     /**
      * Get stomp, configured to use a connection which will return the given result on read.
      *
-     * @param mixed   $readFrameResult
+     * @param mixed $readFrameResult
      * @return Client
      */
     protected function getStompWithInjectedMockedConnectionReadResult($readFrameResult)

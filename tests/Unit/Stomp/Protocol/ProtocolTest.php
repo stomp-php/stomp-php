@@ -53,6 +53,16 @@ class ProtocolTest extends ProtocolTestCase
         $this->assertEquals('my-pass', $actual['passcode']);
     }
 
+
+    public function testGetters()
+    {
+        $protocol = new Protocol('client-id', Version::VERSION_1_1, 'server-id');
+
+        $this->assertEquals('client-id', $protocol->getClientId());
+        $this->assertEquals(Version::VERSION_1_1, $protocol->getVersion());
+        $this->assertEquals('server-id', $protocol->getServer());
+    }
+
     protected function getProtocolClassFqn()
     {
         return Protocol::class;

@@ -14,6 +14,7 @@ use Stomp\LegacyStomp;
 use Stomp\Protocol\Protocol;
 use Stomp\Protocol\Version;
 use Stomp\Transport\Frame;
+use Stomp\Transport\Message;
 
 /**
  * LegacyStompTest
@@ -24,6 +25,21 @@ use Stomp\Transport\Frame;
 class LegacyStompTest extends PHPUnit_Framework_TestCase
 {
 
+    public function testSendIsMappedToClient()
+    {
+        $queue = 'queue';
+        $message = new Message('content');
+
+        $stomp = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['send'])
+            ->getMock();
+
+        $stomp->expects($this->once())->method('send')->with($queue, $message);
+
+        $legacy = new LegacyStomp($stomp);
+        $legacy->send($queue, $message);
+    }
     /**
      * @param $method
      * @param array $parameters
