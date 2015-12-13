@@ -73,9 +73,10 @@ interface IStateful
      * @param string $destination
      * @param string $selector
      * @param string $ack
+     * @param array  $header
      * @return int
      */
-    public function subscribe($destination, $selector, $ack);
+    public function subscribe($destination, $selector, $ack, array $header = []);
 
     /**
      * Unsubscribe from current or given destination.

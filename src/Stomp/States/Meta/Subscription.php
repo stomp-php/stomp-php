@@ -39,18 +39,25 @@ class Subscription
     private $ack;
 
     /**
+     * @var array
+     */
+    private $header;
+
+    /**
      * Subscription constructor.
      * @param String $destination
      * @param String $selector
      * @param String $ack
      * @param int $subscriptionId
+     * @param array $header additionally passed to create this subscription
      */
-    public function __construct($destination, $selector, $ack, $subscriptionId)
+    public function __construct($destination, $selector, $ack, $subscriptionId, array $header = [])
     {
         $this->subscriptionId = $subscriptionId;
         $this->selector = $selector;
         $this->destination = $destination;
         $this->ack = $ack;
+        $this->header = $header;
     }
 
 
@@ -86,6 +93,13 @@ class Subscription
         return $this->ack;
     }
 
+    /**
+     * @return array
+     */
+    public function getHeader()
+    {
+        return $this->header;
+    }
 
     /**
      * Checks if the given frame belongs to current Subscription.

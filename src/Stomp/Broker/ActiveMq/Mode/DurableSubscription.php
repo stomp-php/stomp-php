@@ -8,7 +8,6 @@
 
 namespace Stomp\Broker\ActiveMq\Mode;
 
-use Stomp\Broker\ActiveMq\Exception\NoActiveMqBroker;
 use Stomp\Client;
 use Stomp\Exception\StompException;
 use Stomp\States\Meta\Subscription;
@@ -18,7 +17,7 @@ use Stomp\Transport\Frame;
  * DurableSubscription for ActiveMq.
  *
  * @package Stomp\Broker\ActiveMq\Mode
- * @author Jens Radtke <swefl.oss@fin-sn.de>
+ * @author Jens Radtke <swefl.oss@fin-sn.de>l
  */
 class DurableSubscription extends ActiveMqMode
 {
@@ -54,7 +53,7 @@ class DurableSubscription extends ActiveMqMode
     /**
      * Init the subscription.
      *
-     * @throws NoActiveMqBroker
+     * @return void
      */
     public function activate()
     {

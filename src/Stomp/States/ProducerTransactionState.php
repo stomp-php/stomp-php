@@ -51,11 +51,11 @@ class ProducerTransactionState extends ProducerState
     /**
      * @inheritdoc
      */
-    public function subscribe($destination, $selector, $ack)
+    public function subscribe($destination, $selector, $ack, array $header = [])
     {
         return $this->setState(
             new ConsumerTransactionState($this->getClient(), $this->getBase()),
-            $this->getOptions() + compact('destination', 'selector', 'ack')
+            $this->getOptions() + compact('destination', 'selector', 'ack', 'header')
         );
     }
 

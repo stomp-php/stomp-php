@@ -117,7 +117,7 @@ class StatefulTest extends PHPUnit_Framework_TestCase
                 // state to test
                 ConsumerState::class,
                 // init options
-                ['destination' => 'test', 'selector' => 'test', 'ack' => 'auto'],
+                ['destination' => 'test', 'selector' => 'test', 'ack' => 'auto', 'header' => []],
                 // transactions
                 [
                     'begin' => ConsumerTransactionState::class,
@@ -130,7 +130,7 @@ class StatefulTest extends PHPUnit_Framework_TestCase
                 // state to test
                 ConsumerTransactionState::class,
                 // init options
-                ['transactionId' => 5, 'destination' => 'test', 'selector' => 'test', 'ack' => 'auto'],
+                ['transactionId' => 5, 'destination' => 'test', 'selector' => 'test', 'ack' => 'auto', 'header' => []],
                 // transactions
                 [
                     'commit' => ConsumerState::class,

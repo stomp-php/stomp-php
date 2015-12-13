@@ -62,7 +62,7 @@ class ConsumerState extends StateTemplate
         if (isset($options['subscriptions'])) {
             $this->subscriptions = $options['subscriptions'];
         } else {
-            $this->subscribe($options['destination'], $options['selector'], $options['ack']);
+            $this->subscribe($options['destination'], $options['selector'], $options['ack'], $options['header']);
         }
         return $this->subscriptions->getLast()->getSubscriptionId();
     }
@@ -102,16 +102,16 @@ class ConsumerState extends StateTemplate
     /**
      * @inheritdoc
      */
-    public function subscribe($destination, $selector, $ack)
+    public function subscribe($destination, $selector, $ack, array $header = [])
     {
-        $subscription = new Subscription($destination, $selector, $ack, IdGenerator::generateId());
+        $subscription = new Subscription($destination, $selector, $ack, IdGenerator::generateId(), $header);
         $this->getClient()->sendFrame(
             $this->getProtocol()->getSubscribeFrame(
                 $subscription->getDestination(),
                 $subscription->getSubscriptionId(),
                 $subscription->getAck(),
                 $subscription->getSelector()
-            )
+            )->addHeaders($header)
         );
         $this->subscriptions[$subscription->getSubscriptionId()] = $subscription;
         return $subscription->getSubscriptionId();
