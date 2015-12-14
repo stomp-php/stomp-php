@@ -306,6 +306,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $body = 'test';
         $mapMessage = new Bytes($body);
         $this->Stomp->send($this->queue, $mapMessage);
+        $this->Stomp->disconnect(true);
 
         $this->simpleStomp->subscribe($this->queue, 'mysubid');
         $msg = $this->Stomp->readFrame();

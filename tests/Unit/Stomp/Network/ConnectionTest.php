@@ -36,40 +36,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('host2', $list[1]['host'], 'List is not in expected order.');
     }
 
-    public function testBrokerUriParseRandom()
-    {
-        $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)?randomize=true');
-        $getHostList = new ReflectionMethod($connection, 'getHostList');
-        $getHostList->setAccessible(true);
-
-        $arrayHash = function (array $array) {
-            $hash = '';
-            foreach ($array as $host) {
-                $hash .= $host['host'];
-            }
-            return $hash;
-        };
-
-        $calls = [
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-           $arrayHash($getHostList->invoke($connection)),
-        ];
-
-
-        $orders = array_unique($calls);
-        $this->assertCount(
-            2,
-            $orders,
-            'Hostlist should be returned in random order. Expected 2 possible orders for given host list.'
-        );
-    }
-
     public function testBrokerUriParseSimple()
     {
         $connection = new Connection('tcp://host1');

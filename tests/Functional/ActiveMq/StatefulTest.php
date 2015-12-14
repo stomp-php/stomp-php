@@ -35,6 +35,7 @@ class StatefulTest extends StatefulTestBase
 
         $producer->send($queue, new Message('message-a', ['persistent' => 'true']));
         $producer->send($queue, new Message('message-b', ['persistent' => 'true']));
+        $producer->getClient()->disconnect(true);
 
         $frameA = $receiver->read();
         $this->assertInstanceOf(Frame::class, $frameA);
@@ -47,5 +48,6 @@ class StatefulTest extends StatefulTestBase
         $receiver->ack($frameB);
 
         $this->assertFalse($receiver->read());
+        $receiver->unsubscribe();
     }
 }

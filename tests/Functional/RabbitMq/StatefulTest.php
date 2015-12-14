@@ -24,6 +24,8 @@ class StatefulTest extends StatefulTestBase
      */
     protected function getClient()
     {
-        return ClientProvider::getClient();
+        $client = ClientProvider::getClient();
+        $client->setReceiptWait(2);
+        return $client;
     }
 }

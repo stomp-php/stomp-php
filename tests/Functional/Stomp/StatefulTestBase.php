@@ -24,6 +24,21 @@ use Stomp\Transport\Message;
 abstract class StatefulTestBase extends PHPUnit_Framework_TestCase
 {
     /**
+     * @var Client[]
+     */
+    private $clients = [];
+
+    protected function tearDown()
+    {
+        foreach ($this->clients as $client) {
+            if ($client->isConnected()) {
+                $client->disconnect(true);
+            }
+        }
+        parent::tearDown();
+    }
+
+    /**
      * @return Client
      */
     abstract protected function getClient();
@@ -36,10 +51,7 @@ abstract class StatefulTestBase extends PHPUnit_Framework_TestCase
     {
         $client = $this->getClient();
         $client->getConnection()->setReadTimeout(0, 750000);
-        if (!$client->isConnected()) {
-            $client->connect();
-        }
-
+        $this->clients[] = $client;
         return new StatefulStomp($client);
     }
 
@@ -122,10 +134,10 @@ abstract class StatefulTestBase extends PHPUnit_Framework_TestCase
         $producer = $this->getStatefulStomp();
 
         $receiver->subscribe($queue, null, 'client');
-        // $receiver->subscribe($queue, null, 'client-individual');
 
         $producer->send($queue, new Message('message-a', ['persistent' => 'true']));
         $producer->send($queue, new Message('message-b', ['persistent' => 'true']));
+        $producer->getClient()->disconnect(true);
 
         for ($i = 0; $i < 2; $i++) {
             $frame = $receiver->read();

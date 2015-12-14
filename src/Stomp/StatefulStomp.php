@@ -182,4 +182,14 @@ class StatefulStomp extends StateSetter implements IStateful
     {
         $this->state = $state;
     }
+
+    /**
+     * Returns the used client.
+     *
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
 }

@@ -47,7 +47,7 @@ class ASyncTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->Stomp->disconnect();
+        $this->Stomp->disconnect(true);
         $this->Stomp = null;
         parent::tearDown();
     }
