@@ -9,12 +9,13 @@
 
 namespace Stomp\Tests\Functional\ActiveMq;
 
-use Stomp\Frame;
-use Stomp\Message\Bytes;
-use Stomp\Message\Map;
-use Stomp\Stomp;
-
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
+use PHPUnit_Framework_TestCase;
+use Stomp\Broker\ActiveMq\ActiveMq;
+use Stomp\Client;
+use Stomp\SimpleStomp;
+use Stomp\Transport\Bytes;
+use Stomp\Transport\Frame;
+use Stomp\Transport\Map;
 
 /**
  * Client test for ActiveMq Broker
@@ -23,13 +24,17 @@ use Stomp\Stomp;
  * @author Michael Caplan <mcaplan@labnet.net>
  * @author Dejan Bosanac <dejan@nighttale.net>
  */
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Stomp
+     * @var SimpleStomp
+     */
+    private $simpleStomp;
+    /**
+     * @var Client
      */
     private $Stomp;
-    private $broker = 'tcp://127.0.0.1:61010';
+
     private $queue = '/queue/test';
     private $topic = '/topic/test';
 
@@ -40,8 +45,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->Stomp = new Stomp($this->broker);
-        $this->Stomp->getConnection()->setReadTimeout(0, 400000);
+        $this->Stomp = ClientProvider::getClient();
+        $this->simpleStomp = new SimpleStomp($this->Stomp);
     }
     /**
      * Cleans up the environment after running a test.
@@ -58,11 +63,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->assertInstanceOf(
-            '\Stomp\Protocol\ActiveMq',
-            $this->Stomp->getProtocol(),
-            'Expected an ActiveMq Broker.'
-        );
+        $this->assertInstanceOf(ActiveMq::class, $this->Stomp->getProtocol(), 'Expected an ActiveMq Broker.');
 
         $this->Stomp->disconnect();
     }
@@ -77,11 +78,13 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
 
+        $this->Stomp->getConnection()->setReadTimeout(0, 750000);
+
         $this->assertFalse($this->Stomp->getConnection()->hasDataToRead(), 'Has frame to read when non expected');
 
         $this->Stomp->send($this->queue, 'testHasFrameToRead');
 
-        $this->Stomp->subscribe($this->queue, array('ack' => 'client','activemq.prefetchSize' => 1 ));
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
 
         $this->assertTrue($this->Stomp->getConnection()->hasDataToRead(), 'Did not have frame to read when expected');
 
@@ -89,9 +92,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($frame instanceof Frame, 'Frame expected');
 
-        $this->Stomp->ack($frame);
+        $this->simpleStomp->ack($frame);
 
         $this->Stomp->disconnect();
+
+        $this->Stomp->getConnection()->setReadTimeout(60);
     }
 
     /**
@@ -103,7 +108,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
 
-        $messages = array();
+        $messages = [];
 
         for ($x = 0; $x < 100; ++$x) {
             $this->Stomp->send($this->queue, $x);
@@ -115,11 +120,11 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         for ($y = 0; $y < 100; $y += 10) {
             $this->Stomp->connect();
 
-            $this->Stomp->subscribe($this->queue, array('ack' => 'client','activemq.prefetchSize' => 1 ));
+            $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
 
             for ($x = $y; $x < $y + 10; ++$x) {
                 $frame = $this->Stomp->readFrame();
-                $this->assertTrue($frame instanceof Frame);
+                $this->assertInstanceOf(Frame::class, $frame);
                 $this->assertArrayHasKey(
                     $frame->body,
                     $messages,
@@ -132,7 +137,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
                 );
                 $messages[$frame->body] = 'acked';
 
-                $this->assertTrue($this->Stomp->ack($frame), "Unable to ack {$frame->headers['message-id']}");
+                $this->simpleStomp->ack($frame);
 
             }
 
@@ -140,7 +145,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         }
 
-        $un_acked_messages = array();
+        $un_acked_messages = [];
 
         foreach ($messages as $key => $value) {
             if ($value == 'sent') {
@@ -160,17 +165,18 @@ class ClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testAbort()
     {
+        $this->Stomp->getConnection()->setReadTimeout(1);
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->Stomp->begin("tx1");
-        $this->assertTrue($this->Stomp->send($this->queue, 'testSend', array("transaction" => "tx1")));
-        $this->Stomp->abort("tx1");
+        $this->simpleStomp->begin("tx1");
+        $this->assertTrue($this->Stomp->send($this->queue, 'testSend', ["transaction" => "tx1"]));
+        $this->simpleStomp->abort("tx1");
 
-        $this->Stomp->subscribe($this->queue);
+        $this->simpleStomp->subscribe($this->queue, 'mysubid');
         $frame = $this->Stomp->readFrame();
         $this->assertFalse($frame);
-        $this->Stomp->unsubscribe($this->queue);
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
         $this->Stomp->disconnect();
     }
 
@@ -226,12 +232,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
         $this->Stomp->send($this->queue, 'testReadFrame');
-        $this->Stomp->subscribe($this->queue);
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
         $frame = $this->Stomp->readFrame();
         $this->assertTrue($frame instanceof Frame);
         $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
-        $this->Stomp->ack($frame);
-        $this->Stomp->unsubscribe($this->queue);
+        $this->simpleStomp->ack($frame);
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -243,12 +249,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             $this->Stomp->connect();
         }
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend'));
-        $this->Stomp->subscribe($this->queue);
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
         $frame = $this->Stomp->readFrame();
         $this->assertTrue($frame instanceof Frame);
         $this->assertEquals('testSend', $frame->body, 'Body of test frame does not match sent message');
-        $this->Stomp->ack($frame);
-        $this->Stomp->unsubscribe($this->queue);
+        $this->simpleStomp->ack($frame);
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -259,8 +265,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->assertTrue($this->Stomp->subscribe($this->queue));
-        $this->Stomp->unsubscribe($this->queue);
+        $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid'));
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
     }
 
     /**
@@ -271,19 +277,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $body = array("city"=>"Belgrade", "name"=>"Dejan");
-        $header = array();
+        $body = ["city"=>"Belgrade", "name"=>"Dejan"];
+        $header = [];
         $header['transformation'] = 'jms-map-json';
         $mapMessage = new Map($body, $header);
         $this->Stomp->send($this->queue, $mapMessage);
 
-        $this->Stomp->subscribe($this->queue, array('transformation' => 'jms-map-json'));
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'auto', null, ['transformation' => 'jms-map-json']);
         $msg = $this->Stomp->readFrame();
         $this->assertTrue($msg instanceof Map);
 
-        /** @var Map $msg */
+        /** @var \Stomp\Transport\Map $msg */
         $this->assertEquals($msg->map, $body);
-        $this->Stomp->ack($msg);
+        $this->simpleStomp->ack($msg);
         $this->Stomp->disconnect();
     }
 
@@ -298,11 +304,12 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $body = 'test';
         $mapMessage = new Bytes($body);
         $this->Stomp->send($this->queue, $mapMessage);
+        $this->Stomp->disconnect(true);
 
-        $this->Stomp->subscribe($this->queue);
+        $this->simpleStomp->subscribe($this->queue, 'mysubid');
         $msg = $this->Stomp->readFrame();
         $this->assertEquals($msg->body, $body);
-        $this->Stomp->ack($msg);
+        $this->simpleStomp->ack($msg);
         $this->Stomp->disconnect();
     }
 
@@ -314,60 +321,71 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
-        $this->Stomp->subscribe($this->queue);
-        $this->assertTrue($this->Stomp->unsubscribe($this->queue));
+        $this->simpleStomp->subscribe($this->queue, 'mysubid');
+        $this->assertTrue($this->simpleStomp->unsubscribe($this->queue, 'mysubid'));
     }
 
     public function testDurable()
     {
         $this->subscribe();
-        usleep(500000);
         $this->produce();
-        usleep(500000);
         $this->consume();
     }
 
     protected function produce()
     {
-        $producer = new Stomp($this->broker);
-        $producer->sync = false;
-        $producer->connect('system', 'manager');
-        $producer->send($this->topic, 'test message', array('persistent' => 'true'));
+        $producer = ClientProvider::getClient();
+        $producer->setSync(false);
+        $producer->connect();
+        $producer->send($this->topic, 'test message', ['persistent' => 'true']);
         $producer->disconnect();
     }
 
     protected function subscribe()
     {
-        $consumer = new Stomp($this->broker);
-        $consumer->sync = false;
-        $consumer->clientId = 'test';
-        $consumer->connect('system', 'manager');
-        $consumer->subscribe($this->topic, null, null, true);
+        $consumer = ClientProvider::getClient();
+        $consumer->setSync(false);
+        $consumer->setClientId('test');
+        $consumer->connect();
 
-        $consumer->disconnect();
+        $amq = $consumer->getProtocol();
+        $this->assertInstanceOf(ActiveMq::class, $amq);
+        /**
+         * @var $amq ActiveMq
+         */
+        $consumer->sendFrame($amq->getSubscribeFrame($this->topic, 'test', 'auto', null, true));
+
+        $consumer->disconnect(true);
     }
 
     protected function consume()
     {
-        $consumer2 = new Stomp($this->broker);
-        $consumer2->sync = false;
-        $consumer2->clientId = 'test';
-        $consumer2->getConnection()->setReadTimeout(0, 500000);
-        $consumer2->connect('system', 'manager');
-        $consumer2->subscribe($this->topic, null, null, true);
+        $consumer2 = ClientProvider::getClient();
+        $consumer2->setSync(false);
+        $consumer2->setClientId('test');
+        $consumer2->getConnection()->setReadTimeout(1);
+        $consumer2->connect();
+
+        $amq = $consumer2->getProtocol();
+        $this->assertInstanceOf(ActiveMq::class, $amq);
+        /**
+         * @var $amq ActiveMq
+         */
+        $consumer2->sendFrame($amq->getSubscribeFrame($this->topic, 'test', 'auto', null, true));
+
 
         $frame = $consumer2->readFrame();
         $this->assertEquals($frame->body, 'test message');
         if ($frame != null) {
-            $consumer2->ack($frame);
+            $consumer2->sendFrame($amq->getAckFrame($frame));
         }
 
         // yes, that's active mq! you must unsub two times...
         // http://mail-archives.apache.org/mod_mbox/activemq-dev/201205.mbox/raw/
         //        %3C634996273.21688.1336051731428.JavaMail.tomcat@hel.zones.apache.org%3E/
-        $consumer2->unsubscribe($this->topic);
+        $consumer2->sendFrame($amq->getUnsubscribeFrame($this->topic, 'test'));
         // that took me some time...
-        $consumer2->unsubscribe($this->topic, null, null, true);
+        $consumer2->sendFrame($amq->getUnsubscribeFrame($this->topic, 'test', true));
 
         $consumer2->disconnect();
     }

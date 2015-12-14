@@ -9,8 +9,6 @@
 
 namespace Stomp\Exception;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Any kind of connection problems.
  *
@@ -32,7 +30,7 @@ class ConnectionException extends StompException
      * @param array $connection
      * @param ConnectionException $previous
      */
-    public function __construct($info, array $connection = array(), ConnectionException $previous = null)
+    public function __construct($info, array $connection = [], ConnectionException $previous = null)
     {
         $this->connectionInfo = $connection;
 

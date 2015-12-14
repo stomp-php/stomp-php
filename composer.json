@@ -1,7 +1,7 @@
 {
     "name": "stomp-php/stomp-php",
     "description": "stomp support for PHP",
-    "keywords": ["messaging", "stomp", "jms", "activemq", "rabbitmq"],
+    "keywords": ["messaging", "stomp", "jms", "activemq", "rabbitmq", "apollomq"],
     "homepage": "http://github.com/stomp-php/stomp-php",
     "license": "Apache-2.0",
     "authors": [
@@ -14,10 +14,15 @@
             "name": "Sören Rohweder",
             "email": "s.rohweder@blage.net",
             "homepage": "http://www.monofone.de"
+        },
+        {
+            "name": "Jens Radtke",
+            "email": "swefl@fin-sn.de",
+            "homepage": "http://www.fin-sn.de"
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.5.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "2.*",
@@ -27,6 +32,11 @@
     "autoload": {
         "psr-4": {
             "Stomp\\": "src/Stomp/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Stomp\\Tests\\": "tests/"
         }
     }
 }

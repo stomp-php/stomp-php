@@ -1,13 +1,14 @@
 # Stomp PHP
 
 This project is a PHP [Stomp](http://stomp.github.com) Client that besides it implements the Stomp protocol fully,
-adds some ActiveMQ specific features that could make your messaging from PHP easier.
+brings some ActiveMQ and Apollo specific utils that could make your messaging from PHP easier.
 
 [![Build Status](https://travis-ci.org/stomp-php/stomp-php.svg?branch=master)](https://travis-ci.org/stomp-php/stomp-php)
 
 ## Version choice
 
-- For new projects you should use version `3.*` which is the last `php-5.3` compatible.
+- For new projects you should use version `4.*` which requires `php-5.5`.
+- For projects running older php versions you can use version `3.*` which is the last `php-5.3` compatible.
 - For running projects with `fusesource/stomp-php@2.x` clients you can use version `2.2.2`.
 - All version newer that `2.x` won't be compatible with `fusesource/stomp-php`. (https://github.com/dejanb/stomp-php.)  
 
@@ -23,7 +24,7 @@ Just add
 
 ```json
     "require": {
-        "stomp-php/stomp-php": "3.*"
+        "stomp-php/stomp-php": "4.*"
     }
 ```
 
@@ -45,24 +46,13 @@ If you used `fusesource/stomp-php` before, you can use our `2.x` versions.
 
 See our [wiki](https://github.com/stomp-php/stomp-php/wiki).
 
-## Running Examples
+## Examples
 
-Examples are located in `src/examples` folder. Before running them, be sure
-you have installed this library properly and you have started ActiveMQ broker
-(recommended version 5.5.0 or above) with [Stomp connector enabled]
-(http://activemq.apache.org/stomp.html).
+Have a look at our example project https://github.com/stomp-php/stomp-php-examples.
 
-You can start by running
+## Contributing
 
-    cd examples
-    php connectivity.php
-
-Also, be sure to check comments in the particular examples for some special
-configuration steps (if needed).
-
-## Step by Step: Certificate based Authentication
-
-https://github.com/rethab/php-stomp-cert-example
+We code in `PSR2`, please use our predefined `pre_commit.sh` hook. 
 
 ## Tests
 

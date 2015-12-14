@@ -9,7 +9,9 @@
 
 namespace Stomp\Tests\Functional\ActiveMq;
 
-use Stomp\Stomp;
+use PHPUnit_Framework_TestCase;
+use Stomp\Client;
+use Stomp\SimpleStomp;
 
 /**
  * Stomp test case.
@@ -17,12 +19,17 @@ use Stomp\Stomp;
  * @package Stomp
  * @author Mark R. <mark+gh@mark.org.il>
  */
-class ASyncTest extends \PHPUnit_Framework_TestCase
+class ASyncTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Stomp
+     * @var Client
      */
     private $Stomp;
+
+    /**
+     * @var SimpleStomp
+     */
+    private $simpleStomp;
 
     /**
      * Prepares the environment before running a test.
@@ -30,8 +37,9 @@ class ASyncTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->Stomp = new Stomp('tcp://localhost:61010');
-        $this->Stomp->sync = false;
+        $this->Stomp = ClientProvider::getClient();
+        $this->Stomp->setSync(false);
+        $this->simpleStomp = new SimpleStomp($this->Stomp);
     }
 
     /**
@@ -39,7 +47,7 @@ class ASyncTest extends \PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
-        $this->Stomp->disconnect();
+        $this->Stomp->disconnect(true);
         $this->Stomp = null;
         parent::tearDown();
     }
@@ -53,14 +61,12 @@ class ASyncTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
-        $this->assertTrue($this->Stomp->subscribe('/queue/test'));
+        $this->assertTrue($this->simpleStomp->subscribe('/queue/test', 'mysubid'));
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals($frame->body, 'test 1', 'test 1 was not received!');
-        $this->Stomp->ack($frame);
 
         $frame = $this->Stomp->readFrame();
         $this->assertEquals($frame->body, 'test 2', 'test 2 was not received!');
-        $this->Stomp->ack($frame);
     }
 }
