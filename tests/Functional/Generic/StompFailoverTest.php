@@ -11,8 +11,6 @@ namespace Stomp\Tests\Functional\Generic;
 
 use Stomp\Client;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Stomp test case.
  *

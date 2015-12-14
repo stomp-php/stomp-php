@@ -33,6 +33,9 @@ class ApolloTest extends ProtocolTestCase
     public function testSubscribeDurable()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance Apollo
+         */
         $result = $instance->getSubscribeFrame('target', null, 'auto', null, true);
         $this->assertEquals('true', $result['persistent']);
         $this->assertIsSubscribeFrame($result);
@@ -49,6 +52,9 @@ class ApolloTest extends ProtocolTestCase
     public function testUnsubscribeDurable()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance Apollo
+         */
         $result = $instance->getUnsubscribeFrame('target', null, true);
         $this->assertEquals('true', $result['persistent']);
         $this->assertIsUnsubscribeFrame($result);

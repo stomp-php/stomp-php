@@ -32,6 +32,9 @@ class QueueBrowserTest extends PHPUnit_Framework_TestCase
             ->getMock();
         $client->method('getProtocol')->willReturn(new RabbitMq('client-id'));
 
+        /**
+         * @var $client Client
+         */
         $browser = new QueueBrowser($client, 'target');
         $browser->subscribe();
     }

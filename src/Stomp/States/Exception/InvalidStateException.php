@@ -22,6 +22,9 @@ class InvalidStateException extends StompException
 
     /**
      * InvalidStateException constructor.
+     *
+     * @param IStateful $state
+     * @param string $method
      */
     public function __construct(IStateful $state, $method)
     {

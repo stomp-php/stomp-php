@@ -11,7 +11,6 @@ namespace Stomp\Tests\Functional\ActiveMq;
 use PHPUnit_Framework_TestCase;
 use Stomp\Client;
 use Stomp\SimpleStomp;
-use Stomp\Network\Connection;
 use Stomp\Transport\Frame;
 
 /**

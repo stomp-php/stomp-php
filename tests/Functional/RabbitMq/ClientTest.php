@@ -16,8 +16,6 @@ use Stomp\Transport\Bytes;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Map;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Client test for RabbitMq Broker
  *

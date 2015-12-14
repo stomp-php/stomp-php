@@ -9,8 +9,6 @@
 
 namespace Stomp\Transport;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * A Stomp frame parser
  *

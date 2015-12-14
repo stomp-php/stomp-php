@@ -91,6 +91,9 @@ class StatefulTest extends PHPUnit_Framework_TestCase
         $client->method('readFrame')->willReturn(new Message('read-frame'));
         $client->method('isConnected')->willReturn(true);
 
+        /**
+         * @var $client Client
+         */
         $stateful = new StatefulStomp($client);
         $setState = new ReflectionMethod($stateful, 'setState');
         $setState->setAccessible(true);

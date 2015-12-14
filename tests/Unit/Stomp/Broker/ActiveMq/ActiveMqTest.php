@@ -25,6 +25,9 @@ class ActiveMqTestCase extends ProtocolTestCase
     public function testSubscribeUsesConfiguredPrefetchSize()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance ActiveMq
+         */
         $instance->setPrefetchSize(506);
         $result = $instance->getSubscribeFrame('target');
         $this->assertEquals(506, $result['activemq.prefetchSize']);
@@ -33,6 +36,9 @@ class ActiveMqTestCase extends ProtocolTestCase
     public function testSubscribeNonDurable()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance ActiveMq
+         */
         $result = $instance->getSubscribeFrame('target');
         $this->assertEquals($instance->getPrefetchSize(), $result['activemq.prefetchSize']);
         $this->assertNull($result['activemq.subscriptionName']);
@@ -41,6 +47,9 @@ class ActiveMqTestCase extends ProtocolTestCase
     public function testSubscribeDurable()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance ActiveMq
+         */
         $result = $instance->getSubscribeFrame('target', null, 'auto', null, true);
         $this->assertEquals($instance->getPrefetchSize(), $result['activemq.prefetchSize']);
         $this->assertEquals('test-client-id', $result['activemq.subscriptionName']);
@@ -56,6 +65,9 @@ class ActiveMqTestCase extends ProtocolTestCase
     public function testUnsubscribeDurable()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance ActiveMq
+         */
         $result = $instance->getUnsubscribeFrame('target', null, true);
         $this->assertEquals('test-client-id', $result['activemq.subscriptionName']);
     }

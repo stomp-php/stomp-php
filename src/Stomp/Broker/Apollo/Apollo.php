@@ -62,6 +62,9 @@ class Apollo extends Protocol
         return $frame;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getAckFrame(Frame $frame, $transactionId = null)
     {
         $ack = new Frame('ACK');
@@ -74,6 +77,9 @@ class Apollo extends Protocol
         return $ack;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getNackFrame(Frame $frame, $transactionId = null)
     {
         $ack = new Frame('NACK');

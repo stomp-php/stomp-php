@@ -9,9 +9,6 @@
 
 namespace Stomp\Transport;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
-
 /**
  * Basic text stomp message
  *
@@ -19,6 +16,12 @@ namespace Stomp\Transport;
  */
 class Message extends Frame
 {
+    /**
+     * Message constructor.
+     *
+     * @param string $body
+     * @param array $headers
+     */
     public function __construct($body, array $headers = [])
     {
         parent::__construct('SEND', $headers, $body);

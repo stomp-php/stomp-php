@@ -74,6 +74,9 @@ class ActiveMq extends Protocol
         return $frame;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getAckFrame(Frame $frame, $transactionId = null)
     {
         $ack = new Frame('ACK');
@@ -86,6 +89,9 @@ class ActiveMq extends Protocol
         return $ack;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getNackFrame(Frame $frame, $transactionId = null)
     {
         $nack = new Frame('NACK');

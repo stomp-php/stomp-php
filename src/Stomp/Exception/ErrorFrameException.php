@@ -11,8 +11,6 @@ namespace Stomp\Exception;
 
 use Stomp\Transport\Frame;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Stomp server send us an error frame.
  *

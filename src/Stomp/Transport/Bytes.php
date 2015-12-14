@@ -9,8 +9,6 @@
 
 namespace Stomp\Transport;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Message that contains a stream of uninterpreted bytes
  *
@@ -31,6 +29,9 @@ class Bytes extends Message
         $this->expectLengthHeader(true);
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function getBodySize()
     {
         return count(unpack('c*', $this->getBody()));

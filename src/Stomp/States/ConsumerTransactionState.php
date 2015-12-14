@@ -10,7 +10,6 @@ namespace Stomp\States;
 
 use Stomp\States\Exception\InvalidStateException;
 use Stomp\Transport\Frame;
-use Stomp\Util\IdGenerator;
 
 /**
  * ConsumerTransactionState client is a consumer within an transaction.

@@ -36,7 +36,9 @@ class SimpleStompTest extends PHPUnit_Framework_TestCase
             ->getMock();
 
         $stomp->expects($this->once())->method('send')->with($queue, $message);
-
+        /**
+         * @var $stomp Client
+         */
         $simpleStomp = new SimpleStomp($stomp);
         $simpleStomp->send($queue, $message);
     }
@@ -64,6 +66,9 @@ class SimpleStompTest extends PHPUnit_Framework_TestCase
             ->with($expectedSendFrameParameters[0], $expectedSendFrameParameters[1])
             ->willReturn($result);
 
+        /**
+         * @var $stomp Client
+         */
         $client = new SimpleStomp($stomp);
         $this->assertEquals($result, call_user_func_array([$client, $method], $parameters));
     }

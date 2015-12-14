@@ -43,7 +43,6 @@ class Options implements ArrayAccess
         }
     }
 
-
     public function offsetExists($offset)
     {
         return isset($this->options[$offset]);

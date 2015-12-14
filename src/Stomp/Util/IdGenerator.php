@@ -28,10 +28,10 @@ class IdGenerator
      */
     public static function generateId()
     {
-        while ($id = rand(1, PHP_INT_MAX)) {
-            if (!in_array($id, static::$generatedIds, true)) {
-                static::$generatedIds[] = $id;
-                return $id;
+        while ($rand = rand(1, PHP_INT_MAX)) {
+            if (!in_array($rand, static::$generatedIds, true)) {
+                static::$generatedIds[] = $rand;
+                return $rand;
             }
         }
     }

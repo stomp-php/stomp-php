@@ -10,12 +10,9 @@
 namespace Stomp\Tests\Unit\Stomp\Protocol;
 
 use PHPUnit_Framework_TestCase;
-use Stomp\Broker\ActiveMq\ActiveMq;
 use Stomp\Protocol\Protocol;
 use Stomp\Protocol\Version;
 use Stomp\Transport\Frame;
-
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
 
 /**
  * Protocol test cases.

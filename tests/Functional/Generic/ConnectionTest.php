@@ -14,8 +14,6 @@ use Stomp\Exception\ErrorFrameException;
 use Stomp\Network\Connection;
 use Stomp\Transport\Frame;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Stomp test case.
  * @package Stomp
@@ -41,8 +39,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         try {
             $connection->readFrame();
             $this->fail('Expected a exception!');
-        } catch (ConnectionException $excpetion) {
-            $this->assertContains('Check failed to determine if the socket is readable.', $excpetion->getMessage());
+        } catch (ConnectionException $exception) {
+            $this->assertContains('Check failed to determine if the socket is readable.', $exception->getMessage());
         }
     }
 
@@ -67,9 +65,9 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         try {
             $connection->readFrame();
             $this->fail('Expected a exception!');
-        } catch (ErrorFrameException $excpetion) {
-            $this->assertContains('stomp-err-info', $excpetion->getMessage());
-            $this->assertEquals('body', $excpetion->getFrame()->body);
+        } catch (ErrorFrameException $exception) {
+            $this->assertContains('stomp-err-info', $exception->getMessage());
+            $this->assertEquals('body', $exception->getFrame()->body);
         }
         fclose($fp);
     }
@@ -92,8 +90,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         try {
             $connection->writeFrame(new Frame('TEST'));
             $this->fail('Expected a exception!');
-        } catch (ConnectionException $excpetion) {
-            $this->assertContains('Was not possible to write frame!', $excpetion->getMessage());
+        } catch (ConnectionException $exception) {
+            $this->assertContains('Was not possible to write frame!', $exception->getMessage());
         }
         fclose($fp);
     }
@@ -128,8 +126,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         try {
             $connection->readFrame();
             $this->fail('Expected a exception!');
-        } catch (ConnectionException $excpetion) {
-            $this->assertContains('Check failed to determine if the socket is readable', $excpetion->getMessage());
+        } catch (ConnectionException $exception) {
+            $this->assertContains('Check failed to determine if the socket is readable', $exception->getMessage());
         }
     }
 

@@ -11,8 +11,6 @@ namespace Stomp\Tests\Functional\ApolloMq;
 
 use PHPUnit_Framework_TestCase;
 use Stomp\Broker\Apollo\Apollo;
-use Stomp\Client;
-use Stomp\Network\Connection;
 
 /**
  * Client test for Apollo Broker

@@ -23,6 +23,9 @@ class RabbitMqTest extends ProtocolTestCase
     public function testSubscribeUsesConfiguredPrefetchSize()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance RabbitMq
+         */
         $instance->setPrefetchCount(506);
         $result = $instance->getSubscribeFrame('target');
         $this->assertEquals(506, $result['prefetch-count']);
@@ -39,6 +42,9 @@ class RabbitMqTest extends ProtocolTestCase
     public function testSubscribeDurable()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance RabbitMq
+         */
         $result = $instance->getSubscribeFrame('target', null, 'auto', null, true);
         $this->assertEquals('true', $result['persistent']);
         $this->assertIsSubscribeFrame($result);
@@ -55,6 +61,9 @@ class RabbitMqTest extends ProtocolTestCase
     public function testUnsubscribeDurable()
     {
         $instance = $this->getProtocol();
+        /**
+         * @var $instance RabbitMq
+         */
         $result = $instance->getUnsubscribeFrame('target', null, true);
         $this->assertEquals('true', $result['persistent']);
         $this->assertIsUnsubscribeFrame($result);

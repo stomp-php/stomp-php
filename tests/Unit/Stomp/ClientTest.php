@@ -24,8 +24,6 @@ use Stomp\Transport\Frame;
 use Stomp\Transport\Message;
 use Stomp\Transport\Parser;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Stomp test case.
  *
@@ -37,7 +35,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     /**
      * Used to avoid destructor calls within single tests
      *
-     * @var Stomp
+     * @var Client
      */
     private static $stomp;
 
@@ -233,7 +231,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('getParser')
             ->will(
-                $this->returnValue(new \Stomp\Transport\Parser())
+                $this->returnValue(new Parser())
             );
         $connection
             ->expects($this->any())
@@ -247,6 +245,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testSendWillAddDestinationAndHeaderToAnyFrameAndSetSyncState()
     {
         $stomp = $this->getStompMockWithSendFrameCatcher($lastSendFrame, $lastSyncState);
+        /**
+         * @var $lastSendFrame Frame
+         */
 
         // test default frame send
         $headers = [
@@ -280,6 +281,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testSendWillConvertStringToFrameBodyAndSetSyncState()
     {
         $stomp = $this->getStompMockWithSendFrameCatcher($lastSendFrame, $lastSyncState);
+        /**
+         * @var $lastSendFrame Frame
+         */
 
         // test data
         $headers = [
@@ -381,7 +385,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
             ->setMethods(['isConnected'])
             ->getMock();
         $stomp->expects($this->any())->method('isConnected')->willReturn(true);
-
+        /**
+         * @var $stomp Client
+         */
         try {
             $stomp->setReceiptWait(0);
             $stomp->sendFrame(new Frame(), true);
@@ -427,7 +433,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
             ->setMethods(['isConnected'])
             ->getMock();
         $stomp->expects($this->any())->method('isConnected')->willReturn(true);
-
+        /**
+         * @var $stomp Client
+         */
 
         $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
         $waitForReceipt->setAccessible(true);

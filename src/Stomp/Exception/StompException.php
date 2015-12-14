@@ -11,8 +11,6 @@ namespace Stomp\Exception;
 
 use Exception;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Base exception for all special stomp exceptions.
  *

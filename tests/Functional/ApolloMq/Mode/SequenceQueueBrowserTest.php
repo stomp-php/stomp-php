@@ -9,7 +9,6 @@
 namespace Stomp\Tests\Functional\ApolloMq\Mode;
 
 use PHPUnit_Framework_TestCase;
-use Stomp\Broker\Apollo\Mode\QueueBrowser;
 use Stomp\Broker\Apollo\Mode\SequenceQueueBrowser;
 use Stomp\Tests\Functional\ApolloMq\ClientProvider;
 use Stomp\Transport\Frame;

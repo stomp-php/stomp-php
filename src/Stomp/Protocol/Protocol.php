@@ -261,7 +261,12 @@ class Protocol
         return $this->server;
     }
 
-
+    /**
+     * Checks if given version is included (equal or lower) in active protocol version.
+     *
+     * @param string $version
+     * @return bool
+     */
     public function hasVersion($version)
     {
         return version_compare($this->version, $version, '>=');

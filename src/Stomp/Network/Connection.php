@@ -14,8 +14,6 @@ use Stomp\Exception\ErrorFrameException;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Parser;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * A Stomp Connection
  *

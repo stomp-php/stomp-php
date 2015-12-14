@@ -45,7 +45,7 @@ hello queue a^@' . "\x00",
     /** @test */
     public function shouldConvertEmptyFrameToString()
     {
-        $frame = new \Stomp\Transport\Frame();
+        $frame = new Frame();
 
         $result = $frame->__toString();
         $this->assertEquals(
@@ -69,7 +69,7 @@ hello queue a^@' . "\x00",
     /** @test */
     public function shouldConvertFrameWithoutBodyToString()
     {
-        $frame = new \Stomp\Transport\Frame('SEND', ['destination' => '/queue/a']);
+        $frame = new Frame('SEND', ['destination' => '/queue/a']);
 
         $result = $frame->__toString();
         $this->assertEquals(
@@ -80,7 +80,7 @@ hello queue a^@' . "\x00",
 
     public function testEncodeWillBeAppliedToHeaders()
     {
-        $frame = new \Stomp\Transport\Frame('SEND', ['my:var' => "\\multi\nline\r!"]);
+        $frame = new Frame('SEND', ['my:var' => "\\multi\nline\r!"]);
 
         $result = $frame->__toString();
         $expected = "SEND\nmy\\cvar:\\\\multi\\nline\\r!\n\n\x00";
@@ -100,7 +100,7 @@ hello queue a^@' . "\x00",
 
     public function testFrameAddsContentLengthHeaderIfBodyContainsNullByte()
     {
-        $frame = new \Stomp\Transport\Frame('SEND', [], 'MyContent' . "\x00");
+        $frame = new Frame('SEND', [], 'MyContent' . "\x00");
         $result = $frame->__toString();
         $expected = "SEND\ncontent-length:10\n\nMyContent\x00\x00";
         $this->assertEquals($expected, $result);

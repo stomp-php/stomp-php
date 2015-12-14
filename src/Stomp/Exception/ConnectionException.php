@@ -9,8 +9,6 @@
 
 namespace Stomp\Exception;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Any kind of connection problems.
  *

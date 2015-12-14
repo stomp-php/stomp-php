@@ -13,8 +13,7 @@ use Exception;
 use ReflectionMethod;
 use Stomp\Exception\ConnectionException;
 use Stomp\Network\Connection;
-
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
+use Stomp\Transport\Frame;
 
 /**
  * Connection test case.
@@ -42,8 +41,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
-        $hostlist = $getHostList->invoke($connection);
-        $host = array_shift($hostlist);
+        $hostList = $getHostList->invoke($connection);
+        $host = array_shift($hostList);
         $this->assertEquals('tcp', $host['scheme']);
         $this->assertEquals('host1', $host['host']);
         $this->assertEquals(61613, $host['port'], 'Default port must be set!');
@@ -55,8 +54,8 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
         $getHostList = new ReflectionMethod($connection, 'getHostList');
         $getHostList->setAccessible(true);
 
-        $hostlist = $getHostList->invoke($connection);
-        $host = array_shift($hostlist);
+        $hostList = $getHostList->invoke($connection);
+        $host = array_shift($hostList);
         $this->assertEquals('tcp', $host['scheme']);
         $this->assertEquals('host1', $host['host']);
         $this->assertEquals(55, $host['port']);
@@ -125,6 +124,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     public function testWriteFrameThrowsExceptionIfNotConnected()
     {
         $connection = new Connection('tcp://localhost');
-        $connection->writeFrame(new \Stomp\Transport\Frame());
+        $connection->writeFrame(new Frame());
     }
 }

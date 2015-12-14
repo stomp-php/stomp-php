@@ -11,8 +11,6 @@ namespace Stomp\Exception;
 
 use Stomp\Transport\Frame;
 
-/* vim: set expandtab tabstop=3 shiftwidth=3: */
-
 /**
  * Exception that occurs, when a frame / response was received that was not expected at this moment.
  *
