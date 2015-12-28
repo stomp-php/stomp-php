@@ -121,7 +121,7 @@ hello queue a^@' . "\x00",
         $frame->legacyMode(true);
 
         $result = $frame->__toString();
-        $expected = "SEND\nmy:var:\\multi\nline\r!\n\n\x00";
+        $expected = "SEND\nmy:var:\\multi\\nline\r!\n\n\x00";
         $this->assertEquals($expected, $result);
     }
 
