@@ -79,7 +79,7 @@ class ActiveMq extends Protocol
      */
     public function getAckFrame(Frame $frame, $transactionId = null)
     {
-        $ack = new Frame('ACK');
+        $ack = $this->createFrame('ACK');
         $ack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
             $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
@@ -94,7 +94,7 @@ class ActiveMq extends Protocol
      */
     public function getNackFrame(Frame $frame, $transactionId = null)
     {
-        $nack = new Frame('NACK');
+        $nack = $this->createFrame('NACK');
         $nack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
             $nack['id'] = $frame['ack'] ?: $frame->getMessageId();

@@ -69,7 +69,7 @@ class Protocol
      */
     final public function getConnectFrame($login = '', $passcode = '', array $versions = [], $host = null)
     {
-        $frame = new Frame('CONNECT');
+        $frame = $this->createFrame('CONNECT');
         $frame->legacyMode(true);
 
         if ($login || $passcode) {
@@ -100,7 +100,7 @@ class Protocol
      */
     public function getSubscribeFrame($destination, $subscriptionId = null, $ack = 'auto', $selector = null)
     {
-        $frame = new Frame('SUBSCRIBE');
+        $frame = $this->createFrame('SUBSCRIBE');
 
         $frame['destination'] = $destination;
         $frame['ack'] = $ack;
@@ -118,7 +118,7 @@ class Protocol
      */
     public function getUnsubscribeFrame($destination, $subscriptionId = null)
     {
-        $frame = new Frame('UNSUBSCRIBE');
+        $frame = $this->createFrame('UNSUBSCRIBE');
         $frame['destination'] = $destination;
         $frame['id'] = $subscriptionId;
         return $frame;
@@ -132,7 +132,7 @@ class Protocol
      */
     public function getBeginFrame($transactionId = null)
     {
-        $frame = new Frame('BEGIN');
+        $frame = $this->createFrame('BEGIN');
         $frame['transaction'] = $transactionId;
         return $frame;
     }
@@ -145,7 +145,7 @@ class Protocol
      */
     public function getCommitFrame($transactionId = null)
     {
-        $frame = new Frame('COMMIT');
+        $frame = $this->createFrame('COMMIT');
         $frame['transaction'] = $transactionId;
         return $frame;
     }
@@ -158,7 +158,7 @@ class Protocol
      */
     public function getAbortFrame($transactionId = null)
     {
-        $frame = new Frame('ABORT');
+        $frame = $this->createFrame('ABORT');
         $frame['transaction'] = $transactionId;
         return $frame;
     }
@@ -172,7 +172,7 @@ class Protocol
      */
     public function getAckFrame(Frame $frame, $transactionId = null)
     {
-        $ack = new Frame('ACK');
+        $ack = $this->createFrame('ACK');
         $ack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
             $ack['id'] = $frame->getMessageId();
@@ -195,7 +195,7 @@ class Protocol
         if ($this->version === Version::VERSION_1_0) {
             throw new StompException('Stomp Version 1.0 has no support for NACK Frames.');
         }
-        $nack = new Frame('NACK');
+        $nack = $this->createFrame('NACK');
         $nack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
             $nack['id'] = $frame->getMessageId();
@@ -214,7 +214,7 @@ class Protocol
      */
     public function getDisconnectFrame()
     {
-        $frame = new Frame('DISCONNECT');
+        $frame = $this->createFrame('DISCONNECT');
         if ($this->hasClientId()) {
             $frame['client-id'] = $this->getClientId();
         }
@@ -270,5 +270,20 @@ class Protocol
     public function hasVersion($version)
     {
         return version_compare($this->version, $version, '>=');
+    }
+
+    /**
+     * Creates a Frame according to the detected STOMP version.
+     *
+     * @param Frame $command
+     */
+    protected function createFrame($command) {
+        $frame = new Frame($command);
+
+        if ($this->version === Version::VERSION_1_0) {
+            $frame->legacyMode(true);
+        }
+
+        return $frame;
     }
 }
