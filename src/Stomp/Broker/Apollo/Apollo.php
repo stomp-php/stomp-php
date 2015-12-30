@@ -67,7 +67,7 @@ class Apollo extends Protocol
      */
     public function getAckFrame(Frame $frame, $transactionId = null)
     {
-        $ack = new Frame('ACK');
+        $ack = $this->createFrame('ACK');
         $ack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
             $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
@@ -82,7 +82,7 @@ class Apollo extends Protocol
      */
     public function getNackFrame(Frame $frame, $transactionId = null)
     {
-        $ack = new Frame('NACK');
+        $ack = $this->createFrame('NACK');
         $ack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
             $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
