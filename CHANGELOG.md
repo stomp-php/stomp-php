@@ -24,3 +24,7 @@ Changelog stomp-php
 - This is the last version which is compatible to original fork!
 - all sync operations will throw an exception if they are left unconfimred (https://github.com/fin-sn-de/stomp-php/issues/2)
 - Updated composer.json (replaces fusesource/stomp-php)
+
+2.2.3
+-----
+- Allow to pass `clientId` on `Stomp::__construct()` (https://github.com/stomp-php/stomp-php/pull/38)

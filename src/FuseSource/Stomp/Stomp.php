@@ -110,12 +110,15 @@ class Stomp
      * Constructor
      *
      * @param string|Connection $broker Broker URL or a connection
+     * @param string|null $clientId
      * @throws StompException
      * @see Connection::__construct()
      */
-    public function __construct ($broker)
+    public function __construct ($broker, $clientId = null)
     {
         $this->_connection = $broker instanceof Connection ? $broker : new Connection($broker);
+        
+        $this->clientId    = $clientId;
     }
 
     /**
