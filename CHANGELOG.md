@@ -67,7 +67,7 @@ Changelog stomp-php
  - do not error when received header value is null (https://github.com/stomp-php/stomp-php/issues/30)
 
 4.0.0 (Full Stomp 1.1 / 1.2 Support)
-----------------------------------
+------------------------------------
 
 - Updated functional testsuite for different brokers (amq,aplo,rabbit), update travis-ci.
 - Update Parser in order to be compliant with stomp-1.2 (https://stomp.github.io/stomp-specification-1.2.html)
@@ -78,3 +78,7 @@ Changelog stomp-php
 - Testsuite rework...
 - Move examples to https://github.com/stomp-php/stomp-php-examples.
 - add utils for `ActiveMq` durable subscription and `Apollo` queue browser.
+
+4.0.1
+-----
+- do not throw read exception if the next byte after a complete read is a zero byte. (https://github.com/stomp-php/stomp-php/issues/39)

@@ -325,7 +325,7 @@ class Connection
 
         do {
             $read = @stream_get_line($this->connection, 8192, Parser::FRAME_END);
-            if ($read === false || $read === '') {
+            if ($read === false) {
                 throw new ConnectionException('Was not possible to read data from stream.', $this->activeHost);
             }
 

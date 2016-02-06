@@ -10,9 +10,11 @@
 namespace Stomp\Tests\Unit\Stomp\Network;
 
 use Exception;
+use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
 use Stomp\Exception\ConnectionException;
 use Stomp\Network\Connection;
+use Stomp\Tests\Unit\Stomp\Network\Mocks\FakeStream;
 use Stomp\Transport\Frame;
 
 /**
@@ -21,7 +23,7 @@ use Stomp\Transport\Frame;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ConnectionTest extends \PHPUnit_Framework_TestCase
+class ConnectionTest extends PHPUnit_Framework_TestCase
 {
     public function testBrokerUriParseFailover()
     {
@@ -125,5 +127,35 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
     {
         $connection = new Connection('tcp://localhost');
         $connection->writeFrame(new Frame());
+    }
+
+    /**
+     * https://github.com/stomp-php/stomp-php/issues/39
+     */
+    public function testMessageWithNullBytesAfterFullReadWontCauseReadException()
+    {
+        stream_wrapper_register('stompFakeStream', FakeStream::class);
+
+        $mock = $this->getMockBuilder(Connection::class)
+            ->setMethods(['getConnection'])
+            ->setConstructorArgs(['stompFakeStream://notInUse'])
+            ->getMock();
+        $fakeStreamResource = fopen('stompFakeStream://notInUse', 'rw');
+        $mock->method('getConnection')->willReturn($fakeStreamResource);
+
+        /**
+         * @var $mock Connection
+         */
+        $mock->connect();
+
+        $header = 'MESSAGE' . "\ncontent-length:8165\n\n"; //29 bytes
+        $body = substr(str_repeat('1234', 2048), 0, -29) . 'X' . "\x00"; //8164 bytes + 1 byte = 8165 bytes
+        $frame = $header . $body; // 8194 bytes = one full 8192 read (+1 byte for marker) + zero byte next read
+        FakeStream::$serverSend = $frame;
+
+        $frame = $mock->readFrame();
+        $this->assertEquals($body, $frame->body);
+        fclose($fakeStreamResource);
+        stream_wrapper_unregister('stompFakeStream');
     }
 }
