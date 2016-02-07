@@ -177,4 +177,25 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('var', $result->body);
         $this->assertEquals(true, $result['header1 value1']);
     }
+
+    public function testFlushBufferReturnsCurrentBufferDataAndClearsIt()
+    {
+        $msg = "CMD\nheader1:value1\n\nvar\x00";
+        $this->parser->addData($msg);
+
+        $this->assertEquals($msg, $this->parser->flushBuffer());
+        $this->assertEquals('', $this->parser->flushBuffer());
+    }
+
+    public function testParserWillWorkAfterFlushBuffer()
+    {
+        $msg = "CMD\nheader1:value1\n\nvar\x00";
+        $this->parser->addData($msg);
+        $this->assertEquals($msg, $this->parser->flushBuffer());
+        $this->parser->addData($msg);
+        $this->parser->parse();
+        $frame = $this->parser->getFrame();
+        $this->assertInstanceOf(Frame::class, $frame);
+        $this->assertEquals('var', $frame->body);
+    }
 }

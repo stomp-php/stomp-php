@@ -82,3 +82,4 @@ Changelog stomp-php
 4.0.1
 -----
 - do not throw read exception if the next byte after a complete read is a zero byte. (https://github.com/stomp-php/stomp-php/issues/39)
+- allow to reset the parser internal state and buffer. (https://github.com/stomp-php/stomp-php/issues/40)
