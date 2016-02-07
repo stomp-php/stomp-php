@@ -80,4 +80,23 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('var', $result->body);
         $this->assertEquals(true, $result->headers['header1 value1']);
     }
+
+    public function testFlushResetsBufferAndReturnsCurrentlyNotParsedBuffer()
+    {
+        $msg = "CMD\nheader1:value1\n\n\nvar\x00";
+
+        $parser = new Parser();
+        $parser->addData($msg);
+        $this->assertTrue($parser->parse());
+        $this->assertTrue($parser->hasBufferedFrames());
+        $parser->addData($msg);
+        $this->assertEquals($msg, $parser->flushBuffer());
+        $this->assertFalse($parser->parse());
+        $this->assertFalse($parser->hasBufferedFrames());
+
+        $parser->addData($msg);
+        $this->assertTrue($parser->parse());
+        $result = $parser->getFrame();
+        $this->assertInstanceOf('\Stomp\Frame', $result);
+    }
 }

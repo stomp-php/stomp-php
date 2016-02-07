@@ -65,3 +65,8 @@ Changelog stomp-php
 3.0.5
 -----
  - do not error when received header value is null (https://github.com/stomp-php/stomp-php/issues/30)
+
+3.0.6
+-----
+- do not throw read exception if the next byte after a complete read is a zero byte. (https://github.com/stomp-php/stomp-php/issues/39)
+- allow to reset the parser internal state and buffer. (https://github.com/stomp-php/stomp-php/issues/40)

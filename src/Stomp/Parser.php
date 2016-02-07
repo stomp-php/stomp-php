@@ -164,4 +164,18 @@ class Parser
         // No content-length, search for first 0-byte
         return strpos($this->buffer, self::FRAME_END, $offset);
     }
+
+    /**
+     * Resets the buffer and all not delivered frames.
+     * Returns the not yet parsed buffer, which will be flushed.
+     *
+     * @return string
+     */
+    public function flushBuffer()
+    {
+        $currentBuffer = $this->buffer;
+        $this->buffer = '';
+        $this->frames = array();
+        return $currentBuffer;
+    }
 }

@@ -409,4 +409,14 @@ class Connection
 
         return !empty($read);
     }
+
+    /**
+     * Returns the used parser.
+     *
+     * @return Parser
+     */
+    public function getParser()
+    {
+        return $this->parser;
+    }
 }
