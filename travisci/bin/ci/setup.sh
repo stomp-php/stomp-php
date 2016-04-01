@@ -1,4 +1,6 @@
 #!/bin/bash
+set -x
+set -e
 
 if [ ! -d "./travisci/conf/" ]; then
     echo "Check your pwd, you need to run this script from project root."
@@ -15,7 +17,7 @@ fi
 
 CONFIG_PATH=$(readlink -f ./travisci/conf)
 EXTRACT_PATH=$(readlink -f ./travisci/tmp)
-
+echo $EXTRACT_PATH
 
 ./travisci/bin/ci/setup_activemq.sh $AMQ_VERSION $CONFIG_PATH $EXTRACT_PATH
 ./travisci/bin/ci/setup_apollomq.sh $APLO_VERSION $CONFIG_PATH $EXTRACT_PATH
