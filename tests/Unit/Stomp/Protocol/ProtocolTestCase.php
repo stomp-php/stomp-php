@@ -13,6 +13,7 @@ use PHPUnit_Framework_TestCase;
 use Stomp\Protocol\Protocol;
 use Stomp\Protocol\Version;
 use Stomp\Transport\Frame;
+use Stomp\Exception\StompException;
 
 /**
  * Protocol test cases.
@@ -44,12 +45,24 @@ abstract class ProtocolTestCase extends PHPUnit_Framework_TestCase
     {
         $protocol = $this->getProtocol();
 
-        $actual = $protocol->getSubscribeFrame('my-destination', 'my-sub-id', 'my-ack', 'my-selector');
+        $actual = $protocol->getSubscribeFrame('my-destination', 'my-sub-id', 'client', 'my-selector');
         $this->assertIsSubscribeFrame($actual);
         $this->assertEquals('my-destination', $actual['destination']);
-        $this->assertEquals('my-ack', $actual['ack']);
+        $this->assertEquals('client', $actual['ack']);
         $this->assertEquals('my-sub-id', $actual['id']);
         $this->assertEquals('my-selector', $actual['selector']);
+    }
+
+    public function testInvalidSubscribeFrameAck()
+    {
+        $protocol = $this->getProtocol();
+
+        try {
+            $actual = $protocol->getSubscribeFrame('my-destination', 'my-sub-id', 'my-ack', 'my-selector');
+            $this->fail();
+        } catch (StompException $e) {
+            $this->assertContains('"my-ack" is not a valid ack value', $e->getMessage());
+        }
     }
 
     public function testAckVersionZero()
