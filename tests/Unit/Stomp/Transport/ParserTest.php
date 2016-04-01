@@ -116,7 +116,7 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->parser->legacyMode(true);
         $this->parser->addData($frame);
         $this->parser->parse();
-        $expected = new Frame('COMMAND', ['X-Proof' => "Hello\\c\\r\\n  \\\\World!"], "Body");
+        $expected = new Frame('COMMAND', ['X-Proof' => "Hello\\c\\r\n  \\\\World!"], "Body");
         $actual = $this->parser->getFrame();
 
         $this->assertEquals($expected, $actual);
