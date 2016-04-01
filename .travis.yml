@@ -5,6 +5,7 @@ sudo: false
 cache:
   directories:
     - ./travisci/tmp
+    - $HOME/.composer/cache
 
 php:
   - "7.0"
