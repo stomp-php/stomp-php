@@ -287,7 +287,7 @@ class Parser
     private function decodeHeaderValue($value)
     {
         if ($this->legacyMode) {
-            return $value;
+            return str_replace(["\n"], ['\n'], $value);
         }
         return str_replace(['\r', '\n', '\c', "\\\\"], ["\r", "\n", ':', "\\"], $value);
     }
