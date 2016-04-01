@@ -195,7 +195,7 @@ class Frame implements ArrayAccess
     protected function encodeHeaderValue($value)
     {
         if ($this->legacyMode) {
-            return $value;
+            return str_replace(["\n"], ['\n'], $value);
         }
         return str_replace(["\\", "\r", "\n", ':'], ["\\\\", '\r', '\n', '\c'], $value);
     }

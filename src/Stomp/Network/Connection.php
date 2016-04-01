@@ -291,7 +291,7 @@ class Connection
     /**
      * Write frame to server.
      *
-     * @param \Stomp\Transport\Frame $stompFrame
+     * @param Frame $stompFrame
      * @return boolean
      * @throws ConnectionException
      */
@@ -310,7 +310,7 @@ class Connection
     /**
      * Try to read a frame from the server.
      *
-     * @return \Stomp\Transport\Frame|false when no frame to read
+     * @return Frame|false when no frame to read
      * @throws ConnectionException
      * @throws ErrorFrameException
      */
@@ -325,7 +325,7 @@ class Connection
 
         do {
             $read = @stream_get_line($this->connection, 8192, Parser::FRAME_END);
-            if ($read === false || $read === '') {
+            if ($read === false) {
                 throw new ConnectionException('Was not possible to read data from stream.', $this->activeHost);
             }
 
@@ -410,7 +410,9 @@ class Connection
     }
 
     /**
-     * @return \Stomp\Transport\Parser
+     * Returns the parser which is used by the connection.
+     *
+     * @return Parser
      */
     public function getParser()
     {
@@ -418,6 +420,8 @@ class Connection
     }
 
     /**
+     * Returns the host the connection was established to.
+     *
      * @return String
      */
     public function getHost()

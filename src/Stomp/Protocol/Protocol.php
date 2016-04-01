@@ -276,8 +276,10 @@ class Protocol
      * Creates a Frame according to the detected STOMP version.
      *
      * @param Frame $command
+     * @return Frame
      */
-    protected function createFrame($command) {
+    protected function createFrame($command)
+    {
         $frame = new Frame($command);
 
         if ($this->version === Version::VERSION_1_0) {

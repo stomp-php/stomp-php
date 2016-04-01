@@ -31,7 +31,7 @@ class Parser
      *
      * @var Frame
      */
-    private $frame = [];
+    private $frame = null;
 
     /**
      * Active Frame command
@@ -290,5 +290,23 @@ class Parser
             return $value;
         }
         return str_replace(['\r', '\n', '\c', "\\\\"], ["\r", "\n", ':', "\\"], $value);
+    }
+
+    /**
+     * Resets the current buffer within this parser and returns the flushed buffer value.
+     *
+     * @return string
+     */
+    public function flushBuffer()
+    {
+        $this->expectedBodyLength = null;
+        $this->headers = [];
+        $this->mode = self::MODE_HEADER;
+
+        $currentBuffer = substr($this->buffer, $this->offset);
+        $this->offset = 0;
+        $this->bufferSize = 0;
+        $this->buffer = '';
+        return $currentBuffer;
     }
 }
