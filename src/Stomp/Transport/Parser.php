@@ -238,6 +238,7 @@ class Parser
     private function setFrame($bodySize)
     {
         $frame = new Frame($this->command, $this->headers, (string) substr($this->buffer, $this->offset, $bodySize));
+        $frame->legacyMode($this->legacyMode);
 
         if ($frame['transformation'] == 'jms-map-json') {
             $this->frame = new Map($frame);
