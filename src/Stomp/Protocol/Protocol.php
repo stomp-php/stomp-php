@@ -100,6 +100,19 @@ class Protocol
      */
     public function getSubscribeFrame($destination, $subscriptionId = null, $ack = 'auto', $selector = null)
     {
+        // validate ACK types per spec
+        // https://stomp.github.io/stomp-specification-1.0.html#frame-ACK
+        // https://stomp.github.io/stomp-specification-1.1.html#ACK
+        // https://stomp.github.io/stomp-specification-1.2.html#ACK
+        if ($this->hasVersion(Version::VERSION_1_1)) {
+            $validAcks = array('auto', 'client', 'client-individual');
+        } else {
+            $validAcks = array('auto', 'client');
+        }
+        if (!in_array($ack, $validAcks)) {
+            throw new StompException('"'. $ack .'" is not a valid ack value for STOMP '. $this->version .'. A valid value is one of '. implode(',', $validAcks));
+        }
+        
         $frame = $this->createFrame('SUBSCRIBE');
 
         $frame['destination'] = $destination;
