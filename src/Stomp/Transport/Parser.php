@@ -238,7 +238,8 @@ class Parser
     private function setFrame($bodySize)
     {
         $frame = new Frame($this->command, $this->headers, (string) substr($this->buffer, $this->offset, $bodySize));
-
+        $frame->legacyMode($this->legacyMode);
+ 
         if ($frame['transformation'] == 'jms-map-json') {
             $this->frame = new Map($frame);
         } else {
@@ -287,7 +288,7 @@ class Parser
     private function decodeHeaderValue($value)
     {
         if ($this->legacyMode) {
-            return $value;
+            return str_replace(['\n'], ["\n"], $value);
         }
         return str_replace(['\r', '\n', '\c', "\\\\"], ["\r", "\n", ':', "\\"], $value);
     }
