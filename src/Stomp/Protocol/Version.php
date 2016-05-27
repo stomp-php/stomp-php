@@ -11,6 +11,7 @@ namespace Stomp\Protocol;
 use Stomp\Broker\ActiveMq\ActiveMq;
 use Stomp\Broker\Apollo\Apollo;
 use Stomp\Broker\RabbitMq\RabbitMq;
+use Stomp\Broker\OpenMq\OpenMq;
 use Stomp\Exception\StompException;
 use Stomp\Exception\UnexpectedResponseException;
 use Stomp\Transport\Frame;
@@ -76,6 +77,8 @@ class Version
             return new Apollo($clientId, $version, $server);
         } elseif (stristr($server, 'activemq') !== false) {
             return new ActiveMq($clientId, $version, $server);
+        } elseif (stristr($server, 'open message queue') !== false) {
+            return new OpenMq($clientId, $version, $server);
         }
         return new Protocol($clientId, $version, $server);
     }
