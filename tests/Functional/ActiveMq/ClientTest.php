@@ -165,7 +165,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testAbort()
     {
-        $this->Stomp->getConnection()->setReadTimeout(1);
+        $this->Stomp->getConnection()->setReadTimeout(3);
         if (! $this->Stomp->isConnected()) {
             $this->Stomp->connect();
         }
