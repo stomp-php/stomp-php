@@ -304,6 +304,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($simpleStomp->unsubscribe('/queue/unsub'));
     }
 
+    /**
+     * @see https://www.rabbitmq.com/stomp.html#d.dts
+     */
     public function testDurable()
     {
         $this->subscribe();
@@ -318,7 +321,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $consumer->connect();
 
         $simpleStomp = new SimpleStomp($consumer);
-        $simpleStomp->subscribe($this->topic, 'myId', 'client-individual', null, ['persistent' => 'true']);
+        $simpleStomp->subscribe($this->topic, 'myId', 'client-individual', null, ['durable' => 'true', 'auto-delete' => 'false']);
         $simpleStomp->unsubscribe($this->topic, 'myId');
         $consumer->disconnect();
     }
@@ -340,7 +343,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $consumer->getConnection()->setReadTimeout(5);
 
         $simpleStomp = new SimpleStomp($consumer);
-        $simpleStomp->subscribe($this->topic, 'myId', 'client-individual', null, ['persistent' => 'true']);
+        $simpleStomp->subscribe($this->topic, 'myId', 'client-individual', null, ['durable' => 'true', 'auto-delete' => 'false']);
 
 
         $frame = $simpleStomp->read();
@@ -349,7 +352,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
             $simpleStomp->ack($frame);
         }
 
-        $simpleStomp->unsubscribe($this->topic, 'myId');
+        $simpleStomp->unsubscribe($this->topic, 'myId', ['durable' => 'true', 'auto-delete' => 'false']);
 
         $consumer->disconnect();
     }
