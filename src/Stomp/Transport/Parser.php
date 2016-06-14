@@ -216,9 +216,12 @@ class Parser
     private function detectFrameEnd()
     {
         $bodySize = null;
-        if ($this->expectedBodyLength && ($this->bufferSize - $this->offset) >= $this->expectedBodyLength) {
-            $bodySize = $this->expectedBodyLength;
-        } elseif (($frameEnd = strpos($this->buffer, self::FRAME_END, $this->offset)) !== false) {
+        if ($this->expectedBodyLength) {
+            if (($this->bufferSize - $this->offset) >= $this->expectedBodyLength) {
+                $bodySize = $this->expectedBodyLength;
+            }
+        }
+        elseif (($frameEnd = strpos($this->buffer, self::FRAME_END, $this->offset)) !== false) {
             $bodySize = $frameEnd - $this->offset;
         }
 
