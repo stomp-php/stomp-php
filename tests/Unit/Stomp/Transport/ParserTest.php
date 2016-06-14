@@ -199,4 +199,35 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Frame::class, $frame);
         $this->assertEquals('var', $frame->body);
     }
+
+    public function testParserWillWaitForFullContentLength() {
+        // Make our body and split it up.
+        $body = "Test\x00body with\x00NULL octets.";
+        $body_parts = str_split($body, 5);
+
+        // Send our header.
+        $content_length = (string) strlen($body);
+        $this->parser->addData("MESSAGE\ncontent-length:{$content_length}\n\n");
+
+        // This should not parse yet.
+        $this->assertFalse($this->parser->parse());
+
+        // Remove our last part so we can loop over the rest.
+        $last_body_part = array_pop($body_parts);
+
+        // Send our parts, checking that we don't parse.
+        foreach ($body_parts as $part) {
+            $this->parser->addData($part);
+            $this->assertFalse($this->parser->parse());
+        }
+
+        // Adding our last part should allow it to parse.
+        $this->parser->addData($last_body_part);
+        $this->assertTrue($this->parser->parse());
+
+        // Check our frame matches our expectation.
+        $expected = new Frame('MESSAGE', ['content-length' => $content_length], $body);
+        $actual = $this->parser->getFrame();
+        $this->assertEquals($expected, $actual);
+    }
 }
