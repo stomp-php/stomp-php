@@ -73,6 +73,9 @@ class Apollo extends Protocol
             $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
         } else {
             $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+            if ($this->hasVersion(Version::VERSION_1_1)) {
+                $ack['subscription'] = $frame['subscription'];
+            }
         }
         return $ack;
     }
@@ -82,13 +85,16 @@ class Apollo extends Protocol
      */
     public function getNackFrame(Frame $frame, $transactionId = null)
     {
-        $ack = $this->createFrame('NACK');
-        $ack['transaction'] = $transactionId;
+        $nack = $this->createFrame('NACK');
+        $nack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
-            $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
+            $nack['id'] = $frame['ack'] ?: $frame->getMessageId();
         } else {
-            $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+            $nack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+            if ($this->hasVersion(Version::VERSION_1_1)) {
+                $nack['subscription'] = $frame['subscription'];
+            }
         }
-        return $ack;
+        return $nack;
     }
 }

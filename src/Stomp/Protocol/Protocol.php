@@ -191,6 +191,9 @@ class Protocol
             $ack['id'] = $frame->getMessageId();
         } else {
             $ack['message-id'] = $frame->getMessageId();
+            if ($this->hasVersion(Version::VERSION_1_1)) {
+                $ack['subscription'] = $frame['subscription'];
+            }
         }
         return $ack;
     }
@@ -214,6 +217,9 @@ class Protocol
             $nack['id'] = $frame->getMessageId();
         } else {
             $nack['message-id'] = $frame->getMessageId();
+            if ($this->hasVersion(Version::VERSION_1_1)) {
+                $nack['subscription'] = $frame['subscription'];
+            }
         }
 
         $nack['message-id'] = $frame->getMessageId();
