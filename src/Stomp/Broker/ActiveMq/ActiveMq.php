@@ -81,11 +81,22 @@ class ActiveMq extends Protocol
     {
         $ack = $this->createFrame('ACK');
         $ack['transaction'] = $transactionId;
-        if ($this->hasVersion(Version::VERSION_1_2)) {
-            $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
-        } else {
-            $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+
+        switch ($this->getVersion()) {
+            case Version::VERSION_1_0:
+                $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+                break;
+            case Version::VERSION_1_1:
+                $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+                if (false === is_null($frame->offsetGet('subscription'))) {
+                    $ack['subscription'] = $frame->offsetGet('subscription');
+                }
+                break;
+            case Version::VERSION_1_2:
+                $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
+                break;
         }
+
         return $ack;
     }
 
@@ -96,11 +107,22 @@ class ActiveMq extends Protocol
     {
         $nack = $this->createFrame('NACK');
         $nack['transaction'] = $transactionId;
-        if ($this->hasVersion(Version::VERSION_1_2)) {
-            $nack['id'] = $frame['ack'] ?: $frame->getMessageId();
-        } else {
-            $nack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+
+        switch ($this->getVersion()) {
+            case Version::VERSION_1_0:
+                $nack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+                break;
+            case Version::VERSION_1_1:
+                $nack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+                if (false === is_null($frame->offsetGet('subscription'))) {
+                    $nack['subscription'] = $frame->offsetGet('subscription');
+                }
+                break;
+            case Version::VERSION_1_2:
+                $nack['id'] = $frame['ack'] ?: $frame->getMessageId();
+                break;
         }
+
         return $nack;
     }
 
