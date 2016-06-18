@@ -85,6 +85,9 @@ class ActiveMq extends Protocol
             $ack['id'] = $frame['ack'] ?: $frame->getMessageId();
         } else {
             $ack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+            if ($this->hasVersion(Version::VERSION_1_1)) {
+                $ack['subscription'] = $frame['subscription'];
+            }
         }
         return $ack;
     }
@@ -100,6 +103,9 @@ class ActiveMq extends Protocol
             $nack['id'] = $frame['ack'] ?: $frame->getMessageId();
         } else {
             $nack['message-id'] = $frame['ack'] ?: $frame->getMessageId();
+            if ($this->hasVersion(Version::VERSION_1_1)) {
+                $nack['subscription'] = $frame['subscription'];
+            }
         }
         return $nack;
     }

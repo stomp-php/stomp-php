@@ -35,9 +35,7 @@ class OpenMq extends Protocol
         }
         // spec quote: "ACK should always specify a "subscription" header for the subscription id that the message to be acked was delivered to ."
         // see https://mq.java.net/4.4-content/stomp-funcspec.html
-        if (isset($frame['subscription'])) {
-            $ack['subscription'] = $frame['subscription'];
-        }
+        $ack['subscription'] = $frame['subscription'];
         return $ack;
     }
 }

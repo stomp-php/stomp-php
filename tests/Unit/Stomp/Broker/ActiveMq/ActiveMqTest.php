@@ -88,6 +88,26 @@ class ActiveMqTestCase extends ProtocolTestCase
 
     }
 
+    public function testAckVersionOne()
+    {
+        $instance = $this->getProtocol(Version::VERSION_1_1);
+
+        $resultAckBased = $instance->getAckFrame(new Frame(null, ['ack' => 'ack-value']), 'my-transaction');
+        $this->assertIsAckFrame($resultAckBased);
+        $this->assertEquals('ack-value', $resultAckBased['message-id']);
+        $this->assertEquals('my-transaction', $resultAckBased['transaction']);
+
+        $resultIdBased = $instance->getAckFrame(new Frame(null, [
+            'message-id' => 'id-value',
+            'subscription' => 'my-subscription'
+        ]), 'my-transaction');
+
+        $this->assertIsAckFrame($resultIdBased);
+        $this->assertEquals('id-value', $resultIdBased['message-id']);
+        $this->assertEquals('my-subscription', $resultIdBased['subscription']);
+        $this->assertEquals('my-transaction', $resultAckBased['transaction']);
+    }
+
     public function testAckVersionTwo()
     {
         $instance = $this->getProtocol(Version::VERSION_1_2);
@@ -117,6 +137,27 @@ class ActiveMqTestCase extends ProtocolTestCase
         $this->assertEquals('my-transaction', $resultIdBased['transaction']);
         $this->assertIsNackFrame($resultIdBased);
 
+    }
+
+
+    public function testNackVersionOne()
+    {
+        $instance = $this->getProtocol(Version::VERSION_1_1);
+
+        $resultAckBased = $instance->getNackFrame(new Frame(null, ['ack' => 'ack-value']), 'my-transaction');
+        $this->assertIsNackFrame($resultAckBased);
+        $this->assertEquals('ack-value', $resultAckBased['message-id']);
+        $this->assertEquals('my-transaction', $resultAckBased['transaction']);
+
+        $resultIdBased = $instance->getNackFrame(new Frame(null, [
+            'message-id' => 'id-value',
+            'subscription' => 'my-subscription'
+        ]), 'my-transaction');
+
+        $this->assertIsNackFrame($resultIdBased);
+        $this->assertEquals('id-value', $resultIdBased['message-id']);
+        $this->assertEquals('my-subscription', $resultIdBased['subscription']);
+        $this->assertEquals('my-transaction', $resultAckBased['transaction']);
     }
 
     public function testNackVersionTwo()
