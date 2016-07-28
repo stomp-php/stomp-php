@@ -118,15 +118,13 @@ class Connection
      * @param string $brokerUri
      * @param integer $connectionTimeout in seconds
      * @param array $context stream context
-     * @param bool $persistentConnection
      * @throws ConnectionException
      */
-    public function __construct($brokerUri, $connectionTimeout = 1, array $context = [], $persistentConnection = false)
+    public function __construct($brokerUri, $connectionTimeout = 1, array $context = [])
     {
         $this->parser = new Parser();
         $this->connectTimeout = $connectionTimeout;
         $this->context = $context;
-        $this->persistentConnection = $persistentConnection;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
             $scheme = $matches[2];
@@ -204,6 +202,14 @@ class Connection
         return true;
     }
 
+    /**
+     * @param boolean $persistentConnection
+     */
+    public function setPersistentConnection($persistentConnection)
+    {
+        $this->persistentConnection = $persistentConnection;
+    }
+
 
 
     /**
@@ -256,7 +262,7 @@ class Connection
         $context = stream_context_create($this->context);
         $flags = STREAM_CLIENT_CONNECT;
         if ($this->persistentConnection) {
-            $flags = STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT;
+            $flags |= STREAM_CLIENT_PERSISTENT;
         }
         $socket = @stream_socket_client(
             $host['scheme'] . '://' . $host['host'] . ':' . $host['port'],
