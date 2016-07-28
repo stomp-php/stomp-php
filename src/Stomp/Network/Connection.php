@@ -45,6 +45,13 @@ class Connection
     private $connectTimeout;
 
     /**
+     * Using persistent connection for creating socket
+     *
+     * @var bool
+     */
+    private $persistentConnection = false;
+
+    /**
      * Connection read wait timeout.
      *
      * 0 => seconds
@@ -110,14 +117,16 @@ class Connection
      *
      * @param string $brokerUri
      * @param integer $connectionTimeout in seconds
-     * @param array   $context stream context
+     * @param array $context stream context
+     * @param bool $persistentConnection
      * @throws ConnectionException
      */
-    public function __construct($brokerUri, $connectionTimeout = 1, array $context = [])
+    public function __construct($brokerUri, $connectionTimeout = 1, array $context = [], $persistentConnection = false)
     {
         $this->parser = new Parser();
         $this->connectTimeout = $connectionTimeout;
         $this->context = $context;
+        $this->persistentConnection = $persistentConnection;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
             $scheme = $matches[2];
@@ -245,12 +254,16 @@ class Connection
         $errNo = null;
         $errStr = null;
         $context = stream_context_create($this->context);
+        $flags = STREAM_CLIENT_CONNECT;
+        if ($this->persistentConnection) {
+            $flags = STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT;
+        }
         $socket = @stream_socket_client(
             $host['scheme'] . '://' . $host['host'] . ':' . $host['port'],
             $errNo,
             $errStr,
             $this->connectTimeout,
-            STREAM_CLIENT_CONNECT,
+            $flags,
             $context
         );
 
