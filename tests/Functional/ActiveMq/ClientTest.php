@@ -389,4 +389,38 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $consumer2->disconnect();
     }
+
+    /**
+     * Test that heartbeats are supported.
+     */
+    public function testHeartbeat()
+    {
+        if ($this->Stomp->isConnected()) {
+            $this->Stomp->disconnect();
+        }
+
+        $this->Stomp->setHeartbeat(500);
+        $this->Stomp->getConnection()->setReadTimeout(0, 750000);
+
+        $this->Stomp->connect();
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
+
+        // Sleep long enough for a heartbeat to be sent.
+        sleep(1);
+
+        // Check we have no frame yet.
+        $this->assertFalse($this->Stomp->getConnection()->hasDataToRead(), 'Has frame to read when none expected');
+        $this->assertFalse($this->Stomp->readFrame(), 'Read a frame when none expected');
+
+        // Send a frame.
+        $this->Stomp->send($this->queue, 'testReadFrame');
+
+        // Check we now have a frame to read.
+        $frame = $this->Stomp->readFrame();
+        $this->assertTrue($frame instanceof Frame);
+        $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
+        $this->simpleStomp->ack($frame);
+        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
+    }
+
 }
