@@ -105,6 +105,12 @@ class Client
     private $host = null;
 
     /**
+     *
+     * @var int[]
+     */
+    private $heartbeat = [0, 0];
+
+    /**
      * @var bool
      */
     private $isConnecting = false;
@@ -154,6 +160,20 @@ class Client
         $this->host = $host;
     }
 
+  /**
+   * Set the desired heartbeat for the connection.
+   *
+   * @param int $receive
+   *   Number of milliseconds between expected receipt of heartbeats. 0 means
+   *   no heart beats expected.
+   * @param int $send
+   *   Number of milliseconds between expected sending of heartbeats. 0 means
+   *   no heart beats sent.
+   */
+    public function setHeartbeat($receive = 0, $send = 0)
+    {
+      $this->heartbeat = [$send, $receive];
+    }
 
     /**
      * Connect to server
@@ -174,7 +194,7 @@ class Client
 
         $this->host = $this->host ?: $this->connection->getHost();
 
-        $connectFrame = $this->protocol->getConnectFrame($this->login, $this->passcode, $this->versions, $this->host);
+        $connectFrame = $this->protocol->getConnectFrame($this->login, $this->passcode, $this->versions, $this->host, $this->heartbeat);
         $this->sendFrame($connectFrame, false);
 
         if ($frame = $this->connection->readFrame()) {
