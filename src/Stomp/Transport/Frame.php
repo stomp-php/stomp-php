@@ -151,6 +151,15 @@ class Frame implements ArrayAccess
         return $this->body;
     }
 
+    /**
+     * Headers
+     *
+     * @return array
+     */
+    public function getHeaders()
+    {
+        return $this->headers;
+    }
 
     /**
      * Convert frame to transportable string
