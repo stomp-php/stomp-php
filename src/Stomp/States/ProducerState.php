@@ -39,7 +39,7 @@ class ProducerState extends StateTemplate
     {
         return $this->setState(
             new ConsumerState($this->getClient(), $this->getBase()),
-            compact('destination', 'selector', 'ack', 'header')
+            ['destination' => $destination, 'selector' => $selector, 'ack' => $ack, 'header' => $header]
         );
     }
 

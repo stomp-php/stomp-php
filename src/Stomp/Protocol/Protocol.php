@@ -73,7 +73,7 @@ class Protocol
         $frame->legacyMode(true);
 
         if ($login || $passcode) {
-            $frame->addHeaders(compact('login', 'passcode'));
+            $frame->addHeaders(['login' => $login, 'passcode' => $passcode]);
         }
 
         if ($this->hasClientId()) {
