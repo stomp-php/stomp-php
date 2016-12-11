@@ -422,7 +422,12 @@ class Connection
         $hasStreamInfo = @stream_select($read, $write, $except, $timeoutSec, $timeoutMicros);
 
         if ($hasStreamInfo === false) {
-            throw new ConnectionException('Check failed to determine if the socket is readable.', $this->activeHost);
+            // stream_select can return `false` if used in combination with `pcntl_signal` and lead to false errors here
+            $error = error_get_last();
+            if ($error && isset($error['message']) && stripos($error['message'], 'interrupted system call') === false) {
+                throw new ConnectionException('Check failed to determine if the socket is readable.', $this->activeHost);
+            }
+            return false;
         }
 
         return !empty($read);
