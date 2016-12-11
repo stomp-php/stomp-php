@@ -109,6 +109,30 @@ class Parser
      */
     private $legacyMode = false;
 
+    /**
+     * @var FrameFactory
+     */
+    private $factory;
+
+    /**
+     * Parser constructor.
+     *
+     * @param FrameFactory $factory
+     */
+    public function __construct(FrameFactory $factory = null)
+    {
+        $this->factory = $factory ?: new FrameFactory();
+    }
+
+    /**
+     * Returns the factory that will be used to create frame instances.
+     *
+     * @return FrameFactory
+     */
+    public function getFactory()
+    {
+        return $this->factory;
+    }
 
     /**
      * Set parser in legacy mode.
@@ -220,8 +244,7 @@ class Parser
             if (($this->bufferSize - $this->offset) >= $this->expectedBodyLength) {
                 $bodySize = $this->expectedBodyLength;
             }
-        }
-        elseif (($frameEnd = strpos($this->buffer, self::FRAME_END, $this->offset)) !== false) {
+        } elseif (($frameEnd = strpos($this->buffer, self::FRAME_END, $this->offset)) !== false) {
             $bodySize = $frameEnd - $this->offset;
         }
 
@@ -240,14 +263,12 @@ class Parser
      */
     private function setFrame($bodySize)
     {
-        $frame = new Frame($this->command, $this->headers, (string) substr($this->buffer, $this->offset, $bodySize));
-        $frame->legacyMode($this->legacyMode);
- 
-        if ($frame['transformation'] == 'jms-map-json') {
-            $this->frame = new Map($frame);
-        } else {
-            $this->frame = $frame;
-        }
+        $this->frame = $this->factory->createFrame(
+            $this->command,
+            $this->headers,
+            (string) substr($this->buffer, $this->offset, $bodySize),
+            $this->legacyMode
+        );
 
         $this->expectedBodyLength = null;
         $this->headers = [];
