@@ -14,7 +14,7 @@ namespace Stomp\Transport;
  *
  * @package Stomp
  */
-class Map extends Frame
+class Map extends Message
 {
     public $map;
 
@@ -27,12 +27,14 @@ class Map extends Frame
     public function __construct($msg, array $headers = [])
     {
         if ($msg instanceof Frame) {
-            parent::__construct($msg->command, $msg->headers, $msg->body);
+            parent::__construct($msg->body, $msg->headers);
+            $this->command = $msg->command;
             $this->map = json_decode($msg->body, true);
         } else {
-            parent::__construct('SEND', $headers, $msg);
+            parent::__construct($msg, $headers);
             $this['transformation'] = 'jms-map-json';
             $this->body = json_encode($msg);
+            $this->command = 'SEND';
         }
     }
 }
