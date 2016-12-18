@@ -51,3 +51,8 @@ Changelog stomp-php
 4.1.5
 -----
 - fix for false exceptions in combination with pcntl_signal (https://github.com/stomp-php/stomp-php/pull/65)
+
+4.2.0
+-----
+- fix invalid class hierarchy for `Stomp\Transport\Map` changed parent from `Frame` to `Message`
+- add option to register own message type handlers in `Stomp\Transport\FrameFactory` (https://github.com/stomp-php/stomp-php/pull/64)
