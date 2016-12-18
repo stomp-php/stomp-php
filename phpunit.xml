@@ -24,6 +24,9 @@
         <testsuite name="stomp-php Functional Test Suite">
             <directory>tests/Functional/</directory>
         </testsuite>
+        <testsuite name="stomp-php Special Test Cases Suite">
+            <directory>tests/Cases/</directory>
+        </testsuite>
         <testsuite name="stomp-php Unit Test Suite">
             <directory>tests/Unit/</directory>
         </testsuite>
