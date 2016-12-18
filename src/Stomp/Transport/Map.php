@@ -14,25 +14,37 @@ namespace Stomp\Transport;
  *
  * @package Stomp
  */
-class Map extends Frame
+class Map extends Message
 {
     public $map;
 
     /**
      * Constructor
      *
-     * @param Frame|string $msg
+     * @param array|object|string $body string will get decoded (receive), otherwise the body will be encoded (send)
      * @param array $headers
+     * @param string $command
      */
-    public function __construct($msg, array $headers = [])
+    public function __construct($body, array $headers = [], $command = 'SEND')
     {
-        if ($msg instanceof Frame) {
-            parent::__construct($msg->command, $msg->headers, $msg->body);
-            $this->map = json_decode($msg->body, true);
+        if (is_string($body)) {
+            parent::__construct($body, $headers);
+            $this->command = $command;
+            $this->map = json_decode($body, true);
         } else {
-            parent::__construct('SEND', $headers, $msg);
-            $this['transformation'] = 'jms-map-json';
-            $this->body = json_encode($msg);
+            parent::__construct(json_encode($body), $headers + ['transformation' => 'jms-map-json']);
+            $this->command = $command;
+            $this->map = $body;
         }
+    }
+
+    /**
+     * Returns the received decoded json.
+     *
+     * @return mixed
+     */
+    public function getMap()
+    {
+        return $this->map;
     }
 }
