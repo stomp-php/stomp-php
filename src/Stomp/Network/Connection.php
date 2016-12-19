@@ -125,7 +125,7 @@ class Connection
         $this->parser = new Parser();
         $this->connectTimeout = $connectionTimeout;
         $this->context = $context;
-        $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-_]+)\)*\??([a-zA-Z0-9=&_]*)$|i";
+        $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-_]+)\)*\??([a-zA-Z0-9=&]*)$|i";
         if (preg_match($pattern, $brokerUri, $matches)) {
             $scheme = $matches[2];
             $hosts = $matches[3];
