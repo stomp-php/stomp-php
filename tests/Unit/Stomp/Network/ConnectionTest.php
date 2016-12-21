@@ -50,6 +50,18 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(61613, $host['port'], 'Default port must be set!');
     }
 
+    public function testBrokerUriParseUnderscoreInHost()
+    {
+        $connection = new Connection('tcp://host_test');
+        $getHostList = new ReflectionMethod($connection, 'getHostList');
+        $getHostList->setAccessible(true);
+
+        $hostList = $getHostList->invoke($connection);
+        $host = array_shift($hostList);
+        $this->assertEquals('tcp', $host['scheme']);
+        $this->assertEquals('host_test', $host['host']);
+    }
+
     public function testBrokerUriParseSpecificPort()
     {
         $connection = new Connection('tcp://host1:55');
