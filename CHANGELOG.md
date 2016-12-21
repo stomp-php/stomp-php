@@ -56,3 +56,7 @@ Changelog stomp-php
 -----
 - fix invalid class hierarchy for `Stomp\Transport\Map` changed parent from `Frame` to `Message`
 - add option to register own message type handlers in `Stomp\Transport\FrameFactory` (https://github.com/stomp-php/stomp-php/pull/64)
+
+4.2.1
+-----
+- Update Connector to support `_`  in the broker uri, thanks to @campru (https://github.com/stomp-php/stomp-php/pull/66)
