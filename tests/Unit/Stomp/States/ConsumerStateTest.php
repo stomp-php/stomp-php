@@ -37,6 +37,5 @@ class ConsumerStateTest extends PHPUnit_Framework_TestCase
         $stateful = new StatefulStomp($client);
         $consumerState = new ConsumerState($client, $stateful);
         $consumerState->unsubscribe('not-existing');
-
     }
 }

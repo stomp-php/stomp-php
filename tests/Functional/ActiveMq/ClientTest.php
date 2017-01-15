@@ -138,11 +138,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
                 $messages[$frame->body] = 'acked';
 
                 $this->simpleStomp->ack($frame);
-
             }
 
             $this->Stomp->disconnect();
-
         }
 
         $un_acked_messages = [];

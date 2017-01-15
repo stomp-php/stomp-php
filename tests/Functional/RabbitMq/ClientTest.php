@@ -123,7 +123,6 @@ class ClientTest extends PHPUnit_Framework_TestCase
                 $messages[$frame->body] = 'acked';
 
                 $this->simpleStomp->ack($frame);
-
             }
 
             $this->stomp->disconnect();
@@ -321,7 +320,13 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $consumer->connect();
 
         $simpleStomp = new SimpleStomp($consumer);
-        $simpleStomp->subscribe($this->topic, 'myId', 'client-individual', null, ['durable' => 'true', 'auto-delete' => 'false']);
+        $simpleStomp->subscribe(
+            $this->topic,
+            'myId',
+            'client-individual',
+            null,
+            ['durable' => 'true', 'auto-delete' => 'false']
+        );
         $simpleStomp->unsubscribe($this->topic, 'myId');
         $consumer->disconnect();
     }
@@ -343,7 +348,13 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $consumer->getConnection()->setReadTimeout(5);
 
         $simpleStomp = new SimpleStomp($consumer);
-        $simpleStomp->subscribe($this->topic, 'myId', 'client-individual', null, ['durable' => 'true', 'auto-delete' => 'false']);
+        $simpleStomp->subscribe(
+            $this->topic,
+            'myId',
+            'client-individual',
+            null,
+            ['durable' => 'true', 'auto-delete' => 'false']
+        );
 
 
         $frame = $simpleStomp->read();

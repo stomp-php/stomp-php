@@ -55,7 +55,6 @@ class ClientTest extends PHPUnit_Framework_TestCase
         } catch (UnexpectedResponseException $connectionException) {
             $this->assertSame($frame, $connectionException->getFrame());
         }
-
     }
 
     /**
@@ -65,7 +64,6 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult(false);
         $stomp->connect();
-
     }
 
     public function testConnectWillDetermineRabbitMqDialect()

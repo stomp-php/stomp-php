@@ -33,7 +33,8 @@ class OpenMq extends Protocol
         } else {
             $ack['message-id'] = $frame->getMessageId();
         }
-        // spec quote: "ACK should always specify a "subscription" header for the subscription id that the message to be acked was delivered to ."
+        // spec quote: "ACK should always specify a "subscription" header for the subscription id
+        //              that the message to be acked was delivered to ."
         // see https://mq.java.net/4.4-content/stomp-funcspec.html
         $ack['subscription'] = $frame['subscription'];
         return $ack;

@@ -58,7 +58,7 @@ abstract class ProtocolTestCase extends PHPUnit_Framework_TestCase
         $protocol = $this->getProtocol();
 
         try {
-            $actual = $protocol->getSubscribeFrame('my-destination', 'my-sub-id', 'my-ack', 'my-selector');
+            $protocol->getSubscribeFrame('my-destination', 'my-sub-id', 'my-ack', 'my-selector');
             $this->fail();
         } catch (StompException $e) {
             $this->assertContains('"my-ack" is not a valid ack value', $e->getMessage());
@@ -73,7 +73,6 @@ abstract class ProtocolTestCase extends PHPUnit_Framework_TestCase
         $this->assertIsAckFrame($actual);
         $this->assertEquals('id-value', $actual['message-id']);
         $this->assertEquals('my-transaction', $actual['transaction']);
-
     }
 
     public function testAckVersionTwo()
@@ -93,7 +92,6 @@ abstract class ProtocolTestCase extends PHPUnit_Framework_TestCase
     {
         $instance = $this->getProtocol(Version::VERSION_1_0);
         $instance->getNackFrame(new Frame(null, ['message-id' => 'id-value']));
-
     }
 
     public function testNackVersionOne()

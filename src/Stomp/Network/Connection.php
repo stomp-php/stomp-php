@@ -113,7 +113,7 @@ class Connection
      * Example broker uri
      * - Use only one broker uri: tcp://localhost:61614
      * - use failover in given order: failover://(tcp://localhost:61614,ssl://localhost:61612)
-     * - use brokers in random order://(tcp://localhost:61614,ssl://localhost:61612)?randomize=true
+     * - use brokers in random order: failover://(tcp://localhost:61614,ssl://localhost:61612)?randomize=true
      *
      * @param string $brokerUri
      * @param integer $connectionTimeout in seconds
@@ -354,7 +354,6 @@ class Connection
             if (strlen($read) != 8192) {
                 $this->parser->addData(Parser::FRAME_END);
             }
-
         } while (!$this->parser->parse());
 
         // See if there are newlines after the \0
@@ -425,7 +424,10 @@ class Connection
             // stream_select can return `false` if used in combination with `pcntl_signal` and lead to false errors here
             $error = error_get_last();
             if ($error && isset($error['message']) && stripos($error['message'], 'interrupted system call') === false) {
-                throw new ConnectionException('Check failed to determine if the socket is readable.', $this->activeHost);
+                throw new ConnectionException(
+                    'Check failed to determine if the socket is readable.',
+                    $this->activeHost
+                );
             }
             return false;
         }

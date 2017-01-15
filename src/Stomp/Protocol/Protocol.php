@@ -55,7 +55,6 @@ class Protocol
         $this->clientId = $clientId;
         $this->server = $server;
         $this->version = $version;
-
     }
 
     /**
@@ -105,12 +104,19 @@ class Protocol
         // https://stomp.github.io/stomp-specification-1.1.html#ACK
         // https://stomp.github.io/stomp-specification-1.2.html#ACK
         if ($this->hasVersion(Version::VERSION_1_1)) {
-            $validAcks = array('auto', 'client', 'client-individual');
+            $validAcks = ['auto', 'client', 'client-individual'];
         } else {
-            $validAcks = array('auto', 'client');
+            $validAcks = ['auto', 'client'];
         }
         if (!in_array($ack, $validAcks)) {
-            throw new StompException('"'. $ack .'" is not a valid ack value for STOMP '. $this->version .'. A valid value is one of '. implode(',', $validAcks));
+            throw new StompException(
+                sprintf(
+                    '"%s" is not a valid ack value for STOMP %s. A valid value is one of %s',
+                    $ack,
+                    $this->version,
+                    implode(',', $validAcks)
+                )
+            );
         }
         
         $frame = $this->createFrame('SUBSCRIBE');
@@ -294,7 +300,7 @@ class Protocol
     /**
      * Creates a Frame according to the detected STOMP version.
      *
-     * @param Frame $command
+     * @param string $command
      * @return Frame
      */
     protected function createFrame($command)

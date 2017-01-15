@@ -200,7 +200,8 @@ class ParserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('var', $frame->body);
     }
 
-    public function testParserWillWaitForFullContentLength() {
+    public function testParserWillWaitForFullContentLength()
+    {
         // Make our body and split it up.
         $body = "Test\x00body with\x00NULL octets.";
         $body_parts = str_split($body, 5);

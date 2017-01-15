@@ -25,13 +25,13 @@ trait TransactionsTrait
     /**
      * @return Protocol
      */
-    abstract function getProtocol();
+    abstract public function getProtocol();
 
 
     /**
      * @return Client
      */
-    abstract function getClient();
+    abstract public function getClient();
 
     /**
      * Id used for current transaction.
