@@ -85,7 +85,6 @@ class ActiveMqTestCase extends ProtocolTestCase
         $this->assertIsAckFrame($resultIdBased);
         $this->assertEquals('id-value', $resultIdBased['message-id']);
         $this->assertEquals('my-transaction', $resultIdBased['transaction']);
-
     }
 
     public function testAckVersionOne()
@@ -136,7 +135,6 @@ class ActiveMqTestCase extends ProtocolTestCase
         $this->assertEquals('id-value', $resultIdBased['message-id']);
         $this->assertEquals('my-transaction', $resultIdBased['transaction']);
         $this->assertIsNackFrame($resultIdBased);
-
     }
 
 

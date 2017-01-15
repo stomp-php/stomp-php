@@ -73,7 +73,6 @@ class ApolloTest extends ProtocolTestCase
         $this->assertEquals('id-value', $resultIdBased['message-id']);
         $this->assertEquals('my-transaction', $resultIdBased['transaction']);
         $this->assertIsNackFrame($resultIdBased);
-
     }
 
     protected function getProtocolClassFqn()

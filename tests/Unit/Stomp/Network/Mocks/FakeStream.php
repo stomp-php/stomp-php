@@ -13,6 +13,7 @@ namespace Stomp\Tests\Unit\Stomp\Network\Mocks;
  *
  * @package Stomp\Tests\Unit\Stomp\Network\Mocks
  * @author Jens Radtke <swefl.oss@fin-sn.de>
+ * @codingStandardsIgnoreFile
  */
 class FakeStream
 {

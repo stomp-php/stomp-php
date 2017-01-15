@@ -150,7 +150,6 @@ class ConnectionTest extends \PHPUnit_Framework_TestCase
             $hostInfo = $prev->getConnectionInfo();
             $this->assertEquals('0.0.0.1', $hostInfo['host']);
             $this->assertEquals('15', $hostInfo['port']);
-
         }
     }
 }

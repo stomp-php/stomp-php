@@ -55,7 +55,13 @@ class ProducerTransactionState extends ProducerState
     {
         return $this->setState(
             new ConsumerTransactionState($this->getClient(), $this->getBase()),
-            $this->getOptions() + ['destination' => $destination, 'selector' => $selector, 'ack' => $ack, 'header' => $header]
+            $this->getOptions() +
+            [
+                'destination' => $destination,
+                'selector' => $selector,
+                'ack' => $ack,
+                'header' => $header
+            ]
         );
     }
 
