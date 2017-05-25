@@ -11,6 +11,7 @@ namespace Stomp\Tests\Functional\ActiveMq;
 
 use Stomp\Client;
 use Stomp\SimpleStomp;
+use Stomp\Transport\Frame;
 
 /**
  * Stomp test case.
@@ -55,7 +56,7 @@ class SyncTest extends \PHPUnit_Framework_TestCase
     public function testSyncSub()
     {
         $this->assertTrue($this->Stomp->connect());
-        $this->assertTrue($this->simpleStomp->subscribe('/queue/test', 'mysubid'));
+        $this->assertTrue($this->simpleStomp->subscribe('/queue/test', 'mysubid', 'client-individual'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 1'));
         $this->assertTrue($this->Stomp->send('/queue/test', 'test 2'));
 
@@ -81,8 +82,9 @@ class SyncTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->simpleStomp->subscribe('/queue/test', 'mysubid'));
 
         $frame = $this->Stomp->readFrame();
+        $this->assertInstanceOf(Frame::class, $frame);
         $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
-        $this->simpleStomp->ack($frame);
+
     }
 
     public function testAbortTransaction()

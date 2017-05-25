@@ -12,6 +12,7 @@ namespace Stomp\Tests\Functional\ActiveMq;
 use PHPUnit_Framework_TestCase;
 use Stomp\Broker\ActiveMq\ActiveMq;
 use Stomp\Client;
+use Stomp\Network\Observer\Heartbeat\Emitter;
 use Stomp\SimpleStomp;
 use Stomp\Transport\Bytes;
 use Stomp\Transport\Frame;
@@ -301,11 +302,12 @@ class ClientTest extends PHPUnit_Framework_TestCase
         }
         $body = 'test';
         $mapMessage = new Bytes($body);
-        $this->Stomp->send($this->queue, $mapMessage);
-        $this->Stomp->disconnect(true);
+        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client-individual');
 
-        $this->simpleStomp->subscribe($this->queue, 'mysubid');
+        $this->Stomp->send($this->queue, $mapMessage);
+
         $msg = $this->Stomp->readFrame();
+        $this->assertInstanceOf(Frame::class, $msg);
         $this->assertEquals($msg->body, $body);
         $this->simpleStomp->ack($msg);
         $this->Stomp->disconnect();
@@ -396,29 +398,41 @@ class ClientTest extends PHPUnit_Framework_TestCase
         if ($this->Stomp->isConnected()) {
             $this->Stomp->disconnect();
         }
+        $this->Stomp->getConnection()->setPersistentConnection(false);
 
-        $this->Stomp->setHeartbeat(500);
-        $this->Stomp->getConnection()->setReadTimeout(0, 750000);
+        // It's important that the read timeout is lower than the offered beat interval.
+        // In detail the minimum suggested beat is: ((readTimeout μs / 1000 ms) * IntervalUsage %) + time you need to add logic between any call to the lib
+        $this->Stomp->setHeartbeat(0,500); // at least after 0.5 seconds we will let the server know that we're alive
+        $this->Stomp->getConnection()->setReadTimeout(0, 250000); // after 0.25 seconds a read operation must timeout
+
+        // we add a beat emitter to the observers of our connection
+        $this->Stomp->getConnection()->getObserver()->addObserver(new Emitter($this->Stomp->getConnection()));
 
         $this->Stomp->connect();
-        $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
+        $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid', 'client'));
 
+        $this->Stomp->readFrame(); // ~ 0.25 seconds
+        usleep(250000); // 0.25 seconds
         // Sleep long enough for a heartbeat to be sent.
-        sleep(1);
-
-        // Check we have no frame yet.
-        $this->assertFalse($this->Stomp->getConnection()->hasDataToRead(), 'Has frame to read when none expected');
-        $this->assertFalse($this->Stomp->readFrame(), 'Read a frame when none expected');
+        $this->Stomp->readFrame(); // ~ 0.25 seconds
 
         // Send a frame.
-        $this->Stomp->send($this->queue, 'testReadFrame');
+        $this->assertTrue($this->Stomp->send($this->queue, 'testReadFrame'));
 
+        $tries = 0;
         // Check we now have a frame to read.
-        $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof Frame);
-        $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
-        $this->simpleStomp->ack($frame);
-        $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
+        while (true) {
+            $tries++;
+            $frame = $this->Stomp->readFrame(); // ~ 0.25 seconds
+            if ($frame) {
+                $this->assertTrue($frame instanceof Frame);
+                $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
+                $this->simpleStomp->ack($frame);
+                $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
+                break;
+            }
+            $this->assertLessThan(10, $tries, 'Was not able to read the frame inside the expected time.');
+        }
     }
 
 }
