@@ -163,14 +163,22 @@ class Client
   /**
    * Set the desired heartbeat for the connection.
    *
-   * @param int $receive
-   *   Number of milliseconds between expected receipt of heartbeats. 0 means
-   *   no heart beats expected.
+   * A heartbeat is a specific message that will be send / received when no other data is send / received
+   * within an interval - to indicate that the connection is still stable. If client and server agree on a beat and
+   * the interval passes without any data activity / beats the connection will be considered as broken and closed.
+   *
+   * If you define a heartbeat, you must assure that your application will send data within the interval.
+   * You can add \Stomp\Network\Observer\Heartbeat\Emitter to your connection in order to send beats automatically.
+   *
    * @param int $send
    *   Number of milliseconds between expected sending of heartbeats. 0 means
    *   no heart beats sent.
+   * @param int $receive
+   *   Number of milliseconds between expected receipt of heartbeats. 0 means
+   *   no heart beats expected. (not yet supported by this client)
+   * @see \Stomp\Network\Observer\Heartbeat\Emitter
    */
-    public function setHeartbeat($receive = 0, $send = 0)
+    public function setHeartbeat($send = 0, $receive = 0)
     {
       $this->heartbeat = [$send, $receive];
     }

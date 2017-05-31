@@ -22,6 +22,16 @@ use Stomp\Transport\Frame;
 class Emitter implements ConnectionObserver
 {
     /**
+     * Frame from client that request a connection.
+     */
+    const FRAME_CLIENT_CONNECT = 'CONNECT';
+
+    /**
+     * Frame from server when a connection is established.
+     */
+    const FRAME_SERVER_CONNECTED = 'CONNECTED';
+
+    /**
      * @var Connection
      */
     private $connection;
@@ -146,14 +156,14 @@ class Emitter implements ConnectionObserver
     }
 
     /**
-     * Indicates that a frame has been received.
+     * Indicates that a frame has been received from the server.
      *
      * @param Frame $frame that has been received
      * @return void
      */
     public function receivedFrame(Frame $frame)
     {
-        if ($frame->getCommand() === 'CONNECTED') {
+        if ($frame->getCommand() === Emitter::FRAME_SERVER_CONNECTED) {
             $beats = $this->getHeartbeats($frame);
             $this->intervalServer = $beats[1];
             if ($this->intervalServer && ($this->intervalClient || $this->intervalClient === null)) {
@@ -182,18 +192,18 @@ class Emitter implements ConnectionObserver
     }
 
     /**
-     * Indicates that a frame has been transmitted.
+     * Indicates that a frame has been sent to the server.
      *
      * @param Frame $frame
      * @return void
      */
-    public function transmittedFrame(Frame $frame)
+    public function sentFrame(Frame $frame)
     {
         if ($this->enabled) {
             $this->notifyBeat();
             return;
         }
-        if ($frame->getCommand() === 'CONNECT') {
+        if ($frame->getCommand() === Emitter::FRAME_CLIENT_CONNECT) {
             $beats = $this->getHeartbeats($frame);
             $this->intervalClient = $beats[0];
             $this->notifyBeat();

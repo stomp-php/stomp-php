@@ -48,12 +48,12 @@ class EmitterTest extends TestCase
     {
         $this->assertFalse($this->instance->isEnabled());
 
-        $connectFrame = new Frame('CONNECT');
+        $connectFrame = new Frame(Emitter::FRAME_CLIENT_CONNECT);
         $connectFrame['heart-beat'] = '100,0';
-        $this->instance->transmittedFrame($connectFrame);
+        $this->instance->sentFrame($connectFrame);
         $this->assertFalse($this->instance->isEnabled());
 
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,100';
         $this->instance->receivedFrame($connectedFrame);
 
@@ -64,12 +64,12 @@ class EmitterTest extends TestCase
     {
         $this->assertFalse($this->instance->isEnabled());
 
-        $connectFrame = new Frame('CONNECT');
+        $connectFrame = new Frame(Emitter::FRAME_CLIENT_CONNECT);
         $connectFrame['heart-beat'] = '100,0';
-        $this->instance->transmittedFrame($connectFrame);
+        $this->instance->sentFrame($connectFrame);
         $this->assertFalse($this->instance->isEnabled());
 
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $this->instance->receivedFrame($connectedFrame);
         $this->assertFalse($this->instance->isEnabled());
 
@@ -80,11 +80,11 @@ class EmitterTest extends TestCase
 
     public function testEmitterNotActivatedIfClientDontWantToSendBeats()
     {
-        $connectFrame = new Frame('CONNECT');
-        $this->instance->transmittedFrame($connectFrame);
+        $connectFrame = new Frame(Emitter::FRAME_CLIENT_CONNECT);
+        $this->instance->sentFrame($connectFrame);
         $this->assertFalse($this->instance->isEnabled());
 
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,100';
         $this->instance->receivedFrame($connectedFrame);
         $this->assertFalse($this->instance->isEnabled());
@@ -93,7 +93,7 @@ class EmitterTest extends TestCase
     public function testEmitterActivatedIfServerRequestsBeatsAndNoConnectFrameWasSend()
     {
         // can happen when the connection was recycled
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,100';
         $this->instance->receivedFrame($connectedFrame);
         $this->assertTrue($this->instance->isEnabled());
@@ -103,7 +103,7 @@ class EmitterTest extends TestCase
     public function testDelayDetection()
     {
         // can happen when the connection was recycled
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
         $this->instance->emptyLineReceived();
@@ -115,7 +115,7 @@ class EmitterTest extends TestCase
     public function testBeatTriggeredByEmptyBufferRead()
     {
         // can happen when the connection was recycled
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
         $this->instance->emptyBuffer();
@@ -129,7 +129,7 @@ class EmitterTest extends TestCase
     public function testBeatTriggeredByFrameRead()
     {
         // can happen when the connection was recycled
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
         $this->instance->emptyLineReceived();
@@ -143,7 +143,7 @@ class EmitterTest extends TestCase
     public function testBeatTriggeredByEmptyLineRead()
     {
         // can happen when the connection was recycled
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
         $this->instance->emptyLineReceived();
@@ -158,14 +158,14 @@ class EmitterTest extends TestCase
     public function testLastBeatUpdated()
     {
         // can happen when the connection was recycled
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
-        $this->instance->transmittedFrame(new Frame('MESSAGE'));
+        $this->instance->sentFrame(new Frame('MESSAGE'));
         $lastBeat = $this->instance->getLastbeat();
         usleep(4000);
         $this->assertEquals($lastBeat, $this->instance->getLastbeat());
-        $this->instance->transmittedFrame(new Frame('MESSAGE'));
+        $this->instance->sentFrame(new Frame('MESSAGE'));
         $this->assertGreaterThan($lastBeat, $this->instance->getLastbeat());
     }
 
@@ -183,12 +183,12 @@ class EmitterTest extends TestCase
         $this->instance->setIntervalUsage(0.5);
 
         // we offer 300
-        $connectFrame = new Frame('CONNECT');
+        $connectFrame = new Frame(Emitter::FRAME_CLIENT_CONNECT);
         $connectFrame['heart-beat'] = '300,0';
-        $this->instance->transmittedFrame($connectFrame);
+        $this->instance->sentFrame($connectFrame);
 
         // server asks for 500
-        $connectedFrame = new Frame('CONNECTED');
+        $connectedFrame = new Frame(Emitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,500';
         $this->instance->receivedFrame($connectedFrame);
 

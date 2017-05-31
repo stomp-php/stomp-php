@@ -38,17 +38,17 @@ class ConnectionObserverCollectionTest extends TestCase
         $frameA = new Message('message-a');
         $frameB = new Message('message-b');
         $observerA = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['transmittedFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame'])
+            ->setMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame'])
             ->getMock();
-        $observerA->expects($this->exactly(1))->method('transmittedFrame')->with($frameA);
+        $observerA->expects($this->exactly(1))->method('sentFrame')->with($frameA);
         $observerA->expects($this->exactly(1))->method('emptyLineReceived');
         $observerA->expects($this->exactly(1))->method('emptyBuffer');
         $observerA->expects($this->exactly(1))->method('receivedFrame')->with($frameB);
 
         $observerB = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['transmittedFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame'])
+            ->setMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame'])
             ->getMock();
-        $observerB->expects($this->exactly(1))->method('transmittedFrame')->with($frameA);
+        $observerB->expects($this->exactly(1))->method('sentFrame')->with($frameA);
         $observerB->expects($this->exactly(1))->method('emptyLineReceived');
         $observerB->expects($this->exactly(1))->method('emptyBuffer');
         $observerB->expects($this->exactly(1))->method('receivedFrame')->with($frameB);
@@ -57,7 +57,7 @@ class ConnectionObserverCollectionTest extends TestCase
         $this->instance->addObserver($observerB);
 
         $this->instance->receivedFrame($frameB);
-        $this->instance->transmittedFrame($frameA);
+        $this->instance->sentFrame($frameA);
         $this->instance->emptyBuffer();
         $this->instance->emptyLineReceived();
     }
@@ -70,12 +70,12 @@ class ConnectionObserverCollectionTest extends TestCase
         $this->instance->addObserver($observerA);
         $this->instance->addObserver($observerB);
 
-        self::assertContains($observerA, $this->instance->getObserver());
-        self::assertContains($observerB, $this->instance->getObserver());
+        self::assertContains($observerA, $this->instance->getObservers());
+        self::assertContains($observerB, $this->instance->getObservers());
 
         $this->instance->removeObserver($observerA);
 
-        self::assertNotContains($observerA, $this->instance->getObserver());
-        self::assertContains($observerB, $this->instance->getObserver());
+        self::assertNotContains($observerA, $this->instance->getObservers());
+        self::assertContains($observerB, $this->instance->getObservers());
     }
 }

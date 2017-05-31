@@ -111,7 +111,7 @@ class Connection
     /**
      * @var ConnectionObserverCollection
      */
-    private $observer;
+    private $observers;
 
     /**
      * Initialize connection
@@ -129,7 +129,7 @@ class Connection
     public function __construct($brokerUri, $connectionTimeout = 1, array $context = [])
     {
         $this->parser = new Parser();
-        $this->observer = new ConnectionObserverCollection();
+        $this->observers = new ConnectionObserverCollection();
         $this->connectTimeout = $connectionTimeout;
         $this->context = $context;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-_]+)\)*\??([a-zA-Z0-9=&]*)$|i";
@@ -163,9 +163,9 @@ class Connection
      *
      * @return ConnectionObserverCollection
      */
-    public function getObserver()
+    public function getObservers()
     {
-        return $this->observer;
+        return $this->observers;
     }
 
     /**
@@ -339,7 +339,7 @@ class Connection
         if (!@fwrite($this->connection, $data, strlen($data))) {
             throw new ConnectionException('Was not possible to write frame!', $this->activeHost);
         }
-        $this->getObserver()->transmittedFrame($stompFrame);
+        $this->observers->sentFrame($stompFrame);
         return true;
     }
 
@@ -381,7 +381,7 @@ class Connection
             throw new ErrorFrameException($frame);
         }
 
-        $this->getObserver()->receivedFrame($frame);
+        $this->observers->receivedFrame($frame);
         return $frame;
     }
 
@@ -402,7 +402,7 @@ class Connection
 
         $isDataInBuffer = $this->connectionHasDataToRead($this->readTimeout[0], $this->readTimeout[1]);
         if (!$isDataInBuffer) {
-            $this->getObserver()->emptyBuffer();
+            $this->observers->emptyBuffer();
         }
         return $isDataInBuffer;
     }
@@ -423,7 +423,7 @@ class Connection
                 $this->parser->addData($data);
                 break;
             } else {
-                $this->getObserver()->emptyLineReceived();
+                $this->observers->emptyLineReceived();
             }
         }
     }

@@ -33,7 +33,7 @@ interface ConnectionObserver
     public function emptyBuffer();
 
     /**
-     * Indicates that a frame has been received.
+     * Indicates that a frame has been received from the server.
      *
      * @param Frame $frame that has been received
      * @return void
@@ -41,10 +41,10 @@ interface ConnectionObserver
     public function receivedFrame(Frame $frame);
 
     /**
-     * Indicates that a frame has been transmitted.
+     * Indicates that a frame has been sent to the server.
      *
      * @param Frame $frame
      * @return void
      */
-    public function transmittedFrame(Frame $frame);
+    public function sentFrame(Frame $frame);
 }

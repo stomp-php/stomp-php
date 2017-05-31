@@ -406,7 +406,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->Stomp->getConnection()->setReadTimeout(0, 250000); // after 0.25 seconds a read operation must timeout
 
         // we add a beat emitter to the observers of our connection
-        $this->Stomp->getConnection()->getObserver()->addObserver(new Emitter($this->Stomp->getConnection()));
+        $this->Stomp->getConnection()->getObservers()->addObserver(new Emitter($this->Stomp->getConnection()));
 
         $this->Stomp->connect();
         $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid', 'client'));

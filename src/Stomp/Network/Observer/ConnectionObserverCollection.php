@@ -22,18 +22,18 @@ class ConnectionObserverCollection implements ConnectionObserver
     /**
      * @var ConnectionObserver[]
      */
-    private $observer = [];
+    private $observers = [];
 
     /**
      * Adds new observers to the collection.
      *
      * @param ConnectionObserver $observer
-     * @return ConnectionObserverCollection
+     * @return ConnectionObserverCollection this collection
      */
     public function addObserver(ConnectionObserver $observer)
     {
-        if (!in_array($observer, $this->observer, true)) {
-            $this->observer[] = $observer;
+        if (!in_array($observer, $this->observers, true)) {
+            $this->observers[] = $observer;
         }
         return $this;
     }
@@ -42,13 +42,13 @@ class ConnectionObserverCollection implements ConnectionObserver
      * Removes the observers from the collection.
      *
      * @param ConnectionObserver $observer
-     * @return ConnectionObserverCollection
+     * @return ConnectionObserverCollection this collection
      */
     public function removeObserver(ConnectionObserver $observer)
     {
-        $index = array_search($observer, $this->observer, true);
+        $index = array_search($observer, $this->observers, true);
         if ($index !== false) {
-            unset($this->observer[$index]);
+            unset($this->observers[$index]);
         }
         return $this;
     }
@@ -58,9 +58,9 @@ class ConnectionObserverCollection implements ConnectionObserver
      *
      * @return ConnectionObserver[]
      */
-    public function getObserver()
+    public function getObservers()
     {
-        return array_values($this->observer);
+        return array_values($this->observers);
     }
 
     /**
@@ -70,7 +70,7 @@ class ConnectionObserverCollection implements ConnectionObserver
      */
     public function emptyLineReceived()
     {
-        foreach ($this->observer as $item) {
+        foreach ($this->observers as $item) {
             $item->emptyLineReceived();
         }
     }
@@ -83,7 +83,7 @@ class ConnectionObserverCollection implements ConnectionObserver
      */
     public function receivedFrame(Frame $frame)
     {
-        foreach ($this->observer as $item) {
+        foreach ($this->observers as $item) {
             $item->receivedFrame($frame);
         }
     }
@@ -94,10 +94,10 @@ class ConnectionObserverCollection implements ConnectionObserver
      * @param Frame $frame
      * @return void
      */
-    public function transmittedFrame(Frame $frame)
+    public function sentFrame(Frame $frame)
     {
-        foreach ($this->observer as $item) {
-            $item->transmittedFrame($frame);
+        foreach ($this->observers as $item) {
+            $item->sentFrame($frame);
         }
     }
 
@@ -108,7 +108,7 @@ class ConnectionObserverCollection implements ConnectionObserver
      */
     public function emptyBuffer()
     {
-        foreach ($this->observer as $item) {
+        foreach ($this->observers as $item) {
             $item->emptyBuffer();
         }
     }
