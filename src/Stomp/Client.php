@@ -168,15 +168,19 @@ class Client
    * the interval passes without any data activity / beats the connection will be considered as broken and closed.
    *
    * If you define a heartbeat, you must assure that your application will send data within the interval.
-   * You can add \Stomp\Network\Observer\Heartbeat\Emitter to your connection in order to send beats automatically.
+   * You can add \Stomp\Network\Observer\HeartbeatEmitter to your connection in order to send beats automatically.
+   *
+   * If you don't use HeartbeatEmitter you must either send messages within the interval
+   * or make calls to Connection::sendAlive()
    *
    * @param int $send
    *   Number of milliseconds between expected sending of heartbeats. 0 means
-   *   no heart beats sent.
+   *   no heartbeats sent.
    * @param int $receive
    *   Number of milliseconds between expected receipt of heartbeats. 0 means
-   *   no heart beats expected. (not yet supported by this client)
-   * @see \Stomp\Network\Observer\Heartbeat\Emitter
+   *   no heartbeats expected. (not yet supported by this client)
+   * @see \Stomp\Network\Observer\HeartbeatEmitter
+   * @see \Stomp\Network\Connection::sendAlive()
    */
     public function setHeartbeat($send = 0, $receive = 0)
     {

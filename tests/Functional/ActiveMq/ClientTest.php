@@ -12,7 +12,7 @@ namespace Stomp\Tests\Functional\ActiveMq;
 use PHPUnit_Framework_TestCase;
 use Stomp\Broker\ActiveMq\ActiveMq;
 use Stomp\Client;
-use Stomp\Network\Observer\Heartbeat\Emitter;
+use Stomp\Network\Observer\HeartbeatEmitter;
 use Stomp\SimpleStomp;
 use Stomp\Transport\Bytes;
 use Stomp\Transport\Frame;
@@ -406,7 +406,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->Stomp->getConnection()->setReadTimeout(0, 250000); // after 0.25 seconds a read operation must timeout
 
         // we add a beat emitter to the observers of our connection
-        $this->Stomp->getConnection()->getObservers()->addObserver(new Emitter($this->Stomp->getConnection()));
+        $this->Stomp->getConnection()->getObservers()->addObserver(new HeartbeatEmitter($this->Stomp->getConnection()));
 
         $this->Stomp->connect();
         $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid', 'client'));

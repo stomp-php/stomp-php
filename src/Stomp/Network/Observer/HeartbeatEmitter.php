@@ -6,20 +6,19 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Network\Observer\Heartbeat;
+namespace Stomp\Network\Observer;
 
 
 use Stomp\Network\Connection;
-use Stomp\Network\Observer\ConnectionObserver;
 use Stomp\Transport\Frame;
 
 /**
- * Emitter a very basic heartbeat emitter.
+ * HeartbeatEmitter a very basic heartbeat emitter.
  *
  * @package Stomp\Network\Observer\Heartbeat
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class Emitter implements ConnectionObserver
+class HeartbeatEmitter implements ConnectionObserver
 {
     /**
      * Frame from client that request a connection.
@@ -76,14 +75,24 @@ class Emitter implements ConnectionObserver
      *
      * @var float
      */
-    private $intervalUsage = 0.65;
+    private $intervalUsage;
 
     /**
      * Emitter constructor.
+     *
+     * What is the interval usage?
+     * The usage (percentage) defines the amount of agreed beat interval time,
+     * that is allowed to pass before the emitter will send a beat.
+     *
+     * A higher value increases the risk that a beat is send after a timeout has occurred.
+     * A lower value increases the beats and adds overhead to the connection.
+     *
      * @param Connection $connection
+     * @param float $intervalUsage
      */
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, $intervalUsage = 0.65)
     {
+        $this->intervalUsage = max(0.05, min($intervalUsage, 0.95));
         $this->connection = $connection;
     }
 
@@ -132,7 +141,7 @@ class Emitter implements ConnectionObserver
     private function sendBeat()
     {
         $this->connection->sendAlive();
-        $this->notifyBeat();
+        $this->rememberBeat();
     }
 
     /**
@@ -140,7 +149,7 @@ class Emitter implements ConnectionObserver
      *
      * @return void
      */
-    private function notifyBeat()
+    private function rememberBeat()
     {
         $this->lastbeat = microtime(true);
     }
@@ -163,7 +172,7 @@ class Emitter implements ConnectionObserver
      */
     public function receivedFrame(Frame $frame)
     {
-        if ($frame->getCommand() === Emitter::FRAME_SERVER_CONNECTED) {
+        if ($frame->getCommand() === HeartbeatEmitter::FRAME_SERVER_CONNECTED) {
             $beats = $this->getHeartbeats($frame);
             $this->intervalServer = $beats[1];
             if ($this->intervalServer && ($this->intervalClient || $this->intervalClient === null)) {
@@ -177,7 +186,7 @@ class Emitter implements ConnectionObserver
     }
 
     /**
-     * Returns the heart beat header.
+     * Returns the heartbeat header.
      *
      * @param Frame $frame
      * @return array
@@ -200,13 +209,13 @@ class Emitter implements ConnectionObserver
     public function sentFrame(Frame $frame)
     {
         if ($this->enabled) {
-            $this->notifyBeat();
+            $this->rememberBeat();
             return;
         }
-        if ($frame->getCommand() === Emitter::FRAME_CLIENT_CONNECT) {
+        if ($frame->getCommand() === HeartbeatEmitter::FRAME_CLIENT_CONNECT) {
             $beats = $this->getHeartbeats($frame);
             $this->intervalClient = $beats[0];
-            $this->notifyBeat();
+            $this->rememberBeat();
         }
     }
 
@@ -249,22 +258,5 @@ class Emitter implements ConnectionObserver
     {
         return $this->intervalUsage;
     }
-
-    /**
-     * Sets the interval usage, must be configured before the emitter gets active to work.
-     *
-     * The usage (percentage) defines the amount of agreed beat interval time,
-     * that is allowed to pass before the emitter will send a beat.
-     *
-     * A higher value increases the risk that a beat is send after a timeout has occurred.
-     * A lower value increases the beats and adds overhead to the connection.
-     *
-     * @param float $intervalUsage
-     */
-    public function setIntervalUsage($intervalUsage)
-    {
-        $this->intervalUsage = max(0.05, min($intervalUsage, 0.95));
-    }
-
 
 }
