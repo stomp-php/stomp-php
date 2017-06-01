@@ -488,7 +488,7 @@ class Connection
     public function sendAlive()
     {
         if ($this->isConnected()) {
-            return (!@fwrite($this->connection, "\n", 1) == true);
+            return (@fwrite($this->connection, "\n", 1) === 1);
         }
         return false;
     }
