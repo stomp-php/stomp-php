@@ -11,6 +11,7 @@ namespace Stomp\Network;
 
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\ErrorFrameException;
+use Stomp\Network\Observer\ConnectionObserverCollection;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Parser;
 
@@ -108,6 +109,11 @@ class Connection
     private $host;
 
     /**
+     * @var ConnectionObserverCollection
+     */
+    private $observers;
+
+    /**
      * Initialize connection
      *
      * Example broker uri
@@ -123,6 +129,7 @@ class Connection
     public function __construct($brokerUri, $connectionTimeout = 1, array $context = [])
     {
         $this->parser = new Parser();
+        $this->observers = new ConnectionObserverCollection();
         $this->connectTimeout = $connectionTimeout;
         $this->context = $context;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-_]+)\)*\??([a-zA-Z0-9=&]*)$|i";
@@ -151,6 +158,15 @@ class Connection
         }
     }
 
+    /**
+     * Returns the collection of observers of this connection.
+     *
+     * @return ConnectionObserverCollection
+     */
+    public function getObservers()
+    {
+        return $this->observers;
+    }
 
     /**
      * Parse a broker URL
@@ -323,6 +339,7 @@ class Connection
         if (!@fwrite($this->connection, $data, strlen($data))) {
             throw new ConnectionException('Was not possible to write frame!', $this->activeHost);
         }
+        $this->observers->sentFrame($stompFrame);
         return true;
     }
 
@@ -363,6 +380,8 @@ class Connection
         if ($frame->isErrorFrame()) {
             throw new ErrorFrameException($frame);
         }
+
+        $this->observers->receivedFrame($frame);
         return $frame;
     }
 
@@ -381,7 +400,11 @@ class Connection
             throw new ConnectionException('Not connected to any server.', $this->activeHost);
         }
 
-        return $this->connectionHasDataToRead($this->readTimeout[0], $this->readTimeout[1]);
+        $isDataInBuffer = $this->connectionHasDataToRead($this->readTimeout[0], $this->readTimeout[1]);
+        if (!$isDataInBuffer) {
+            $this->observers->emptyBuffer();
+        }
+        return $isDataInBuffer;
     }
 
     /**
@@ -399,6 +422,8 @@ class Connection
             if ($data !== "\n" && $data !== "\r") {
                 $this->parser->addData($data);
                 break;
+            } else {
+                $this->observers->emptyLineReceived();
             }
         }
     }
@@ -453,5 +478,18 @@ class Connection
     public function getHost()
     {
         return $this->host;
+    }
+
+    /**
+     * Writes an "alive" message on the connection to indicate that the client is alive.
+     *
+     * @return bool
+     */
+    public function sendAlive()
+    {
+        if ($this->isConnected()) {
+            return (@fwrite($this->connection, "\n", 1) === 1);
+        }
+        return false;
     }
 }
