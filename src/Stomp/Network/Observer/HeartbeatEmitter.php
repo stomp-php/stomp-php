@@ -172,7 +172,7 @@ class HeartbeatEmitter implements ConnectionObserver
      */
     public function receivedFrame(Frame $frame)
     {
-        if ($frame->getCommand() === HeartbeatEmitter::FRAME_SERVER_CONNECTED) {
+        if ($frame->getCommand() === self::FRAME_SERVER_CONNECTED) {
             $beats = $this->getHeartbeats($frame);
             $this->intervalServer = $beats[1];
             if ($this->intervalServer && ($this->intervalClient || $this->intervalClient === null)) {
@@ -212,7 +212,7 @@ class HeartbeatEmitter implements ConnectionObserver
             $this->rememberBeat();
             return;
         }
-        if ($frame->getCommand() === HeartbeatEmitter::FRAME_CLIENT_CONNECT) {
+        if ($frame->getCommand() === self::FRAME_CLIENT_CONNECT) {
             $beats = $this->getHeartbeats($frame);
             $this->intervalClient = $beats[0];
             $this->rememberBeat();
