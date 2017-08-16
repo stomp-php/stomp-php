@@ -40,7 +40,7 @@ class SequenceQueueBrowser extends QueueBrowser
      *
      * @var null|int
      */
-    private $seq = null;
+    private $seq;
 
     /**
      * SequenceQueueBrowser constructor.

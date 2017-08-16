@@ -76,7 +76,7 @@ class Connection
      *
      * @var resource
      */
-    private $connection = null;
+    private $connection;
 
     /**
      * Connected host info.

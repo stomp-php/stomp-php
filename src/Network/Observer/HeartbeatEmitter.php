@@ -40,28 +40,28 @@ class HeartbeatEmitter implements ConnectionObserver
      *
      * @var float
      */
-    private $lastbeat = null;
+    private $lastbeat;
 
     /**
      * The beat interval that the client has offered to the server.
      *
      * @var integer
      */
-    private $intervalClient = null;
+    private $intervalClient;
 
     /**
      * The beat interval that the server has requested for this connection.
      *
      * @var integer
      */
-    private $intervalServer = null;
+    private $intervalServer;
 
     /**
      * The interval that will be used to send beats.
      *
      * @var float
      */
-    private $interval = null;
+    private $interval;
 
     /**
      * Whenever the emitter is configured to send beats.
