@@ -19,7 +19,7 @@ use Stomp\Transport\Frame;
  * @package Stomp\Tests\Unit\Stomp\Broker\ActiveMq
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ActiveMqTestCase extends ProtocolTestCase
+class ActiveMqTest extends ProtocolTestCase
 {
 
     public function testSubscribeUsesConfiguredPrefetchSize()
