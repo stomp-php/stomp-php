@@ -24,7 +24,6 @@ jdk:
 before_script:
   - sudo apt-get update
   - sudo apt-get install -y --force-yes --no-install-recommends erlang
-  - phpenv config-rm xdebug.ini; true
   - ./travisci/bin/ci/setup.sh
   - composer install
   
