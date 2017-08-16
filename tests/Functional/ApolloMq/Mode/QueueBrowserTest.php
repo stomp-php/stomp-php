@@ -78,7 +78,7 @@ class QueueBrowserTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($browser->hasReachedEnd());
 
         $producer = ClientProvider::getClient();
-        $producer->send(self::$queue, new Message('message-6', ['expires' => (self::$expires + 20000)]));
+        $producer->send(self::$queue, new Message('message-6', ['expires' => self::$expires + 20000]));
         $producer->disconnect(true);
 
         $frame = $browser->read();
