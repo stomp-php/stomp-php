@@ -31,7 +31,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Stomp\\": "src/Stomp/"
+            "Stomp\\": "src/"
         }
     },
     "autoload-dev": {
