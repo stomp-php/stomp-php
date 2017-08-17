@@ -224,7 +224,9 @@ class Parser
             $this->extractFrameMeta(substr($this->buffer, $this->offset, $headerEnd - $this->offset));
             $this->offset = $headerEnd + strlen(self::HEADER_STOP_CR_LF);
             return true;
-        } elseif (($headerEnd = strpos($this->buffer, self::HEADER_STOP_LF, $this->offset)) !== false) {
+        }
+
+        if (($headerEnd = strpos($this->buffer, self::HEADER_STOP_LF, $this->offset)) !== false) {
             $this->extractFrameMeta(substr($this->buffer, $this->offset, $headerEnd - $this->offset));
             $this->offset = $headerEnd + strlen(self::HEADER_STOP_LF);
             return true;
