@@ -21,13 +21,16 @@
             "homepage": "http://www.fin-sn.de"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "require": {
         "php": ">=5.5.0"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "2.*",
+        "phpmd/phpmd": "2.*",
         "phpunit/phpunit": "4.*",
-        "phpmd/phpmd": "2.*"
+        "squizlabs/php_codesniffer": "2.*"
     },
     "autoload": {
         "psr-4": {
