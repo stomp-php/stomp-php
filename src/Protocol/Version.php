@@ -73,11 +73,14 @@ class Version
         $version = $this->getVersion();
         if (stristr($server, 'rabbitmq') !== false) {
             return new RabbitMq($clientId, $version, $server);
-        } elseif (stristr($server, 'apache-apollo') !== false) {
+        }
+        if (stristr($server, 'apache-apollo') !== false) {
             return new Apollo($clientId, $version, $server);
-        } elseif (stristr($server, 'activemq') !== false) {
+        }
+        if (stristr($server, 'activemq') !== false) {
             return new ActiveMq($clientId, $version, $server);
-        } elseif (stristr($server, 'open message queue') !== false) {
+        }
+        if (stristr($server, 'open message queue') !== false) {
             return new OpenMq($clientId, $version, $server);
         }
         return new Protocol($clientId, $version, $server);
