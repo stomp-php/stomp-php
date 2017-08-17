@@ -27,7 +27,7 @@ use Stomp\Transport\Message;
  * @package Stomp\Tests\Unit\Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class StatefulTest extends PHPUnit_Framework_TestCase
+class StatefulStompTest extends PHPUnit_Framework_TestCase
 {
 
     public function testInitialStateIsProducer()
