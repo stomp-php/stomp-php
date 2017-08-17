@@ -9,6 +9,7 @@
 
 namespace Stomp\Tests\Unit\Transport;
 
+use PHPUnit\Framework\TestCase;
 use Stomp\Transport\Frame;
 
 /**
@@ -17,7 +18,7 @@ use Stomp\Transport\Frame;
  * @package Stomp\Tests\Unit
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class FrameTest extends \PHPUnit_Framework_TestCase
+class FrameTest extends TestCase
 {
     /** @test */
     public function shouldConvertFrameToString()

@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Functional\ActiveMq;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Broker\ActiveMq\ActiveMq;
 use Stomp\Client;
 use Stomp\Network\Observer\HeartbeatEmitter;
@@ -25,7 +25,7 @@ use Stomp\Transport\Map;
  * @author Michael Caplan <mcaplan@labnet.net>
  * @author Dejan Bosanac <dejan@nighttale.net>
  */
-class ClientTest extends PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
     /**
      * @var SimpleStomp

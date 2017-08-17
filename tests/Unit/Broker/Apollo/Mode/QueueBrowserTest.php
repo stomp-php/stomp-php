@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Unit\Broker\Apollo\Mode;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Broker\Apollo\Mode\QueueBrowser;
 use Stomp\Broker\RabbitMq\RabbitMq;
 use Stomp\Client;
@@ -19,7 +19,7 @@ use Stomp\Client;
  * @package Stomp\Tests\Unit\Broker\Apollo\Mode
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class QueueBrowserTest extends PHPUnit_Framework_TestCase
+class QueueBrowserTest extends TestCase
 {
     /**
      * @expectedException \Stomp\Broker\Exception\UnsupportedBrokerException

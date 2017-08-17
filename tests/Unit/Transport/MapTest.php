@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Unit\Transport;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 use Stomp\Transport\Map;
 
@@ -19,7 +19,7 @@ use Stomp\Transport\Map;
  * @package Stomp\Tests\Unit
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class MapTest extends PHPUnit_Framework_TestCase
+class MapTest extends TestCase
 {
     public function testMapWillCreateJmsMapJsonIfObjectIsPassed()
     {

@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Functional\ApolloMq\Mode;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Broker\Apollo\Mode\QueueBrowser;
 use Stomp\Tests\Functional\ApolloMq\ClientProvider;
 use Stomp\Transport\Frame;
@@ -20,7 +20,7 @@ use Stomp\Transport\Message;
  * @package Stomp\Tests\Functional\ApolloMq\Mode
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class QueueBrowserTest extends PHPUnit_Framework_TestCase
+class QueueBrowserTest extends TestCase
 {
 
     public static function setUpBeforeClass()

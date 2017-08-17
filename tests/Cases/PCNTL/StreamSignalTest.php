@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Cases\PCNTL;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * StreamSignalTest
@@ -16,7 +16,7 @@ use PHPUnit_Framework_TestCase;
  * @package Stomp\Tests\Cases\PCNTL
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class StreamSignalTest extends PHPUnit_Framework_TestCase
+class StreamSignalTest extends TestCase
 {
     public function testSignaledWontBreakStreamSelect()
     {

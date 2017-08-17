@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Unit\Broker\ActiveMq\Mode;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Broker\ActiveMq\Mode\DurableSubscription;
 use Stomp\Client;
 
@@ -18,7 +18,7 @@ use Stomp\Client;
  * @package Stomp\Tests\Unit\Broker\ActiveMq\Mode
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class DurableSubscriptionTest extends PHPUnit_Framework_TestCase
+class DurableSubscriptionTest extends TestCase
 {
     /**
      * @expectedException \Stomp\Exception\StompException

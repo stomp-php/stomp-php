@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Functional\ActiveMq;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Client;
 use Stomp\SimpleStomp;
 
@@ -19,7 +19,7 @@ use Stomp\SimpleStomp;
  * @package Stomp
  * @author Mark R. <mark+gh@mark.org.il>
  */
-class ASyncTest extends PHPUnit_Framework_TestCase
+class ASyncTest extends TestCase
 {
     /**
      * @var Client

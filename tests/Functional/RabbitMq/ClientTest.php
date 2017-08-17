@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Functional\RabbitMq;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Client;
 use Stomp\SimpleStomp;
 use Stomp\Transport\Bytes;
@@ -23,7 +23,7 @@ use Stomp\Transport\Map;
  * @author Michael Caplan <mcaplan@labnet.net>
  * @author Dejan Bosanac <dejan@nighttale.net>
  */
-class ClientTest extends PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
     /**
      * @var Client

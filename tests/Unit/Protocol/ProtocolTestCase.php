@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Unit\Protocol;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Protocol\Protocol;
 use Stomp\Protocol\Version;
 use Stomp\Transport\Frame;
@@ -21,7 +21,7 @@ use Stomp\Exception\StompException;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-abstract class ProtocolTestCase extends PHPUnit_Framework_TestCase
+abstract class ProtocolTestCase extends TestCase
 {
 
     /**

@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Functional\ActiveMq;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Client;
 use Stomp\SimpleStomp;
 use Stomp\Transport\Frame;
@@ -19,7 +19,7 @@ use Stomp\Transport\Frame;
  * @package Stomp\Tests\Functional\ActiveMq
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-abstract class ActiveMqFunctionalTestCase extends PHPUnit_Framework_TestCase
+abstract class ActiveMqFunctionalTestCase extends TestCase
 {
 
     /**

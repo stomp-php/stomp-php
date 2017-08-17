@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Unit;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Stomp\Broker\RabbitMq\RabbitMq;
 use Stomp\Client;
@@ -30,7 +30,7 @@ use Stomp\Transport\Parser;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ClientTest extends PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
     /**
      * Used to avoid destructor calls within single tests
