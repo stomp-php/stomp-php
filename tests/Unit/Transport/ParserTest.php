@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Unit\Transport;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Map;
 use Stomp\Transport\Parser;
@@ -21,7 +21,7 @@ use Stomp\Transport\Parser;
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  * @coversDefaultClass \Stomp\Transport\Parser
  */
-class ParserTest extends PHPUnit_Framework_TestCase
+class ParserTest extends TestCase
 {
 
     /**

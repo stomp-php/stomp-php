@@ -9,7 +9,7 @@
 
 namespace Stomp\Tests\Functional\ApolloMq;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Broker\Apollo\Apollo;
 
 /**
@@ -18,7 +18,7 @@ use Stomp\Broker\Apollo\Apollo;
  * @package Stomp\Tests\Functional\ApolloMq
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ClientTest extends PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
     /**
      * @var \Stomp\Client

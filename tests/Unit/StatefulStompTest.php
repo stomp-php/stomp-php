@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Unit;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Stomp\Client;
 use Stomp\Protocol\Protocol;
@@ -27,7 +27,7 @@ use Stomp\Transport\Message;
  * @package Stomp\Tests\Unit
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class StatefulStompTest extends PHPUnit_Framework_TestCase
+class StatefulStompTest extends TestCase
 {
 
     public function testInitialStateIsProducer()

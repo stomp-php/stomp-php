@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Unit;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Client;
 use Stomp\SimpleStomp;
 use Stomp\Protocol\Protocol;
@@ -22,7 +22,7 @@ use Stomp\Transport\Message;
  * @package Stomp\Tests\Unit
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class SimpleStompTest extends PHPUnit_Framework_TestCase
+class SimpleStompTest extends TestCase
 {
 
     public function testSendIsMappedToClient()

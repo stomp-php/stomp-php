@@ -10,7 +10,7 @@
 namespace Stomp\Tests\Unit\Network;
 
 use Exception;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Stomp\Exception\ConnectionException;
 use Stomp\Network\Connection;
@@ -23,7 +23,7 @@ use Stomp\Transport\Frame;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ConnectionTest extends PHPUnit_Framework_TestCase
+class ConnectionTest extends TestCase
 {
     public function testBrokerUriParseFailover()
     {

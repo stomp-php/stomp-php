@@ -9,6 +9,7 @@
 
 namespace Stomp\Tests\Functional\Generic;
 
+use PHPUnit\Framework\TestCase;
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\ErrorFrameException;
 use Stomp\Network\Connection;
@@ -19,7 +20,7 @@ use Stomp\Transport\Frame;
  * @package Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ConnectionTest extends \PHPUnit_Framework_TestCase
+class ConnectionTest extends TestCase
 {
     public function testReadFrameThrowsExceptionIfStreamIsBroken()
     {

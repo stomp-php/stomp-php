@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Functional\Stomp;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Client;
 use Stomp\StatefulStomp;
 use Stomp\Transport\Frame;
@@ -21,7 +21,7 @@ use Stomp\Transport\Message;
  * @package Stomp\Tests\Functional\Stomp
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-abstract class StatefulTestBase extends PHPUnit_Framework_TestCase
+abstract class StatefulTestBase extends TestCase
 {
     /**
      * @var Client[]

@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Unit\Broker\ActiveMq\Mode;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Stomp\Broker\ActiveMq\Mode\ActiveMqMode;
 use Stomp\Broker\RabbitMq\RabbitMq;
@@ -20,7 +20,7 @@ use Stomp\Client;
  * @package Stomp\Tests\Unit\Broker\ActiveMq\Mode
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ActiveMqModeTest extends PHPUnit_Framework_TestCase
+class ActiveMqModeTest extends TestCase
 {
     /**
      * @expectedException \Stomp\Broker\Exception\UnsupportedBrokerException

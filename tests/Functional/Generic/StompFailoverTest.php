@@ -9,6 +9,7 @@
 
 namespace Stomp\Tests\Functional\Generic;
 
+use PHPUnit\Framework\TestCase;
 use Stomp\Client;
 
 /**
@@ -17,7 +18,7 @@ use Stomp\Client;
  * @package Stomp
  * @author Michael Caplan <mcaplan@labnet.net>
  */
-class StompFailoverTest extends \PHPUnit_Framework_TestCase
+class StompFailoverTest extends TestCase
 {
     /**
      * @var Client

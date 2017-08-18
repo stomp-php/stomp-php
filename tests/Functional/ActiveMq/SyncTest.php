@@ -9,6 +9,7 @@
 
 namespace Stomp\Tests\Functional\ActiveMq;
 
+use PHPUnit\Framework\TestCase;
 use Stomp\Client;
 use Stomp\SimpleStomp;
 use Stomp\Transport\Frame;
@@ -19,7 +20,7 @@ use Stomp\Transport\Frame;
  * @package Stomp
  * @author Mark R. <mark+gh@mark.org.il>
   */
-class SyncTest extends \PHPUnit_Framework_TestCase
+class SyncTest extends TestCase
 {
     /**
      * @var SimpleStomp

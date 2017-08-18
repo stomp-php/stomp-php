@@ -8,7 +8,7 @@
 
 namespace Stomp\Tests\Unit\States;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Stomp\Client;
 use Stomp\StatefulStomp;
 use Stomp\States\ConsumerState;
@@ -19,7 +19,7 @@ use Stomp\States\ConsumerState;
  * @package Stomp\Tests\Unit\States
  * @author Jens Radtke <swefl.oss@fin-sn.de>
  */
-class ConsumerStateTest extends PHPUnit_Framework_TestCase
+class ConsumerStateTest extends TestCase
 {
     /**
      * @expectedException \InvalidArgumentException
