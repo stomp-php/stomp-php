@@ -44,7 +44,7 @@ class Client
      *
      * @var string
      */
-    private $clientId = null;
+    private $clientId;
 
     /**
      * Connection session id
@@ -83,13 +83,13 @@ class Client
      *
      * @var string
      */
-    private $login = null;
+    private $login;
 
     /**
      *
      * @var string
      */
-    private $passcode = null;
+    private $passcode;
 
 
     /**
@@ -102,7 +102,7 @@ class Client
      *
      * @var string
      */
-    private $host = null;
+    private $host;
 
     /**
      *

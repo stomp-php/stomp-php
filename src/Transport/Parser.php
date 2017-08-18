@@ -31,14 +31,14 @@ class Parser
      *
      * @var Frame
      */
-    private $frame = null;
+    private $frame;
 
     /**
      * Active Frame command
      *
      * @var string
      */
-    private $command = null;
+    private $command;
 
     /**
      * Active Frame headers
@@ -52,7 +52,7 @@ class Parser
      *
      * @var integer
      */
-    private $expectedBodyLength = null;
+    private $expectedBodyLength;
 
     /**
      * Parser mode
