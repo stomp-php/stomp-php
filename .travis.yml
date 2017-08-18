@@ -1,6 +1,7 @@
 language: php
 
 sudo: true
+dist: precise
 
 addons:
   apt:
@@ -26,7 +27,9 @@ before_script:
   - sudo apt-get install -y --force-yes --no-install-recommends erlang
   - ./travisci/bin/ci/setup.sh
   - composer install
-  
+
+script: vendor/bin/phpunit --debug
+
 after_script:
   - ./travisci/bin/ci/stop.sh
   - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
