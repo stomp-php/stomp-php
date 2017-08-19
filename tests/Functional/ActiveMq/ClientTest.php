@@ -91,7 +91,7 @@ class ClientTest extends TestCase
 
         $frame = $this->Stomp->readFrame();
 
-        $this->assertTrue($frame instanceof Frame, 'Frame expected');
+        $this->assertInstanceOf(Frame::class, $frame, 'Frame expected');
 
         $this->simpleStomp->ack($frame);
 
@@ -152,9 +152,9 @@ class ClientTest extends TestCase
             }
         }
 
-        $this->assertEquals(
+        $this->assertCount(
             0,
-            count($un_acked_messages),
+            $un_acked_messages,
             'Remaining messages to ack' . var_export($un_acked_messages, true)
         );
     }
@@ -233,7 +233,7 @@ class ClientTest extends TestCase
         $this->Stomp->send($this->queue, 'testReadFrame');
         $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof Frame);
+        $this->assertInstanceOf(Frame::class, $frame);
         $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
         $this->simpleStomp->ack($frame);
         $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
@@ -250,7 +250,7 @@ class ClientTest extends TestCase
         $this->assertTrue($this->Stomp->send($this->queue, 'testSend'));
         $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
         $frame = $this->Stomp->readFrame();
-        $this->assertTrue($frame instanceof Frame);
+        $this->assertInstanceOf(Frame::class, $frame);
         $this->assertEquals('testSend', $frame->body, 'Body of test frame does not match sent message');
         $this->simpleStomp->ack($frame);
         $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
@@ -284,7 +284,7 @@ class ClientTest extends TestCase
 
         $this->simpleStomp->subscribe($this->queue, 'mysubid', 'auto', null, ['transformation' => 'jms-map-json']);
         $msg = $this->Stomp->readFrame();
-        $this->assertTrue($msg instanceof Map);
+        $this->assertInstanceOf(Map::class, $msg);
 
         /** @var \Stomp\Transport\Map $msg */
         $this->assertEquals($msg->map, $body);
@@ -425,7 +425,7 @@ class ClientTest extends TestCase
             $tries++;
             $frame = $this->Stomp->readFrame(); // ~ 0.25 seconds
             if ($frame) {
-                $this->assertTrue($frame instanceof Frame);
+                $this->assertInstanceOf(Frame::class, $frame);
                 $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
                 $this->simpleStomp->ack($frame);
                 $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
