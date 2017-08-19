@@ -6,7 +6,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Stomp\Tests\Unit\Network\Observer\Heartbeat;
+namespace Stomp\Tests\Unit\Network\Observer;
 
 
 use PHPUnit\Framework\TestCase;
