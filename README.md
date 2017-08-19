@@ -7,8 +7,8 @@ brings some ActiveMQ and Apollo specific utils that could make your messaging fr
 
 ## Version choice
 
-- For new projects you should use version `4.*` which requires `php-5.5`.
-- For projects running older php versions you can use version `3.*` which is the last `php-5.3` compatible.
+- For new projects you should use version `4.*` which requires `php-5.6`. Support for `php-5.6` ends with version `5.*`.
+- For projects running older php versions you can use version `4.2.*` for `php-5.5` and `3.*` for `php-5.3`, please consider to update php.
 - For running projects with `fusesource/stomp-php@2.x` clients you can use version `2.2.2`.
 - All version newer that `2.x` won't be compatible with `fusesource/stomp-php`. (https://github.com/dejanb/stomp-php.)  
 
