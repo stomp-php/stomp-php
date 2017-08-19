@@ -85,12 +85,12 @@ abstract class ProtocolTestCase extends TestCase
         $this->assertEquals('my-transaction', $actual['transaction']);
     }
 
-    /**
-     * @expectedException \Stomp\Exception\StompException
-     */
     public function testNackVersionZero()
     {
         $instance = $this->getProtocol(Version::VERSION_1_0);
+
+        $this->expectException(StompException::class);
+
         $instance->getNackFrame(new Frame(null, ['message-id' => 'id-value']));
     }
 

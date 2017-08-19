@@ -10,6 +10,7 @@ namespace Stomp\Tests\Unit\Broker\Apollo\Mode;
 
 use PHPUnit\Framework\TestCase;
 use Stomp\Broker\Apollo\Mode\QueueBrowser;
+use Stomp\Broker\Exception\UnsupportedBrokerException;
 use Stomp\Broker\RabbitMq\RabbitMq;
 use Stomp\Client;
 
@@ -21,9 +22,6 @@ use Stomp\Client;
  */
 class QueueBrowserTest extends TestCase
 {
-    /**
-     * @expectedException \Stomp\Broker\Exception\UnsupportedBrokerException
-     */
     public function testBrowserWontWorkWithNonApolloBroker()
     {
         $client = $this->getMockBuilder(Client::class)
@@ -36,6 +34,8 @@ class QueueBrowserTest extends TestCase
          * @var $client Client
          */
         $browser = new QueueBrowser($client, 'target');
+
+        $this->expectException(UnsupportedBrokerException::class);
         $browser->subscribe();
     }
 }

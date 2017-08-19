@@ -57,12 +57,12 @@ class ClientTest extends TestCase
         }
     }
 
-    /**
-     * @expectedException \Stomp\Exception\ConnectionException
-     */
     public function testConnectWillThrowExceptionIfNoFrameWasRead()
     {
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult(false);
+
+        $this->expectException(ConnectionException::class);
+
         $stomp->connect();
     }
 
@@ -155,9 +155,6 @@ class ClientTest extends TestCase
         $this->assertEquals(Version::VERSION_1_0 . ',' . Version::VERSION_1_2, $sendFrame['accept-version']);
     }
 
-    /**
-     * @expectedException \Stomp\Exception\StompException
-     */
     public function testWaitForReceiptWillThrowExceptionOnIdMismatch()
     {
         $receiptFrame = new Frame('RECEIPT');
@@ -167,6 +164,8 @@ class ClientTest extends TestCase
 
         $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
         $waitForReceipt->setAccessible(true);
+
+        $this->expectException(StompException::class);
 
         // expect a receipt for another id
         $waitForReceipt->invoke($stomp, 'your-id');
@@ -191,10 +190,6 @@ class ClientTest extends TestCase
     }
 
 
-    /**
-     * @expectedException \Stomp\Exception\MissingReceiptException
-     * @expectedExceptionMessage my-expected-receive-id
-     */
     public function testWaitForReceiptWillThrowExceptionIfConnectionReadTimeoutOccurs()
     {
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult(false);
@@ -202,6 +197,9 @@ class ClientTest extends TestCase
 
         $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
         $waitForReceipt->setAccessible(true);
+
+        $this->expectException(\Stomp\Exception\MissingReceiptException::class);
+        $this->expectExceptionMessage('my-expected-receive-id');
 
         // MuT
         $waitForReceipt->invoke($stomp, 'my-expected-receive-id');

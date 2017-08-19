@@ -11,6 +11,7 @@ namespace Stomp\Tests\Unit\Broker\ActiveMq\Mode;
 use PHPUnit\Framework\TestCase;
 use Stomp\Broker\ActiveMq\Mode\DurableSubscription;
 use Stomp\Client;
+use Stomp\Exception\StompException;
 
 /**
  * DurableSubscriptionTest
@@ -20,11 +21,10 @@ use Stomp\Client;
  */
 class DurableSubscriptionTest extends TestCase
 {
-    /**
-     * @expectedException \Stomp\Exception\StompException
-     */
     public function testDurableSubscriptionIsOnlyPossibleWithClientId()
     {
+        $this->expectException(StompException::class);
+
         new DurableSubscription(new Client('tcp://127.0.0.1'), 'destination');
     }
 }
