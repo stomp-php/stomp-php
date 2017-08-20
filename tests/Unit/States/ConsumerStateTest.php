@@ -21,9 +21,6 @@ use Stomp\States\ConsumerState;
  */
 class ConsumerStateTest extends TestCase
 {
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testUnsubscribeWillThrowExceptionIfGivenIdIsNotActive()
     {
         $client = $this->getMockBuilder(Client::class)
@@ -36,6 +33,9 @@ class ConsumerStateTest extends TestCase
          */
         $stateful = new StatefulStomp($client);
         $consumerState = new ConsumerState($client, $stateful);
+
+        $this->expectException(\InvalidArgumentException::class);
+
         $consumerState->unsubscribe('not-existing');
     }
 }

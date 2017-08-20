@@ -13,6 +13,7 @@ use Exception;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Stomp\Exception\ConnectionException;
+use Stomp\Exception\StompException;
 use Stomp\Network\Connection;
 use Stomp\Tests\Unit\Network\Mocks\FakeStream;
 use Stomp\Transport\Frame;
@@ -75,11 +76,10 @@ class ConnectionTest extends TestCase
         $this->assertEquals(55, $host['port']);
     }
 
-    /**
-     * @expectedException \Stomp\Exception\StompException
-     */
     public function testBrokerUriParseWithEmptyListWillLeadToException()
     {
+        $this->expectException(StompException::class);
+
         new Connection('-');
     }
 
@@ -114,30 +114,30 @@ class ConnectionTest extends TestCase
         }
     }
 
-    /**
-     * @expectedException \Stomp\Exception\StompException
-     */
     public function testHasDataToReadThrowsExceptionIfNotConnected()
     {
         $connection = new Connection('tcp://localhost');
+
+        $this->expectException(StompException::class);
+
         $connection->hasDataToRead();
     }
 
-    /**
-     * @expectedException \Stomp\Exception\StompException
-     */
     public function testReadFrameThrowsExceptionIfNotConnected()
     {
         $connection = new Connection('tcp://localhost');
+
+        $this->expectException(StompException::class);
+
         $connection->readFrame();
     }
 
-    /**
-     * @expectedException \Stomp\Exception\StompException
-     */
     public function testWriteFrameThrowsExceptionIfNotConnected()
     {
         $connection = new Connection('tcp://localhost');
+
+        $this->expectException(StompException::class);
+
         $connection->writeFrame(new Frame());
     }
 

@@ -11,6 +11,7 @@ namespace Stomp\Tests\Unit\Broker\ActiveMq\Mode;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Stomp\Broker\ActiveMq\Mode\ActiveMqMode;
+use Stomp\Broker\Exception\UnsupportedBrokerException;
 use Stomp\Broker\RabbitMq\RabbitMq;
 use Stomp\Client;
 
@@ -22,9 +23,6 @@ use Stomp\Client;
  */
 class ActiveMqModeTest extends TestCase
 {
-    /**
-     * @expectedException \Stomp\Broker\Exception\UnsupportedBrokerException
-     */
     public function testGetProtocolWillThrowExceptionIfClientIsNotConnectedToActiveMq()
     {
         $client = $this->getMockBuilder(Client::class)
@@ -38,6 +36,9 @@ class ActiveMqModeTest extends TestCase
 
         $getProtocol = new ReflectionMethod($activeMqMode, 'getProtocol');
         $getProtocol->setAccessible(true);
+
+        $this->expectException(UnsupportedBrokerException::class);
+
         $getProtocol->invoke($activeMqMode);
     }
 }
