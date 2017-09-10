@@ -395,7 +395,9 @@ class ClientTest extends TestCase
      */
     public function testHeartbeat()
     {
+        echo "Check Connected", PHP_EOL;
         if ($this->Stomp->isConnected()) {
+            echo "Disconnect", PHP_EOL;
             $this->Stomp->disconnect();
         }
         $this->Stomp->getConnection()->setPersistentConnection(false);
@@ -405,29 +407,38 @@ class ClientTest extends TestCase
         $this->Stomp->setHeartbeat(0,500); // at least after 0.5 seconds we will let the server know that we're alive
         $this->Stomp->getConnection()->setReadTimeout(0, 250000); // after 0.25 seconds a read operation must timeout
 
+        echo "Add Observer", PHP_EOL;
         // we add a beat emitter to the observers of our connection
         $this->Stomp->getConnection()->getObservers()->addObserver(new HeartbeatEmitter($this->Stomp->getConnection()));
 
+        echo "Connect", PHP_EOL;
         $this->Stomp->connect();
+        echo "Subscribe", PHP_EOL;
         $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid', 'client'));
 
+        echo "Read", PHP_EOL;
         $this->Stomp->readFrame(); // ~ 0.25 seconds
         usleep(250000); // 0.25 seconds
         // Sleep long enough for a heartbeat to be sent.
         $this->Stomp->readFrame(); // ~ 0.25 seconds
 
         // Send a frame.
+        echo "Send", PHP_EOL;
         $this->assertTrue($this->Stomp->send($this->queue, 'testReadFrame'));
 
         $tries = 0;
         // Check we now have a frame to read.
         while (true) {
             $tries++;
+            echo "Read #", $tries, PHP_EOL;
             $frame = $this->Stomp->readFrame(); // ~ 0.25 seconds
             if ($frame) {
+                echo "Frame", PHP_EOL;
                 $this->assertInstanceOf(Frame::class, $frame);
                 $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
+                echo "ACK", PHP_EOL;
                 $this->simpleStomp->ack($frame);
+                echo "Unsub", PHP_EOL;
                 $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
                 break;
             }
