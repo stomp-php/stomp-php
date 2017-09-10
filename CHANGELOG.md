@@ -60,3 +60,7 @@ Changelog stomp-php
 4.2.1
 -----
 - Update Connector to support `_`  in the broker uri, thanks to @campru (https://github.com/stomp-php/stomp-php/pull/66)
+
+4.2.2
+-----
+- add support for outgoing heartbeats and a basic heartbeat emitter, than can be added to the connection (see stomp-php-examples) thanks to @andrewbelcher and @staabm (https://github.com/stomp-php/stomp-php/pull/72, https://github.com/stomp-php/stomp-php/pull/60)
