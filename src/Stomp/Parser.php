@@ -44,6 +44,13 @@ class Parser
     private $buffer = '';
 
     /**
+     * The frame header / content delimiter.
+     *
+     * @var string
+     */
+    private $delimiter = null;
+
+    /**
      * Add data to parse.
      *
      * @param string $data
@@ -104,7 +111,7 @@ class Parser
      */
     private function parseToFrame($source)
     {
-        list ($header, $body) = explode("\n\n", ltrim($source), 2);
+        list ($header, $body) = explode($this->delimiter, ltrim($source), 2);
         $header = explode("\n", $header);
         $headers = array();
         $command = null;
@@ -137,9 +144,12 @@ class Parser
         $headerEnd = false;
         $activeMarker = false;
         foreach ($endMarkers as $marker) {
-            $activeMarker = $marker;
-            if (($headerEnd = strpos($this->buffer, $activeMarker, $offset)) !== false) {
-                break;
+            if (($markerPosition = strpos($this->buffer, $marker, $offset)) !== false) {
+                if ($headerEnd !== false && $headerEnd < $markerPosition) {
+                    break;
+                }
+                $activeMarker = $marker;
+                $headerEnd = $markerPosition;
             }
         }
 
@@ -147,6 +157,9 @@ class Parser
         if ($headerEnd === false) {
             return false;
         }
+
+        // keep marker
+        $this->delimiter = $activeMarker;
 
         $headers = substr($this->buffer, $offset, $headerEnd);
 
