@@ -220,15 +220,19 @@ class Parser
      */
     private function detectFrameHead()
     {
-        if (($headerEnd = strpos($this->buffer, self::HEADER_STOP_CR_LF, $this->offset)) !== false) {
-            $this->extractFrameMeta(substr($this->buffer, $this->offset, $headerEnd - $this->offset));
-            $this->offset = $headerEnd + strlen(self::HEADER_STOP_CR_LF);
+        $firstCrLf = strpos($this->buffer, self::HEADER_STOP_CR_LF, $this->offset);
+        $firstLf = strpos($this->buffer, self::HEADER_STOP_LF, $this->offset);
+
+        // we need to use the first available marker, so we need to make sure that cr lf don't overrule lf
+        if ($firstCrLf !== false && ($firstLf === false || $firstLf > $firstCrLf)) {
+            $this->extractFrameMeta(substr($this->buffer, $this->offset, $firstCrLf - $this->offset));
+            $this->offset = $firstCrLf + strlen(self::HEADER_STOP_CR_LF);
             return true;
         }
 
-        if (($headerEnd = strpos($this->buffer, self::HEADER_STOP_LF, $this->offset)) !== false) {
-            $this->extractFrameMeta(substr($this->buffer, $this->offset, $headerEnd - $this->offset));
-            $this->offset = $headerEnd + strlen(self::HEADER_STOP_LF);
+        if ($firstLf !== false) {
+            $this->extractFrameMeta(substr($this->buffer, $this->offset, $firstLf - $this->offset));
+            $this->offset = $firstLf + strlen(self::HEADER_STOP_LF);
             return true;
         }
         return false;
@@ -283,7 +287,7 @@ class Parser
      * Extracts command and headers from given header source.
      *
      * @param $source
-     * @return array
+     * @return void
      */
     private function extractFrameMeta($source)
     {

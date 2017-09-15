@@ -231,4 +231,32 @@ class ParserTest extends TestCase
         $actual = $this->parser->getFrame();
         $this->assertEquals($expected, $actual);
     }
+
+
+    /**
+     * @see https://github.com/stomp-php/stomp-php/issues/93
+     */
+    public function testParserWhenHeaderStopSequenceWithCarriageReturnIsPartOfBody()
+    {
+        $body = "{ \n\"value1\" : \"hello world\"\n,\n\n  \"value2\" : \"2002-02-01\"\r\n\r\n}";
+        $header = "MESSAGE\n\n";
+        $this->parser->addData($header . $body . "\x00");
+        $this->assertTrue($this->parser->parse());
+        $message = $this->parser->getFrame();
+        $this->assertEquals($body, $message->getBody());
+    }
+
+    /**
+     * @see https://github.com/stomp-php/stomp-php/issues/93
+     */
+    public function testParserWhenHeaderStopSequenceWithoutCarriageReturnIsPartOfBody()
+    {
+        $body = "{ \n\"value1\" : \"hello world\"\n,\n\n  \"value2\" : \"2002-02-01\"\n\n}";
+        $header = "MESSAGE\r\n\r\n";
+        $this->parser->addData($header . $body . "\x00");
+        $this->assertTrue($this->parser->parse());
+        $message = $this->parser->getFrame();
+        $this->assertEquals($body, $message->getBody());
+    }
+
 }
