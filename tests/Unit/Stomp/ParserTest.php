@@ -99,4 +99,32 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         $result = $parser->getFrame();
         $this->assertInstanceOf('\Stomp\Frame', $result);
     }
+
+    /**
+     * @see https://github.com/stomp-php/stomp-php/issues/93
+     */
+    public function testParserWhenHeaderStopSequenceWithCarriageReturnIsPartOfBody()
+    {
+        $parser = new Parser();
+        $body = "{ \n\"value1\" : \"hello world\"\n,\n\n  \"value2\" : \"2002-02-01\"\r\n\r\n}";
+        $header = "MESSAGE\n\n";
+        $parser->addData($header . $body . "\x00");
+        $this->assertTrue($parser->parse());
+        $message = $parser->getFrame();
+        $this->assertEquals($body, $message->body);
+    }
+
+    /**
+     * @see https://github.com/stomp-php/stomp-php/issues/93
+     */
+    public function testParserWhenHeaderStopSequenceWithoutCarriageReturnIsPartOfBody()
+    {
+        $parser = new Parser();
+        $body = "{ \n\"value1\" : \"hello world\"\n,\n\n  \"value2\" : \"2002-02-01\"\n\n}";
+        $header = "MESSAGE\r\n\r\n";
+        $parser->addData($header . $body . "\x00");
+        $this->assertTrue($parser->parse());
+        $message = $parser->getFrame();
+        $this->assertEquals($body, $message->body);
+    }
 }
