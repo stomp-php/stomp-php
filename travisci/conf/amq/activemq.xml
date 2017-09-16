@@ -131,4 +131,3 @@
     <import resource="jetty.xml"/>
 
 </beans>
-<!-- END SNIPPET: example -->

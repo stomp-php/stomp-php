@@ -288,7 +288,6 @@ class ClientTest extends TestCase
 
         /** @var \Stomp\Transport\Map $msg */
         $this->assertEquals($msg->map, $body);
-        $this->simpleStomp->ack($msg);
         $this->Stomp->disconnect();
     }
 
@@ -371,7 +370,7 @@ class ClientTest extends TestCase
         /**
          * @var $amq ActiveMq
          */
-        $consumer2->sendFrame($amq->getSubscribeFrame($this->topic, 'test', 'auto', null, true));
+        $consumer2->sendFrame($amq->getSubscribeFrame($this->topic, 'test', 'client', null, true));
 
 
         $frame = $consumer2->readFrame();
@@ -395,7 +394,9 @@ class ClientTest extends TestCase
      */
     public function testHeartbeat()
     {
+        error_log("Check Connected");
         if ($this->Stomp->isConnected()) {
+            error_log("Disconnect");
             $this->Stomp->disconnect();
         }
         $this->Stomp->getConnection()->setPersistentConnection(false);
@@ -405,29 +406,40 @@ class ClientTest extends TestCase
         $this->Stomp->setHeartbeat(0,500); // at least after 0.5 seconds we will let the server know that we're alive
         $this->Stomp->getConnection()->setReadTimeout(0, 250000); // after 0.25 seconds a read operation must timeout
 
+        error_log("Add Observer");
         // we add a beat emitter to the observers of our connection
         $this->Stomp->getConnection()->getObservers()->addObserver(new HeartbeatEmitter($this->Stomp->getConnection()));
 
+        error_log("Connect");
         $this->Stomp->connect();
+        error_log("Subscribe");
         $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid', 'client'));
 
+        error_log("Read-A");
         $this->Stomp->readFrame(); // ~ 0.25 seconds
+        error_log("usleep");
         usleep(250000); // 0.25 seconds
         // Sleep long enough for a heartbeat to be sent.
+        error_log("Read-B");
         $this->Stomp->readFrame(); // ~ 0.25 seconds
 
         // Send a frame.
+        error_log("Send");
         $this->assertTrue($this->Stomp->send($this->queue, 'testReadFrame'));
 
         $tries = 0;
         // Check we now have a frame to read.
         while (true) {
             $tries++;
+            error_log("Read #" . $tries);
             $frame = $this->Stomp->readFrame(); // ~ 0.25 seconds
             if ($frame) {
+                error_log("rame");
                 $this->assertInstanceOf(Frame::class, $frame);
                 $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
+                error_log("ACK");
                 $this->simpleStomp->ack($frame);
+                error_log("Unsub");
                 $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
                 break;
             }

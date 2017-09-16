@@ -140,7 +140,8 @@ class HeartbeatEmitter implements ConnectionObserver
      */
     private function sendBeat()
     {
-        $this->connection->sendAlive();
+        $beat = $this->connection->sendAlive();
+        error_log('Beat' . $beat);
         $this->rememberBeat();
     }
 

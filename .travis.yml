@@ -1,35 +1,22 @@
 language: php
 
 sudo: true
-dist: precise
 
-addons:
-  apt:
-    sources:
-    - sourceline: 'deb http://packages.erlang-solutions.com/ubuntu precise contrib'
-
-cache:
-  directories:
-    - ./travisci/tmp
-    - $HOME/.composer/cache
+services:
+  - docker
 
 php:
   - "7.2"
   - "7.1"
   - "7.0"
   - "5.6"
-  
-jdk:
-  - oraclejdk7
-  
+
 before_script:
-  - sudo apt-get update
-  - sudo apt-get install -y --force-yes --no-install-recommends erlang
-  - ./travisci/bin/ci/setup.sh
+  - ./travisci/bin/start.sh
   - composer install
+  - ./travisci/bin/logs.sh
 
 script: vendor/bin/phpunit --debug
 
 after_script:
-  - ./travisci/bin/ci/stop.sh
-  - erl -eval 'erlang:display(erlang:system_info(otp_release)), halt().'  -noshell
+  - ./travisci/bin/stop.sh

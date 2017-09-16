@@ -66,12 +66,11 @@ Currently it's running on `ActiveMq` (Port 61010), `Apollo` (61020), `RabbitMq` 
 Apollo should be configured to use admin:password and RabbitMq to guest:guest.
 While ActiveMq must be configured to use no login at all.
 
-You can setup all brokers by running `travisci/bin/ci/setup.sh`. Stop them by `travisci/bin/ci/stop.sh`.
-Used version can be configured at `travis/(BROKER)_VERSION`.
-
-You can use `travisci/bin/ci/clean.sh` to reset the test environment.
+You can setup all brokers by running `travisci/bin/start.sh`. Stop them by `travisci/bin/stop.sh`. (Docker is required.)
 
 If you only like to run the functional generic tests, ensure Apollo is configured. 
+A basic setup can be achieved by running `./travisci/bin/apollo-mq.sh 1.7.1`. 
+(If you want to create a local running broker, you find the config / setup at `travisci/docker/apollo-mq/`)
 
 ## Licence
 
