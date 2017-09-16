@@ -415,10 +415,12 @@ class ClientTest extends TestCase
         error_log("Subscribe");
         $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid', 'client'));
 
-        error_log("Read");
+        error_log("Read-A");
         $this->Stomp->readFrame(); // ~ 0.25 seconds
+        error_log("usleep");
         usleep(250000); // 0.25 seconds
         // Sleep long enough for a heartbeat to be sent.
+        error_log("Read-B");
         $this->Stomp->readFrame(); // ~ 0.25 seconds
 
         // Send a frame.
