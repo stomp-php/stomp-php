@@ -6,8 +6,10 @@ services:
   - docker
 
 php:
+  - "7.2"
+  - "7.1"
+  - "7.0"
   - "5.6"
-  
 
 before_script:
   - ./travisci/bin/start.sh
