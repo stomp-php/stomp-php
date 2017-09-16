@@ -15,6 +15,7 @@ php:
 before_script:
   - ./travisci/bin/start.sh
   - composer install
+  - ./travisci/bin/logs.sh
 
 script: vendor/bin/phpunit --debug
 
