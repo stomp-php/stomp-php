@@ -170,4 +170,33 @@ class ConnectionTest extends TestCase
         fclose($fakeStreamResource);
         stream_wrapper_unregister('stompFakeStream');
     }
+
+
+    /**
+     * https://github.com/stomp-php/stomp-php/issues/79
+     */
+    public function testHeartBeatsWillNotTriggerFrameDetection()
+    {
+        stream_wrapper_register('stompFakeStream', FakeStream::class);
+
+        $mock = $this->getMockBuilder(Connection::class)
+            ->setMethods(['getConnection'])
+            ->setConstructorArgs(['stompFakeStream://notInUse'])
+            ->getMock();
+        $fakeStreamResource = fopen('stompFakeStream://notInUse', 'rw');
+        $mock->method('getConnection')->willReturn($fakeStreamResource);
+
+        /**
+         * @var $mock Connection
+         */
+        $mock->connect();
+
+        // we setup a stream with heartbeat data only
+        // if the connection is not capable to detect that there is no possible frame data, it will fail
+        FakeStream::$serverSend = "\n\r";
+
+        $this->assertFalse($mock->readFrame());
+        fclose($fakeStreamResource);
+        stream_wrapper_unregister('stompFakeStream');
+    }
 }

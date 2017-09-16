@@ -357,7 +357,9 @@ class Connection
         }
 
         // See if there are newlines waiting to be processed (some brokers send empty lines as heartbeat)
-        $this->gobbleNewLines();
+        if (!$this->readHeartBeats()) {
+            return false;
+        }
 
         do {
             $read = @stream_get_line($this->connection, 8192, Parser::FRAME_END);
@@ -373,8 +375,8 @@ class Connection
             }
         } while (!$this->parser->parse());
 
-        // See if there are newlines after the \0
-        $this->gobbleNewLines();
+        // See if there are other heartbeats after the frame end (\0)
+        $this->readHeartBeats();
 
         $frame = $this->parser->getFrame();
         if ($frame->isErrorFrame()) {
@@ -408,24 +410,30 @@ class Connection
     }
 
     /**
-     * Read any newline left in the data to read.
+     * Read (eat) any heartbeats left in the data to read. Will return true if any non heart beat data was received.
      *
-     * Newlines will not be added to the parser, if this method encounters a different character or result,
+     * Heartbeat data will not be added to the parser, if this method encounters a different character or result,
      * it'll add that to the parser's data buffer and abort.
+     * 
+     * @return boolean
      */
-    private function gobbleNewLines()
+    private function readHeartBeats()
     {
         // Only test the stream, return immediately if nothing is left
         while ($this->connectionHasDataToRead(0, 0) && ($data = @fread($this->connection, 1)) !== false) {
+            if (strlen($data) == 0) {
+                return false;
+            }
             // If its not a newline, it indicates a new messages has been added,
             // so add that to the data-buffer of the parser.
             if ($data !== "\n" && $data !== "\r") {
                 $this->parser->addData($data);
-                break;
+                return true;
             } else {
                 $this->observers->emptyLineReceived();
             }
         }
+        return false;
     }
 
     /**
