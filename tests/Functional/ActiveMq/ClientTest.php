@@ -288,7 +288,6 @@ class ClientTest extends TestCase
 
         /** @var \Stomp\Transport\Map $msg */
         $this->assertEquals($msg->map, $body);
-        $this->simpleStomp->ack($msg);
         $this->Stomp->disconnect();
     }
 
@@ -371,7 +370,7 @@ class ClientTest extends TestCase
         /**
          * @var $amq ActiveMq
          */
-        $consumer2->sendFrame($amq->getSubscribeFrame($this->topic, 'test', 'auto', null, true));
+        $consumer2->sendFrame($amq->getSubscribeFrame($this->topic, 'test', 'client', null, true));
 
 
         $frame = $consumer2->readFrame();
