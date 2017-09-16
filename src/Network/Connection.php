@@ -488,6 +488,7 @@ class Connection
     public function sendAlive()
     {
         if ($this->isConnected()) {
+            error_log('Sending beat...');
             return (@fwrite($this->connection, "\n", 1) === 1);
         }
         return false;
