@@ -394,9 +394,9 @@ class ClientTest extends TestCase
      */
     public function testHeartbeat()
     {
-        echo "Check Connected", PHP_EOL;
+        error_log("Check Connected");
         if ($this->Stomp->isConnected()) {
-            echo "Disconnect", PHP_EOL;
+            error_log("Disconnect");
             $this->Stomp->disconnect();
         }
         $this->Stomp->getConnection()->setPersistentConnection(false);
@@ -406,38 +406,38 @@ class ClientTest extends TestCase
         $this->Stomp->setHeartbeat(0,500); // at least after 0.5 seconds we will let the server know that we're alive
         $this->Stomp->getConnection()->setReadTimeout(0, 250000); // after 0.25 seconds a read operation must timeout
 
-        echo "Add Observer", PHP_EOL;
+        error_log("Add Observer");
         // we add a beat emitter to the observers of our connection
         $this->Stomp->getConnection()->getObservers()->addObserver(new HeartbeatEmitter($this->Stomp->getConnection()));
 
-        echo "Connect", PHP_EOL;
+        error_log("Connect");
         $this->Stomp->connect();
-        echo "Subscribe", PHP_EOL;
+        error_log("Subscribe");
         $this->assertTrue($this->simpleStomp->subscribe($this->queue, 'mysubid', 'client'));
 
-        echo "Read", PHP_EOL;
+        error_log("Read");
         $this->Stomp->readFrame(); // ~ 0.25 seconds
         usleep(250000); // 0.25 seconds
         // Sleep long enough for a heartbeat to be sent.
         $this->Stomp->readFrame(); // ~ 0.25 seconds
 
         // Send a frame.
-        echo "Send", PHP_EOL;
+        error_log("Send");
         $this->assertTrue($this->Stomp->send($this->queue, 'testReadFrame'));
 
         $tries = 0;
         // Check we now have a frame to read.
         while (true) {
             $tries++;
-            echo "Read #", $tries, PHP_EOL;
+            error_log("Read #" . $tries);
             $frame = $this->Stomp->readFrame(); // ~ 0.25 seconds
             if ($frame) {
-                echo "Frame", PHP_EOL;
+                error_log("rame");
                 $this->assertInstanceOf(Frame::class, $frame);
                 $this->assertEquals('testReadFrame', $frame->body, 'Body of test frame does not match sent message');
-                echo "ACK", PHP_EOL;
+                error_log("ACK");
                 $this->simpleStomp->ack($frame);
-                echo "Unsub", PHP_EOL;
+                error_log("Unsub");
                 $this->simpleStomp->unsubscribe($this->queue, 'mysubid');
                 break;
             }
