@@ -458,13 +458,4 @@ class Client
     {
         $this->sync = $sync;
     }
-    
-    /**
-     * Immediately releases all allocated resources when the client object gets destroyed.
-     *
-     * This is especially important for long running processes.
-     */
-    public function __destruct() {
-        $this->disconnect();
-    }    
 }
