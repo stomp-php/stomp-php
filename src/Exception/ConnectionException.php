@@ -35,7 +35,11 @@ class ConnectionException extends StompException
         $this->connectionInfo = $connection;
 
         $host = ($previous ? $previous->getHostname() : null) ?: $this->getHostname();
-        parent::__construct(sprintf('%s (Host: %s)', $info, $host), 0, $previous);
+        
+        if ($host) {
+            $info = sprintf('%s (Host: %s)', $info, $host);
+        }
+        parent::__construct($info, 0, $previous);
     }
 
 
