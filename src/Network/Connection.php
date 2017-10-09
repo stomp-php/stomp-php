@@ -500,4 +500,13 @@ class Connection
         }
         return false;
     }
+    
+    /**
+     * Immediately releases all allocated resources when the connection object gets destroyed.
+     *
+     * This is especially important for long running processes.
+     */
+    public function __destruct() {
+        $this->disconnect();
+    }
 }
