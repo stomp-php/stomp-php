@@ -10,6 +10,7 @@ namespace Stomp\Tests\Functional\RabbitMq;
 
 use Stomp\Client;
 use Stomp\Tests\Functional\Stomp\StatefulTestBase;
+use Stomp\Transport\Message;
 
 /**
  * StatefulTest on RabbitMq
@@ -27,5 +28,27 @@ class StatefulTest extends StatefulTestBase
         $client = ClientProvider::getClient();
         $client->setReceiptWait(2);
         return $client;
+    }
+
+    public function testNackRequeue()
+    {
+        $queue = '/queue/tests-ack-nack';
+        $receiver = $this->getStatefulStomp();
+        $producer = $this->getStatefulStomp();
+
+        $receiver->subscribe($queue, null, 'client-individual');
+
+        $producer->send($queue, new Message('message-a', ['persistent' => 'true']));
+        $producer->getClient()->disconnect(true);
+
+
+        $frameA = $receiver->read();
+        $receiver->nack($frameA, true);
+
+        $frameA2 = $receiver->read();
+        $receiver->nack($frameA2, false);
+
+        $this->assertFalse($receiver->read());
+        $receiver->unsubscribe();
     }
 }

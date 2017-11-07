@@ -9,8 +9,10 @@
 
 namespace Stomp\Broker\RabbitMq;
 
+use Stomp\Exception\StompException;
 use Stomp\Protocol\Protocol;
 use Stomp\Transport\Frame;
+use Stomp\Protocol\Version;
 
 /**
  * RabbitMq Stomp dialect.
@@ -94,5 +96,38 @@ class RabbitMq extends Protocol
     public function setPrefetchCount($prefetchCount)
     {
         $this->prefetchCount = $prefetchCount;
+    }
+
+
+    /**
+     * Get message not acknowledge frame.
+     *
+     * @param \Stomp\Transport\Frame $frame
+     * @param string $transactionId
+     * @param bool $requeue Requeue header supported on RabbitMQ >= 3.4, ignored in prior versions
+     * @return \Stomp\Transport\Frame
+     * @throws StompException
+     */
+    public function getNackFrame(Frame $frame, $transactionId = null, $requeue = null)
+    {
+        if ($this->getVersion() === Version::VERSION_1_0) {
+            throw new StompException('Stomp Version 1.0 has no support for NACK Frames.');
+        }
+        $nack = $this->createFrame('NACK');
+        if ($requeue !== null) {
+            $nack->addHeaders(['requeue' => $requeue ? 'true' : 'false']);
+        }
+        $nack['transaction'] = $transactionId;
+        if ($this->hasVersion(Version::VERSION_1_2)) {
+            $nack['id'] = $frame->getMessageId();
+        } else {
+            $nack['message-id'] = $frame->getMessageId();
+            if ($this->hasVersion(Version::VERSION_1_1)) {
+                $nack['subscription'] = $frame['subscription'];
+            }
+        }
+
+        $nack['message-id'] = $frame->getMessageId();
+        return $nack;
     }
 }

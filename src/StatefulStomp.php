@@ -65,11 +65,12 @@ class StatefulStomp extends StateSetter implements IStateful
      * Not acknowledge consumption of a message from a subscription
      *
      * @param Frame $frame
+     * @param bool $requeue requeue header not supported in all brokers
      * @return void
      */
-    public function nack(Frame $frame)
+    public function nack(Frame $frame, $requeue = null)
     {
-        $this->state->nack($frame);
+        $this->state->nack($frame, $requeue);
     }
 
     /**
