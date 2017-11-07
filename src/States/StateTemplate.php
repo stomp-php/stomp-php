@@ -112,7 +112,7 @@ abstract class StateTemplate extends StateSetter implements IStateful
     /**
      * @inheritdoc
      */
-    public function nack(Frame $frame)
+    public function nack(Frame $frame, $requeue = null)
     {
         throw new InvalidStateException($this, __FUNCTION__);
     }

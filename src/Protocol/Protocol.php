@@ -99,6 +99,7 @@ class Protocol
      * @param string $ack
      * @param string $selector
      * @return \Stomp\Transport\Frame
+     * @throws StompException;
      */
     public function getSubscribeFrame($destination, $subscriptionId = null, $ack = 'auto', $selector = null)
     {
@@ -212,11 +213,16 @@ class Protocol
      *
      * @param \Stomp\Transport\Frame $frame
      * @param string $transactionId
+     * @param bool $requeue Requeue header
      * @return \Stomp\Transport\Frame
      * @throws StompException
+     * @throws \LogicException
      */
-    public function getNackFrame(Frame $frame, $transactionId = null)
+    public function getNackFrame(Frame $frame, $transactionId = null, $requeue = null)
     {
+        if ($requeue !== null) {
+            throw new \LogicException('requeue header not supported');
+        }
         if ($this->version === Version::VERSION_1_0) {
             throw new StompException('Stomp Version 1.0 has no support for NACK Frames.');
         }

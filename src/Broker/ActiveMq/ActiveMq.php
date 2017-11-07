@@ -95,8 +95,13 @@ class ActiveMq extends Protocol
     /**
      * @inheritdoc
      */
-    public function getNackFrame(Frame $frame, $transactionId = null)
+    public function getNackFrame(Frame $frame, $transactionId = null, $requeue = null)
     {
+        if ($requeue !== null) {
+            throw new \LogicException(
+                'requeue header not supported by ActiveMQ. Please read ActiveMQ DLQ documentation.'
+            );
+        }
         $nack = $this->createFrame('NACK');
         $nack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {

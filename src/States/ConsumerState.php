@@ -78,9 +78,9 @@ class ConsumerState extends StateTemplate
     /**
      * @inheritdoc
      */
-    public function nack(Frame $frame)
+    public function nack(Frame $frame, $requeue = null)
     {
-        $this->getClient()->sendFrame($this->getProtocol()->getNackFrame($frame), false);
+        $this->getClient()->sendFrame($this->getProtocol()->getNackFrame($frame, null, $requeue), false);
     }
 
     /**

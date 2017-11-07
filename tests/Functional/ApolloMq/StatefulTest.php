@@ -9,6 +9,7 @@
 namespace Stomp\Tests\Functional\ApolloMq;
 
 use Stomp\Tests\Functional\Stomp\StatefulTestBase;
+use Stomp\Transport\Message;
 
 /**
  * StatefulTest on ApolloMq
@@ -21,5 +22,24 @@ class StatefulTest extends StatefulTestBase
     protected function getClient()
     {
         return ClientProvider::getClient();
+    }
+
+    /**
+     * @expectedException \LogicException
+     */
+    public function testNackRequeueException()
+    {
+        $queue = '/queue/tests-ack-nack';
+        $receiver = $this->getStatefulStomp();
+        $producer = $this->getStatefulStomp();
+
+        $receiver->subscribe($queue, null, 'client-individual');
+
+        $producer->send($queue, new Message('message-a', ['persistent' => 'true']));
+        $producer->send($queue, new Message('message-b', ['persistent' => 'true']));
+        $producer->getClient()->disconnect(true);
+
+        $frameA = $receiver->read();
+        $receiver->nack($frameA, true);
     }
 }

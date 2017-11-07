@@ -31,9 +31,10 @@ interface IStateful
      * Not acknowledge consumption of a message from a subscription
      *
      * @param Frame $frame
+     * @param bool $requeue Requeue header not supported on all brokers
      * @return void
      */
-    public function nack(Frame $frame);
+    public function nack(Frame $frame, $requeue = null);
 
     /**
      * Send a message.
