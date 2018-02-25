@@ -29,7 +29,7 @@ class StatefulTest extends StatefulTestBase
      */
     public function testNackRequeueException()
     {
-        $queue = '/queue/tests-ack-nack';
+        $queue = '/queue/tests-ack-nack-exception';
         $receiver = $this->getStatefulStomp();
         $producer = $this->getStatefulStomp();
 

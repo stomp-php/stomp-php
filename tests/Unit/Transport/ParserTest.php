@@ -10,6 +10,7 @@
 namespace Stomp\Tests\Unit\Transport;
 
 use PHPUnit\Framework\TestCase;
+use Stomp\Network\Observer\ConnectionObserver;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Map;
 use Stomp\Transport\Parser;
@@ -40,9 +41,8 @@ class ParserTest extends TestCase
     {
         $frame = "COMMAND\r\nheader1:value1\r\nheader2:value2\r\n\r\nBody\x00";
         $this->parser->addData($frame);
-        $this->parser->parse();
         $expected = new Frame('COMMAND', ['header1' => 'value1', 'header2' => 'value2'], 'Body');
-        $actual = $this->parser->getFrame();
+        $actual = $this->parser->nextFrame();
 
         $this->assertEquals($expected, $actual);
     }
@@ -52,9 +52,8 @@ class ParserTest extends TestCase
     {
         $frame = "COMMAND\nheader1:value1\nheader2:value2\n\nBody\x00";
         $this->parser->addData($frame);
-        $this->parser->parse();
         $expected = new Frame('COMMAND', ['header1' => 'value1', 'header2' => 'value2'], 'Body');
-        $actual = $this->parser->getFrame();
+        $actual = $this->parser->nextFrame();
 
         $this->assertEquals($expected, $actual);
     }
@@ -64,9 +63,8 @@ class ParserTest extends TestCase
     {
         $frame = "COMMAND\ncontent-length:5\n\nBody" . "\x00" . "\x00";
         $this->parser->addData($frame);
-        $this->parser->parse();
         $expected = new Frame('COMMAND', ['content-length' => 5], "Body" . "\x00");
-        $actual = $this->parser->getFrame();
+        $actual = $this->parser->nextFrame();
 
         $this->assertEquals($expected, $actual);
     }
@@ -75,9 +73,8 @@ class ParserTest extends TestCase
     {
         $frame = "COMMAND\nX-Proof:Hello\\c\\r\\n  \\\\World!\n\nBody\x00";
         $this->parser->addData($frame);
-        $this->parser->parse();
         $expected = new Frame('COMMAND', ['X-Proof' => 'Hello:' . "\r\n  " . '\\World!'], "Body");
-        $actual = $this->parser->getFrame();
+        $actual = $this->parser->nextFrame();
 
         $this->assertEquals($expected, $actual);
     }
@@ -89,8 +86,7 @@ class ParserTest extends TestCase
 
 
         $this->parser->addData($msg);
-        $this->parser->parse();
-        $result = $this->parser->getFrame();
+        $result = $this->parser->nextFrame();
         $this->assertInstanceOf(Map::class, $result);
         /** @var Map $result */
         $this->assertEquals('value', $result->map['var']);
@@ -102,8 +98,7 @@ class ParserTest extends TestCase
         $msg = "CMD\nheader1:value1\n\n\n" . $body . "\x00";
 
         $this->parser->addData($msg);
-        $this->parser->parse();
-        $result = $this->parser->getFrame();
+        $result = $this->parser->nextFrame();
 
         $this->assertInstanceOf(Frame::class, $result);
         $this->assertEquals("\nvar", $result->body);
@@ -115,10 +110,9 @@ class ParserTest extends TestCase
         $frame = "COMMAND\nX-Proof:Hello\\c\\r\\n  \\\\World!\n\nBody\x00";
         $this->parser->legacyMode(true);
         $this->parser->addData($frame);
-        $this->parser->parse();
         $expected = new Frame('COMMAND', ['X-Proof' => "Hello\\c\\r\n  \\\\World!"], "Body");
         $expected->legacyMode(true);
-        $actual = $this->parser->getFrame();
+        $actual = $this->parser->nextFrame();
 
         $this->assertEquals($expected, $actual);
     }
@@ -134,8 +128,34 @@ class ParserTest extends TestCase
         $detectedFrames = [];
         for ($i = 0; $i < strlen($frame); $i++) {
             $this->parser->addData(substr($frame, $i, 1));
-            if ($this->parser->parse()) {
-                $detectedFrames[] = $this->parser->getFrame();
+            if ($newFrame = $this->parser->nextFrame()) {
+                $detectedFrames[] = $newFrame;
+            }
+        }
+
+
+        $expectedFrameA = new Frame('COMMAND', ['header1' => 'values:[1,2]', 'header2' => 'value2'], 'Body');
+        $expectedFrameB = new Frame('COMMAND2', ['header3' => 'value2'], 'Body ');
+
+
+        $this->assertEquals($expectedFrameA, $detectedFrames[0]);
+        $this->assertEquals($expectedFrameB, $detectedFrames[1]);
+    }
+
+    public function testParserDetectsHeartBeats()
+    {
+        $frame = "\x00\x00COMMAND\nheader1:values\\c[1,2]\nheader2:value2\n\nBody\x00\x00";
+        $frame .= "\r\n\r\n\r\n";
+        $frame .= "\x00\x00COMMAND2\nheader3:value2\n\nBody \x00";
+        $frame .= "\r\n\r\n\x00\x00";
+
+        $this->assertFalse($this->parser->parse());
+
+        $detectedFrames = [];
+        for ($i = 0; $i < strlen($frame); $i++) {
+            $this->parser->addData(substr($frame, $i, 1));
+            if ($newFrame = $this->parser->nextFrame()) {
+                $detectedFrames[] = $newFrame;
             }
         }
 
@@ -155,8 +175,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser();
         $parser->addData($msg);
-        $parser->parse();
-        $result = $parser->getFrame();
+        $result = $parser->nextFrame();
 
         $this->assertInstanceOf(Frame::class, $result);
         $this->assertEquals($body, $result->body);
@@ -171,8 +190,7 @@ class ParserTest extends TestCase
 
         $parser = new Parser();
         $parser->addData($msg);
-        $parser->parse();
-        $result = $parser->getFrame();
+        $result = $parser->nextFrame();
 
         $this->assertInstanceOf(Frame::class, $result);
         $this->assertEquals('var', $result->body);
@@ -194,8 +212,7 @@ class ParserTest extends TestCase
         $this->parser->addData($msg);
         $this->assertEquals($msg, $this->parser->flushBuffer());
         $this->parser->addData($msg);
-        $this->parser->parse();
-        $frame = $this->parser->getFrame();
+        $frame = $this->parser->nextFrame();
         $this->assertInstanceOf(Frame::class, $frame);
         $this->assertEquals('var', $frame->body);
     }
@@ -224,11 +241,10 @@ class ParserTest extends TestCase
 
         // Adding our last part should allow it to parse.
         $this->parser->addData($last_body_part);
-        $this->assertTrue($this->parser->parse());
 
         // Check our frame matches our expectation.
         $expected = new Frame('MESSAGE', ['content-length' => $content_length], $body);
-        $actual = $this->parser->getFrame();
+        $actual = $this->parser->nextFrame();
         $this->assertEquals($expected, $actual);
     }
 
@@ -241,8 +257,7 @@ class ParserTest extends TestCase
         $body = "{ \n\"value1\" : \"hello world\"\n,\n\n  \"value2\" : \"2002-02-01\"\r\n\r\n}";
         $header = "MESSAGE\n\n";
         $this->parser->addData($header . $body . "\x00");
-        $this->assertTrue($this->parser->parse());
-        $message = $this->parser->getFrame();
+        $message = $this->parser->nextFrame();
         $this->assertEquals($body, $message->getBody());
     }
 
@@ -254,9 +269,56 @@ class ParserTest extends TestCase
         $body = "{ \n\"value1\" : \"hello world\"\n,\n\n  \"value2\" : \"2002-02-01\"\n\n}";
         $header = "MESSAGE\r\n\r\n";
         $this->parser->addData($header . $body . "\x00");
-        $this->assertTrue($this->parser->parse());
-        $message = $this->parser->getFrame();
+        $message = $this->parser->nextFrame();
         $this->assertEquals($body, $message->getBody());
     }
 
+
+    public function testParserTriggersObserversHeartBeatAfterFrame()
+    {
+        $observer = $this->getMockBuilder(ConnectionObserver::class)
+            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame'])
+            ->getMock();
+        $observer->expects($this->once())->method('emptyLineReceived');
+        $observer->expects($this->once())->method('receivedFrame');
+        $observer->expects($this->never())->method('sentFrame');
+        $observer->expects($this->never())->method('emptyBuffer');
+        $this->parser->setObserver($observer);
+
+        $data = "RECEIPT\nreceipt-id:813b64a2909519e0a77e1025be67a648\n\n\x00\n\n";
+        $this->parser->addData($data);
+        self::assertInstanceOf(Frame::class, $this->parser->nextFrame());
+        self::assertNull($this->parser->nextFrame());
+    }
+
+    public function testParserTriggersObserversOnSingleHeartBeat()
+    {
+        $observer = $this->getMockBuilder(ConnectionObserver::class)
+            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame'])
+            ->getMock();
+        $observer->expects($this->once())->method('emptyLineReceived');
+        $observer->expects($this->never())->method('receivedFrame');
+        $observer->expects($this->never())->method('sentFrame');
+        $observer->expects($this->never())->method('emptyBuffer');
+        $this->parser->setObserver($observer);
+
+        $this->parser->addData("\n");
+        self::assertNull($this->parser->nextFrame());
+    }
+
+    public function testParserTriggersObserversOnMultipleHeartBeatOnlyOnce()
+    {
+        $observer = $this->getMockBuilder(ConnectionObserver::class)
+            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame'])
+            ->getMock();
+        $observer->expects($this->once())->method('emptyLineReceived');
+        $observer->expects($this->never())->method('receivedFrame');
+        $observer->expects($this->never())->method('sentFrame');
+        $observer->expects($this->never())->method('emptyBuffer');
+        $this->parser->setObserver($observer);
+
+        $this->parser->addData("\n\n");
+        self::assertNull($this->parser->nextFrame());
+        self::assertNull($this->parser->nextFrame());
+    }
 }

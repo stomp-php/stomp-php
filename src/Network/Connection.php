@@ -130,6 +130,7 @@ class Connection
     {
         $this->parser = new Parser();
         $this->observers = new ConnectionObserverCollection();
+        $this->parser->setObserver($this->observers);
         $this->connectTimeout = $connectionTimeout;
         $this->context = $context;
         $pattern = "|^(([a-zA-Z0-9]+)://)+\(*([a-zA-Z0-9\.:/i,-_]+)\)*\??([a-zA-Z0-9=&]*)$|i";
@@ -275,6 +276,7 @@ class Connection
         $this->activeHost = $host;
         $errNo = null;
         $errStr = null;
+
         $context = stream_context_create($this->context);
         $flags = STREAM_CLIENT_CONNECT;
         if ($this->persistentConnection) {
@@ -289,10 +291,14 @@ class Connection
             $context
         );
 
+
         if (!is_resource($socket)) {
             throw new ConnectionException(sprintf('Failed to connect. (%s: %s)', $errNo, $errStr), $host);
         }
 
+        if (!@stream_set_blocking($socket, false)) {
+            throw new ConnectionException('Failed to set non blocking mode for stream.', $host);
+        }
         $this->host = $host['host'];
         return $socket;
     }
@@ -316,7 +322,7 @@ class Connection
     public function disconnect()
     {
         if ($this->isConnected()) {
-            stream_socket_shutdown($this->connection, STREAM_SHUT_RDWR);
+            @stream_socket_shutdown($this->connection, STREAM_SHUT_RDWR);
         }
         $this->connection = null;
         $this->activeHost = [];
@@ -336,7 +342,7 @@ class Connection
             throw new ConnectionException('Not connected to any server.', $this->activeHost);
         }
         $data = $stompFrame->__toString();
-        if (!@fwrite($this->connection, $data, strlen($data))) {
+        if (@fwrite($this->connection, $data, strlen($data)) !== strlen($data)) {
             throw new ConnectionException('Was not possible to write frame!', $this->activeHost);
         }
         $this->observers->sentFrame($stompFrame);
@@ -352,38 +358,44 @@ class Connection
      */
     public function readFrame()
     {
+        // first we try to check the parser for any leftover frames
+        if ($frame = $this->parser->nextFrame()) {
+            return $this->onFrame($frame);
+        }
+
         if (!$this->hasDataToRead()) {
             return false;
         }
 
-        // See if there are newlines waiting to be processed (some brokers send empty lines as heartbeat)
-        if (!$this->readHeartBeats()) {
-            return false;
-        }
-
         do {
-            $read = @stream_get_line($this->connection, 8192, Parser::FRAME_END);
-            if ($read === false) {
-                throw new ConnectionException('Was not possible to read data from stream.', $this->activeHost);
+
+            $read = @fread($this->connection, 8192);
+            if ($read === '' || $read === false) {
+                throw new ConnectionException(sprintf('Was not possible to read data from stream.'), $this->activeHost);
             }
 
             $this->parser->addData($read);
 
-            // Include zero-byte back at the end
-            if (strlen($read) != 8192) {
-                $this->parser->addData(Parser::FRAME_END);
+            if ($frame = $this->parser->nextFrame()) {
+                return $this->onFrame($frame);
             }
-        } while (!$this->parser->parse());
+        } while ($this->isDataOnStream());
 
-        // See if there are other heartbeats after the frame end (\0)
-        $this->readHeartBeats();
+        return false;
+    }
 
-        $frame = $this->parser->getFrame();
+    /**
+     * The connection onFrame handler.
+     *
+     * @param Frame $frame
+     * @return Frame
+     * @throws ErrorFrameException
+     */
+    private function onFrame(Frame $frame)
+    {
         if ($frame->isErrorFrame()) {
             throw new ErrorFrameException($frame);
         }
-
-        $this->observers->receivedFrame($frame);
         return $frame;
     }
 
@@ -410,33 +422,6 @@ class Connection
     }
 
     /**
-     * Read (eat) any heartbeats left in the data to read. Will return true if any non heart beat data was received.
-     *
-     * Heartbeat data will not be added to the parser, if this method encounters a different character or result,
-     * it'll add that to the parser's data buffer and abort.
-     * 
-     * @return boolean
-     */
-    private function readHeartBeats()
-    {
-        // Only test the stream, return immediately if nothing is left
-        while ($this->connectionHasDataToRead(0, 0) && ($data = @fread($this->connection, 1)) !== false) {
-            if (strlen($data) == 0) {
-                return false;
-            }
-            // If its not a newline, it indicates a new messages has been added,
-            // so add that to the data-buffer of the parser.
-            if ($data !== "\n" && $data !== "\r") {
-                $this->parser->addData($data);
-                return true;
-            } else {
-                $this->observers->emptyLineReceived();
-            }
-        }
-        return false;
-    }
-
-    /**
      * See if the connection has data left.
      *
      * If both timeout-parameters are set to 0, it will return immediately.
@@ -448,13 +433,31 @@ class Connection
      */
     private function connectionHasDataToRead($timeoutSec, $timeoutMicros)
     {
+        $timeout = microtime(true) + $timeoutSec + ($timeoutMicros ? $timeoutMicros / 1000000 : 0);
+        while (!$this->isDataOnStream()) {
+            if ($timeout < microtime(true)) {
+                return false;
+            }
+            time_nanosleep(0, 2500000); // 2.5ms / 0.0025s
+        }
+        return true;
+    }
+
+    /**
+     * Checks if there is readable data on the stream.
+     *
+     * @return bool
+     * @throws ConnectionException
+     */
+    private function isDataOnStream()
+    {
         $read = [$this->connection];
         $write = null;
         $except = null;
-        $hasStreamInfo = @stream_select($read, $write, $except, $timeoutSec, $timeoutMicros);
+        $hasStreamInfo = @stream_select($read, $write, $except, 0);
 
         if ($hasStreamInfo === false) {
-            // stream_select can return `false` if used in combination with `pcntl_signal` and lead to false errors here
+            // can return `false` if used in combination with `pcntl_signal` and lead to false errors here
             $error = error_get_last();
             if ($error && isset($error['message']) && stripos($error['message'], 'interrupted system call') === false) {
                 throw new ConnectionException(
