@@ -26,7 +26,7 @@ interface ConnectionObserver
     public function emptyLineReceived();
 
     /**
-     * Indicates that during a read call no frame was received, but an EOL line.
+     * Indicates that during a read call no data was available on the connection.
      *
      * @return void
      */

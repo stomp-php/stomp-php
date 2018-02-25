@@ -9,6 +9,8 @@
 
 namespace Stomp\Transport;
 
+use Stomp\Network\Observer\ConnectionObserver;
+
 /**
  * A Stomp frame parser
  *
@@ -115,6 +117,11 @@ class Parser
     private $factory;
 
     /**
+     * @var ConnectionObserver
+     */
+    private $observer;
+
+    /**
      * Parser constructor.
      *
      * @param FrameFactory $factory
@@ -123,6 +130,19 @@ class Parser
     {
         $this->factory = $factory ?: new FrameFactory();
     }
+
+    /**
+     * Sets the observer for the parser, in order to receive heartbeat information.
+     *
+     * @param ConnectionObserver $observer
+     * @return Parser
+     */
+    public function setObserver(ConnectionObserver $observer)
+    {
+        $this->observer = $observer;
+        return $this;
+    }
+
 
     /**
      * Returns the factory that will be used to create frame instances.
@@ -156,8 +176,9 @@ class Parser
     }
 
     /**
-     * Get parsed frame.
+     * Get next parsed frame.
      *
+     * @deprecated Will be removed in next version. Please use nextFrame().
      * @return Frame
      */
     public function getFrame()
@@ -166,12 +187,36 @@ class Parser
     }
 
     /**
+     * Parse current buffer and return the next available frame, otherwise return null.
+     *
+     * @return null|Frame
+     */
+    public function nextFrame()
+    {
+        if ($this->parse()) {
+            $frame = $this->getFrame();
+            $this->frame = null;
+            if ($this->observer) {
+                $this->observer->receivedFrame($frame);
+            }
+            return $frame;
+        }
+        return null;
+    }
+
+
+    /**
      * Parse current buffer for frames.
+     *
+     * @deprecated Will become private in next version. Please use nextFrame().
      *
      * @return bool
      */
     public function parse()
     {
+        if ($this->buffer === '') {
+            return false;
+        }
         $this->frame = null;
         $this->offset = 0;
         $this->bufferSize = strlen($this->buffer);
@@ -186,9 +231,8 @@ class Parser
             }
             if ($this->detectFrameEnd()) {
                 $this->mode = self::MODE_HEADER;
-            } else {
-                break;
             }
+            break;
         }
 
         if ($this->offset > 0) {
@@ -203,13 +247,18 @@ class Parser
      */
     private function skipEmptyLines()
     {
+        $foundHeartbeat = false;
         while ($this->offset < $this->bufferSize) {
             $char = substr($this->buffer, $this->offset, 1);
-            if ($char === "\n" || $char === "\r") {
+            if ($char === "\x00" || $char === "\n" || $char === "\r") {
                 $this->offset++;
+                $foundHeartbeat = true;
             } else {
                 break;
             }
+        }
+        if ($foundHeartbeat && $this->observer) {
+            $this->observer->emptyLineReceived();
         }
     }
 
@@ -272,7 +321,7 @@ class Parser
         $this->frame = $this->factory->createFrame(
             $this->command,
             $this->headers,
-            (string) substr($this->buffer, $this->offset, $bodySize),
+            (string)substr($this->buffer, $this->offset, $bodySize),
             $this->legacyMode
         );
 
@@ -280,7 +329,6 @@ class Parser
         $this->headers = [];
         $this->mode = self::MODE_HEADER;
     }
-
 
 
     /**
@@ -305,7 +353,7 @@ class Parser
         }
 
         if (isset($this->headers['content-length'])) {
-            $this->expectedBodyLength = (int) $this->headers['content-length'];
+            $this->expectedBodyLength = (int)$this->headers['content-length'];
         }
     }
 
