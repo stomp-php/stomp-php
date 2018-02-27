@@ -160,6 +160,16 @@ class Connection
     }
 
     /**
+     * Returns the connect timeout in seconds.
+     *
+     * @return int
+     */
+    public function getConnectTimeout()
+    {
+        return $this->connectTimeout;
+    }
+
+    /**
      * Returns the collection of observers of this connection.
      *
      * @return ConnectionObserverCollection

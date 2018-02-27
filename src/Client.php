@@ -209,7 +209,7 @@ class Client
         $connectFrame = $this->protocol->getConnectFrame($this->login, $this->passcode, $this->versions, $this->host, $this->heartbeat);
         $this->sendFrame($connectFrame, false);
 
-        if ($frame = $this->connection->readFrame()) {
+        if ($frame = $this->getConnectedFrame()) {
             $version = new Version($frame);
 
             if ($version->hasVersion(Version::VERSION_1_1)) {
@@ -222,6 +222,25 @@ class Client
             return true;
         }
         throw new ConnectionException('Connection not acknowledged');
+    }
+
+    /**
+     * Returns the next available frame from the connection, respecting the connect timeout.
+     *
+     * @return null|Frame
+     * @throws ConnectionException
+     * @throws Exception\ErrorFrameException
+     */
+    private function getConnectedFrame() {
+        $deadline = microtime(true) + ($this->getConnection()->getConnectTimeout() * 1000000);
+        do {
+            if ($frame = $this->connection->readFrame()) {
+                return $frame;
+            }
+
+        } while (microtime(true) <= $deadline);
+
+        return null;
     }
 
     /**
