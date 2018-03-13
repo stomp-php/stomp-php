@@ -46,6 +46,13 @@ class Connection
     private $connectTimeout;
 
     /**
+     * Timeout (seconds) that are applied on write calls.
+     *
+     * @var integer
+     */
+    private $writeTimeout = 3;
+
+    /**
      * Using persistent connection for creating socket
      *
      * @var bool
@@ -205,6 +212,16 @@ class Connection
     }
 
     /**
+     * Set the write timeout
+     *
+     * @param int $writeTimeout seconds
+     */
+    public function setWriteTimeout($writeTimeout)
+    {
+        $this->writeTimeout = $writeTimeout;
+    }
+
+    /**
      * Set socket context
      *
      * @param array $context
@@ -351,12 +368,45 @@ class Connection
         if (!$this->isConnected()) {
             throw new ConnectionException('Not connected to any server.', $this->activeHost);
         }
-        $data = $stompFrame->__toString();
-        if (@fwrite($this->connection, $data, strlen($data)) !== strlen($data)) {
-            throw new ConnectionException('Was not possible to write frame!', $this->activeHost);
-        }
+        $this->writeData($stompFrame->__toString(), $this->writeTimeout);
         $this->observers->sentFrame($stompFrame);
         return true;
+    }
+
+    /**
+     * Write passed data to the stream, respecting passed timeout.
+     *
+     * @param string $data
+     * @param int    $timeout in seconds
+     * @throws ConnectionException
+     */
+    private function writeData($data, $timeout)
+    {
+        $offset = 0;
+        $size = strlen($data);
+        $lastByteTime = microtime(true);
+        do {
+            $written = @fwrite($this->connection, substr($data, $offset), $size - $offset);
+
+            if ($written === false) {
+                throw new ConnectionException('Was not possible to write frame!', $this->activeHost);
+            }
+
+            if ($written > 0) {
+                // offset tracking
+                $offset += $written;
+                $lastByteTime = microtime(true);
+            } else {
+                // timeout tracking
+                if ((microtime(true) - $lastByteTime) > $timeout) {
+                    throw new ConnectionException('Was not possible to write frame! Write operation timed out.', $this->activeHost);
+                }
+            }
+            // keep some time to breath
+            if ($written < $size) {
+                time_nanosleep(0, 2500000); // 2.5ms / 0.0025s
+            }
+        } while ($offset < $size);
     }
 
     /**
