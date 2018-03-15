@@ -368,7 +368,7 @@ class Connection
         if (!$this->isConnected()) {
             throw new ConnectionException('Not connected to any server.', $this->activeHost);
         }
-        $this->writeData($stompFrame->__toString(), $this->writeTimeout);
+        $this->writeData($stompFrame, $this->writeTimeout);
         $this->observers->sentFrame($stompFrame);
         return true;
     }
@@ -376,12 +376,13 @@ class Connection
     /**
      * Write passed data to the stream, respecting passed timeout.
      *
-     * @param string $data
-     * @param int    $timeout in seconds
+     * @param Frame $stompFrame
+     * @param int $timeout in seconds
      * @throws ConnectionException
      */
-    private function writeData($data, $timeout)
+    private function writeData(Frame $stompFrame, $timeout)
     {
+        $data = $stompFrame->__toString();
         $offset = 0;
         $size = strlen($data);
         $lastByteTime = microtime(true);
