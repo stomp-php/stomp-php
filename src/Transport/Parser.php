@@ -339,7 +339,7 @@ class Parser
      */
     private function extractFrameMeta($source)
     {
-        $headers = preg_split("/[\r?\n]+/", $source);
+        $headers = preg_split("/(\r?\n)+/", $source);
 
         $this->command = array_shift($headers);
 
