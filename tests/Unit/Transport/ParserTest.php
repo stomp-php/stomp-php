@@ -321,4 +321,20 @@ class ParserTest extends TestCase
         self::assertNull($this->parser->nextFrame());
         self::assertNull($this->parser->nextFrame());
     }
+
+    /**
+     * @see https://github.com/stomp-php/stomp-php/pull/110
+     */
+    public function testParserCanHandleMessagesWithReturnCharacterInHeaderValues()
+    {
+        $body = 'var';
+        $msg = "CMD\nheader1:valu\re1\n\n" . $body . "\x00";
+
+        $this->parser->addData($msg);
+        $result = $this->parser->nextFrame();
+
+        $this->assertInstanceOf(Frame::class, $result);
+        $this->assertEquals("var", $result->body);
+        $this->assertEquals("valu\re1", $result['header1']);
+    }
 }
