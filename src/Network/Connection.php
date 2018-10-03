@@ -387,7 +387,7 @@ class Connection
         $size = strlen($data);
         $lastByteTime = microtime(true);
         do {
-            $written = @fwrite($this->connection, substr($data, $offset), $size - $offset);
+            $written = @fwrite($this->connection, substr($data, $offset), 81920);
 
             if ($written === false) {
                 throw new ConnectionException('Was not possible to write frame!', $this->activeHost);
