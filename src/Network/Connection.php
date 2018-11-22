@@ -121,6 +121,20 @@ class Connection
     private $observers;
 
     /**
+     * Maximum number of bytes to write to a resource.
+     *
+     * @var int
+     */
+    private $maxWriteBytes = 8192;
+
+    /**
+     * Maximum number of bytes to read from a resource.
+     *
+     * @var int
+     */
+    private $maxReadBytes = 8192;
+
+    /**
      * Initialize connection
      *
      * Example broker uri
@@ -230,6 +244,30 @@ class Connection
     public function setContext(array $context)
     {
         $this->context = $context;
+    }
+
+    /**
+     * Set the maximum number of bytes to write to a resource
+     *
+     * This will be useful if you are suffering problems with OpenSSL or Amazon MQ
+     *
+     * @param int $maxWriteBytes bytes
+     */
+    public function setMaxWriteBytes($maxWriteBytes)
+    {
+        $this->maxWriteBytes = $maxWriteBytes;
+    }
+
+    /**
+     * Set the maximum number of bytes to read from a resource
+     *
+     * This will be useful if you are suffering problems with OpenSSL or Amazon MQ
+     *
+     * @param int $maxReadBytes bytes
+     */
+    public function setMaxReadBytes($maxReadBytes)
+    {
+        $this->maxReadBytes = $maxReadBytes;
     }
 
     /**
@@ -387,7 +425,7 @@ class Connection
         $size = strlen($data);
         $lastByteTime = microtime(true);
         do {
-            $written = @fwrite($this->connection, substr($data, $offset), 81920);
+            $written = @fwrite($this->connection, substr($data, $offset), $this->maxWriteBytes);
 
             if ($written === false) {
                 throw new ConnectionException('Was not possible to write frame!', $this->activeHost);
@@ -430,7 +468,7 @@ class Connection
 
         do {
 
-            $read = @fread($this->connection, 8192);
+            $read = @fread($this->connection, $this->maxReadBytes);
             if ($read === '' || $read === false) {
                 throw new ConnectionException(sprintf('Was not possible to read data from stream.'), $this->activeHost);
             }
