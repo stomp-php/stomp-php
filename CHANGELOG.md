@@ -64,3 +64,32 @@ Changelog stomp-php
 4.2.2
 -----
 - add support for outgoing heartbeats and a basic heartbeat emitter, than can be added to the connection (see stomp-php-examples) thanks to @andrewbelcher and @staabm (https://github.com/stomp-php/stomp-php/pull/72, https://github.com/stomp-php/stomp-php/pull/60)
+
+4.3.0
+------
+- bug: Message incorrectly parsed when body contains \r\n\r\n but delimiter is \n\n thanks to @mattford (https://github.com/stomp-php/stomp-php/issues/93, https://github.com/stomp-php/stomp-php/issues/94)
+- bc: #87 drop php-5.5 support (if you still need to use php-5.5 we can provide a release 4.2.* release for #93 too, but ask for it)
+- #91, #90, #89, #88, #87, #86, #84, #83, #82, #81, #80, #78, #77, #76, #75, #74, #73 many code style improvements big thanks to @localheinz
+Thanks to @staabm for all the reviews :)
+
+4.3.1
+------
+- add requeue support on NACK for rabbitmq 4.3, thanks to @gm-ghanover (https://github.com/stomp-php/stomp-php/pull/102)
+    
+4.4.0
+------
+- change to non blocking mode. Add writeTimeout see https://github.com/stomp-php/stomp-php/blob/master/src/Network/Connection.php#L219 defaults to 3 seconds (#104 @Shaa1 thanks for reporting, https://github.com/stomp-php/stomp-php/pull/107)
+- add git-export-ignore thanks to @staabm (https://github.com/stomp-php/stomp-php/pull/106)
+
+4.4.1
+------
+- fix parser fails on header values that contain \r (thanks to @riven8192 for the fix, https://github.com/stomp-php/stomp-php/pull/110)
+
+4.4.2
+------
+- fix client stuck at large messages (thanks to @ganeko for fix, https://github.com/stomp-php/stomp-php/pull/111)
+
+4.4.3
+------
+- add configuration for connection read/write may bytes (thanks to @ganeko for this enhancement, https://github.com/stomp-php/stomp-php/pull/113)
+
