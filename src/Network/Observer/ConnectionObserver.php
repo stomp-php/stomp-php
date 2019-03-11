@@ -8,7 +8,6 @@
 
 namespace Stomp\Network\Observer;
 
-
 use Stomp\Transport\Frame;
 
 /**
@@ -26,11 +25,18 @@ interface ConnectionObserver
     public function emptyLineReceived();
 
     /**
-     * Indicates that during a read call no data was available on the connection.
+     * Indicates that the connection has no pending data.
      *
      * @return void
      */
     public function emptyBuffer();
+
+    /**
+     * Indicates that the connection tried to read signaled data, but no data was returned.
+     *
+     * @return void
+     */
+    public function emptyRead();
 
     /**
      * Indicates that a frame has been received from the server.

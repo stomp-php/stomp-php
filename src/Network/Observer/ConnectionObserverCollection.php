@@ -8,7 +8,6 @@
 
 namespace Stomp\Network\Observer;
 
-
 use Stomp\Transport\Frame;
 
 /**
@@ -102,7 +101,7 @@ class ConnectionObserverCollection implements ConnectionObserver
     }
 
     /**
-     * Indicates that a read was not performed as the buffer is empty.
+     * Indicates that the connection has no pending data.
      *
      * @return void
      */
@@ -110,6 +109,18 @@ class ConnectionObserverCollection implements ConnectionObserver
     {
         foreach ($this->observers as $item) {
             $item->emptyBuffer();
+        }
+    }
+
+    /**
+     * Indicates that the connection tried to read signaled data, but no data was returned.
+     *
+     * @return void
+     */
+    public function emptyRead()
+    {
+        foreach ($this->observers as $item) {
+            $item->emptyRead();
         }
     }
 }

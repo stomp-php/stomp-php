@@ -439,7 +439,7 @@ class ClientTest extends TestCase
     public function testSendAlive()
     {
         $this->Stomp->connect();
-        $this->assertTrue($this->Stomp->getConnection()->sendAlive());
+        $this->Stomp->getConnection()->sendAlive();
         $this->Stomp->disconnect();
     }
 }

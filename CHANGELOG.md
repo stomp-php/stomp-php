@@ -93,3 +93,9 @@ Thanks to @staabm for all the reviews :)
 ------
 - add configuration for connection read/write may bytes (thanks to @ganeko for this enhancement, https://github.com/stomp-php/stomp-php/pull/113)
 
+4.5.0
+------
+- refined broken connection detection, not longer failing when `fread` returns empty string (thanks to @mlamm for reporting this, https://github.com/stomp-php/stomp-php/issues/115 and https://github.com/stomp-php/stomp-php/issues/114
+- Clients should now use either `ServerAliveObserver` or `HeartbeatEmitter` to verify the state of the connection, otherwise a broken connection might not be detected - especially when the socket is based on ssl.
+- stabilize client heartbeat implementation, added awareness for failing `Connection::sendAlive` calls, now causing `HeartbeatException`
+- added `ServerAliveObserver` in order to simplify detection of dead connections.

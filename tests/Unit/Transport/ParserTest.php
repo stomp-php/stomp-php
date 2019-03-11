@@ -277,12 +277,13 @@ class ParserTest extends TestCase
     public function testParserTriggersObserversHeartBeatAfterFrame()
     {
         $observer = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame'])
+            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
             ->getMock();
         $observer->expects($this->once())->method('emptyLineReceived');
         $observer->expects($this->once())->method('receivedFrame');
         $observer->expects($this->never())->method('sentFrame');
         $observer->expects($this->never())->method('emptyBuffer');
+        $observer->expects($this->never())->method('emptyRead');
         $this->parser->setObserver($observer);
 
         $data = "RECEIPT\nreceipt-id:813b64a2909519e0a77e1025be67a648\n\n\x00\n\n";
@@ -294,12 +295,13 @@ class ParserTest extends TestCase
     public function testParserTriggersObserversOnSingleHeartBeat()
     {
         $observer = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame'])
+            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
             ->getMock();
         $observer->expects($this->once())->method('emptyLineReceived');
         $observer->expects($this->never())->method('receivedFrame');
         $observer->expects($this->never())->method('sentFrame');
         $observer->expects($this->never())->method('emptyBuffer');
+        $observer->expects($this->never())->method('emptyRead');
         $this->parser->setObserver($observer);
 
         $this->parser->addData("\n");
@@ -309,12 +311,13 @@ class ParserTest extends TestCase
     public function testParserTriggersObserversOnMultipleHeartBeatOnlyOnce()
     {
         $observer = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame'])
+            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
             ->getMock();
         $observer->expects($this->once())->method('emptyLineReceived');
         $observer->expects($this->never())->method('receivedFrame');
         $observer->expects($this->never())->method('sentFrame');
         $observer->expects($this->never())->method('emptyBuffer');
+        $observer->expects($this->never())->method('emptyRead');
         $this->parser->setObserver($observer);
 
         $this->parser->addData("\n\n");
