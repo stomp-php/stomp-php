@@ -8,7 +8,6 @@
 
 namespace Stomp\Tests\Unit\Network\Observer;
 
-
 use PHPUnit\Framework\TestCase;
 use Stomp\Network\Observer\ConnectionObserver;
 use Stomp\Network\Observer\ConnectionObserverCollection;
@@ -38,15 +37,16 @@ class ConnectionObserverCollectionTest extends TestCase
         $frameA = new Message('message-a');
         $frameB = new Message('message-b');
         $observerA = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame'])
+            ->setMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'emptyRead'])
             ->getMock();
         $observerA->expects($this->exactly(1))->method('sentFrame')->with($frameA);
         $observerA->expects($this->exactly(1))->method('emptyLineReceived');
         $observerA->expects($this->exactly(1))->method('emptyBuffer');
+        $observerA->expects($this->exactly(1))->method('emptyRead');
         $observerA->expects($this->exactly(1))->method('receivedFrame')->with($frameB);
 
         $observerB = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame'])
+            ->setMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'emptyRead'])
             ->getMock();
         $observerB->expects($this->exactly(1))->method('sentFrame')->with($frameA);
         $observerB->expects($this->exactly(1))->method('emptyLineReceived');
@@ -59,6 +59,7 @@ class ConnectionObserverCollectionTest extends TestCase
         $this->instance->receivedFrame($frameB);
         $this->instance->sentFrame($frameA);
         $this->instance->emptyBuffer();
+        $this->instance->emptyRead();
         $this->instance->emptyLineReceived();
     }
 

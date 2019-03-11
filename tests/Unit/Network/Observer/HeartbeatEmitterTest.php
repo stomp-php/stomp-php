@@ -8,8 +8,9 @@
 
 namespace Stomp\Tests\Unit\Network\Observer;
 
-
 use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_MockObject_MockObject;
+use Stomp\Exception\ConnectionException;
 use Stomp\Network\Connection;
 use Stomp\Network\Observer\HeartbeatEmitter;
 use Stomp\Transport\Frame;
@@ -27,28 +28,42 @@ class HeartbeatEmitterTest extends TestCase
      */
     private $instance;
     private $beatsSend = 0;
+    private $connectionReadTimeOut = [
+        0,
+        5000
+    ];
+
+    /**
+     * @var Connection|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $connection;
 
     protected function setUp()
     {
         parent::setUp();
-        $connection = $this->getMockBuilder(Connection::class)
+        $this->connection = $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
-            ->setMethods(['sendAlive'])
+            ->setMethods(['sendAlive', 'getReadTimeout'])
             ->getMock();
-        $connection->expects($this->any())->method('sendAlive')->willReturnCallback(
+        $this->connection->expects($this->any())->method('sendAlive')->willReturnCallback(
             function () {
                 $this->beatsSend++;
                 return true;
             }
         );
-        $this->instance = new HeartbeatEmitter($connection, 0.5);
+        $this->connection->expects($this->any())->method('getReadTimeout')->willReturnCallback(
+            function () {
+                return $this->connectionReadTimeOut;
+            }
+        );
+        $this->instance = new HeartbeatEmitter($this->connection, 0.5);
     }
 
     public function testEmitterActivatedByConnectAndConnectedFrames()
     {
         $this->assertFalse($this->instance->isEnabled());
 
-        $connectFrame = new Frame(\Stomp\Network\Observer\HeartbeatEmitter::FRAME_CLIENT_CONNECT);
+        $connectFrame = new Frame(HeartbeatEmitter::FRAME_CLIENT_CONNECT);
         $connectFrame['heart-beat'] = '100,0';
         $this->instance->sentFrame($connectFrame);
         $this->assertFalse($this->instance->isEnabled());
@@ -69,7 +84,7 @@ class HeartbeatEmitterTest extends TestCase
         $this->instance->sentFrame($connectFrame);
         $this->assertFalse($this->instance->isEnabled());
 
-        $connectedFrame = new Frame(\Stomp\Network\Observer\HeartbeatEmitter::FRAME_SERVER_CONNECTED);
+        $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
         $this->instance->receivedFrame($connectedFrame);
         $this->assertFalse($this->instance->isEnabled());
 
@@ -80,7 +95,7 @@ class HeartbeatEmitterTest extends TestCase
 
     public function testEmitterNotActivatedIfClientDontWantToSendBeats()
     {
-        $connectFrame = new Frame(\Stomp\Network\Observer\HeartbeatEmitter::FRAME_CLIENT_CONNECT);
+        $connectFrame = new Frame(HeartbeatEmitter::FRAME_CLIENT_CONNECT);
         $this->instance->sentFrame($connectFrame);
         $this->assertFalse($this->instance->isEnabled());
 
@@ -93,12 +108,16 @@ class HeartbeatEmitterTest extends TestCase
     public function testEmitterActivatedIfServerRequestsBeatsAndNoConnectFrameWasSend()
     {
         // can happen when the connection was recycled
-        $connectedFrame = new Frame(\Stomp\Network\Observer\HeartbeatEmitter::FRAME_SERVER_CONNECTED);
+        $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,100';
         $this->instance->receivedFrame($connectedFrame);
         $this->assertTrue($this->instance->isEnabled());
     }
 
+    public function testNoDelayIfEmitterIsNotActive()
+    {
+        $this->assertFalse($this->instance->isDelayed());
+    }
 
     public function testDelayDetection()
     {
@@ -106,7 +125,6 @@ class HeartbeatEmitterTest extends TestCase
         $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
-        $this->instance->emptyLineReceived();
         $this->assertFalse($this->instance->isDelayed());
         usleep(60000);
         $this->assertTrue($this->instance->isDelayed());
@@ -115,7 +133,7 @@ class HeartbeatEmitterTest extends TestCase
     public function testBeatTriggeredByEmptyBufferRead()
     {
         // can happen when the connection was recycled
-        $connectedFrame = new Frame(\Stomp\Network\Observer\HeartbeatEmitter::FRAME_SERVER_CONNECTED);
+        $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
         $this->instance->emptyBuffer();
@@ -132,7 +150,7 @@ class HeartbeatEmitterTest extends TestCase
         $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
-        $this->instance->emptyLineReceived();
+
         usleep(60000);
         $this->assertTrue($this->instance->isDelayed());
         $this->beatsSend = 0;
@@ -146,7 +164,7 @@ class HeartbeatEmitterTest extends TestCase
         $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
-        $this->instance->emptyLineReceived();
+
         usleep(60000);
         $this->assertTrue($this->instance->isDelayed());
         $this->beatsSend = 0;
@@ -154,41 +172,22 @@ class HeartbeatEmitterTest extends TestCase
         $this->assertEquals(1, $this->beatsSend);
     }
 
-
-    public function testLastBeatUpdated()
+    public function testBeatTriggeredByEmptyRead()
     {
         // can happen when the connection was recycled
         $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,50';
         $this->instance->receivedFrame($connectedFrame);
-        $this->instance->sentFrame(new Frame('MESSAGE'));
-        $lastBeat = $this->instance->getLastbeat();
-        usleep(4000);
-        $this->assertEquals($lastBeat, $this->instance->getLastbeat());
-        $this->instance->sentFrame(new Frame('MESSAGE'));
-        $this->assertGreaterThan($lastBeat, $this->instance->getLastbeat());
-    }
 
-    public function testIntervalUsageHasMinimumAndMaximumLimit()
-    {
-        $minUsageInstance = new HeartbeatEmitter(
-            $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock(),
-            0
-        );
-        $maxUsageInstance = new HeartbeatEmitter(
-            $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock(),
-            1
-        );
-
-        $this->assertGreaterThan(0, $minUsageInstance->getIntervalUsage());
-        $this->assertLessThan(1, $maxUsageInstance->getIntervalUsage());
+        usleep(60000);
+        $this->assertTrue($this->instance->isDelayed());
+        $this->beatsSend = 0;
+        $this->instance->emptyRead();
+        $this->assertEquals(1, $this->beatsSend);
     }
 
     public function testIntervalCalculation()
     {
-        // half time of expected beat interval is target send rate
-        $this->assertEquals(0.5, $this->instance->getIntervalUsage());
-
         // we offer 300
         $connectFrame = new Frame(HeartbeatEmitter::FRAME_CLIENT_CONNECT);
         $connectFrame['heart-beat'] = '300,0';
@@ -201,5 +200,57 @@ class HeartbeatEmitterTest extends TestCase
 
         // usage * max(interval) / ms
         $this->assertEquals((0.5 * 500) / 1000, $this->instance->getInterval());
+    }
+
+    /**
+     * @expectedException \Stomp\Network\Observer\Exception\HeartbeatException
+     * @expectedExceptionMessage Client heartbeat is lower than connection read timeout, causing failing heartbeats.
+     */
+    public function testEmitterThrowsExceptionWhenConnectionReadTimeoutIsTooHigh()
+    {
+        $this->connectionReadTimeOut = [0,900000]; // 900 ms
+        // we offer 300
+        $connectFrame = new Frame(HeartbeatEmitter::FRAME_CLIENT_CONNECT);
+        $connectFrame['heart-beat'] = '300,0';
+        $this->instance->sentFrame($connectFrame);
+
+        // server asks for 500
+        $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
+        $connectedFrame['heart-beat'] = '0,500';
+        $this->instance->receivedFrame($connectedFrame);
+    }
+
+    /**
+     * @expectedExceptionMessage Could not send heartbeat to server.
+     * @expectedException \RuntimeException
+     */
+    public function testEmitterThrowsExceptionWhenAliveSignalFails()
+    {
+        // can happen when the connection was recycled
+        $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
+        $connectedFrame['heart-beat'] = '0,50';
+        $this->instance->receivedFrame($connectedFrame);
+
+        usleep(60000);
+
+        $this->connection->expects($this->once())
+            ->method('sendAlive')
+            ->willThrowException(new ConnectionException('Send failure.'));
+        $this->instance->emptyBuffer();
+    }
+
+    public function testEmitterTriggersAliveCallWhenNotDelayedButPessimisticModeEnabledAndEmptyReadDetected()
+    {
+        $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
+        $connectedFrame['heart-beat'] = '0,500';
+        $this->instance->receivedFrame($connectedFrame);
+
+        $this->connection->expects($this->once())
+            ->method('sendAlive');
+        $this->assertTrue($this->instance->isEnabled());
+        $this->assertFalse($this->instance->isDelayed());
+
+        $this->instance->setPessimistic(true);
+        $this->instance->emptyRead();
     }
 }

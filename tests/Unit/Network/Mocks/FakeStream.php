@@ -42,6 +42,13 @@ class FakeStream
     public static $clientSend = '';
 
     /**
+     * Indicates that send will always fail
+     *
+     * @var bool
+     */
+    public static $sendFails = false;
+
+    /**
      *
      * @see streamWrapper::stream_open()
      *
@@ -78,6 +85,9 @@ class FakeStream
      */
     public function stream_write($data)
     {
+        if (self::$sendFails) {
+            return 0;
+        }
         self::$clientSend .= $data;
         return strlen($data);
     }

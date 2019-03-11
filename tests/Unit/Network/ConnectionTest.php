@@ -170,4 +170,41 @@ class ConnectionTest extends TestCase
         fclose($fakeStreamResource);
         stream_wrapper_unregister('stompFakeStream');
     }
+
+
+    /**
+     * @expectedException  \Stomp\Exception\ConnectionException
+     */
+    public function testSendAliveWillCauseConnectionException()
+    {
+        stream_wrapper_register('stompFakeStream', FakeStream::class);
+
+
+        $mock = $this->getMockBuilder(Connection::class)
+            ->setMethods(['getConnection'])
+            ->setConstructorArgs(['stompFakeStream://notInUse'])
+            ->getMock();
+        $fakeStreamResource = fopen('stompFakeStream://notInUse', 'rw');
+        $mock->method('getConnection')->willReturn($fakeStreamResource);
+
+        /**
+         * @var $mock Connection
+         */
+        $mock->connect();
+
+        $exception = null;
+        try {
+            FakeStream::$sendFails = true;
+            $mock->sendAlive(0.150);
+        } catch (\Exception $error) {
+            $exception = $error;
+        }
+        FakeStream::$sendFails = false;
+        fclose($fakeStreamResource);
+        stream_wrapper_unregister('stompFakeStream');
+        if (!$exception) {
+            $this->fail('Excepted exception.');
+        }
+        throw $exception;
+    }
 }

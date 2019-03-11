@@ -135,6 +135,11 @@ class Connection
     private $maxReadBytes = 8192;
 
     /**
+     * Alive Signal
+     */
+    const ALIVE = "\n";
+
+    /**
      * Initialize connection
      *
      * Example broker uri
@@ -219,13 +224,25 @@ class Connection
      * Set the read timeout
      *
      * @param integer $seconds      seconds
-     * @param integer $microseconds microseconds (1μs = 0.000001s)
+     * @param integer $microseconds microseconds (1μs = 0.000001s, ex. 500ms = 500000)
      * @return void
      */
     public function setReadTimeout($seconds, $microseconds = 0)
     {
         $this->readTimeout[0] = $seconds;
         $this->readTimeout[1] = $microseconds;
+    }
+
+    /**
+     * Returns the read timeout
+     *
+     * First element contains full seconds, second the microseconds part.
+     *
+     * @return array
+     */
+    public function getReadTimeout()
+    {
+        return $this->readTimeout;
     }
 
     /**
@@ -294,8 +311,6 @@ class Connection
     {
         $this->persistentConnection = $persistentConnection;
     }
-
-
 
     /**
      * Get a connection.
@@ -417,13 +432,13 @@ class Connection
     /**
      * Write passed data to the stream, respecting passed timeout.
      *
-     * @param Frame $stompFrame
-     * @param int $timeout in seconds
+     * @param Frame|string $stompFrame
+     * @param float $timeout in seconds, supporting fractions
      * @throws ConnectionException
      */
-    private function writeData(Frame $stompFrame, $timeout)
+    private function writeData($stompFrame, $timeout)
     {
-        $data = $stompFrame->__toString();
+        $data = (string) $stompFrame;
         $offset = 0;
         $size = strlen($data);
         $lastByteTime = microtime(true);
@@ -470,10 +485,19 @@ class Connection
         }
 
         do {
-
             $read = @fread($this->connection, $this->maxReadBytes);
-            if ($read === '' || $read === false) {
+            if ($read === false) {
                 throw new ConnectionException(sprintf('Was not possible to read data from stream.'), $this->activeHost);
+            }
+
+            // this can be caused by different events on the stream, ex. new data or any kind of signal
+            // it also happens when a ssl socket was closed on the other side... so we need to test
+            if ($read === '') {
+                $this->observers->emptyRead();
+                // again we give some time here
+                // as this path is most likely indicating that the socket is not working anymore
+                time_nanosleep(0, 5000000); // 5ms / 0.005s
+                return false;
             }
 
             $this->parser->addData($read);
@@ -596,14 +620,16 @@ class Connection
     /**
      * Writes an "alive" message on the connection to indicate that the client is alive.
      *
-     * @return bool
+     * @param float $timeout in seconds supporting fractions (microseconds)
+     *
+     * @return void
+     * @throws ConnectionException
      */
-    public function sendAlive()
+    public function sendAlive($timeout = 1.0)
     {
         if ($this->isConnected()) {
-            return (@fwrite($this->connection, "\n", 1) === 1);
+            $this->writeData(self::ALIVE, $timeout);
         }
-        return false;
     }
     
     /**
@@ -611,7 +637,8 @@ class Connection
      *
      * This is especially important for long running processes.
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->disconnect();
     }
 }
