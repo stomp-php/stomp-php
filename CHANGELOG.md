@@ -99,3 +99,4 @@ Thanks to @staabm for all the reviews :)
 - Clients should now use either `ServerAliveObserver` or `HeartbeatEmitter` to verify the state of the connection, otherwise a broken connection might not be detected - especially when the socket is based on ssl.
 - stabilize client heartbeat implementation, added awareness for failing `Connection::sendAlive` calls, now causing `HeartbeatException`
 - added `ServerAliveObserver` in order to simplify detection of dead connections.
+- fixed connection read blocks on os signals until read timeout (thanks to @edefimov, https://github.com/stomp-php/stomp-php/issues/117)

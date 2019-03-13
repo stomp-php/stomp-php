@@ -560,19 +560,21 @@ class Connection
     private function connectionHasDataToRead($timeoutSec, $timeoutMicros)
     {
         $timeout = microtime(true) + $timeoutSec + ($timeoutMicros ? $timeoutMicros / 1000000 : 0);
-        while (!$this->isDataOnStream()) {
+        while (($hasData = $this->isDataOnStream()) === false) {
             if ($timeout < microtime(true)) {
                 return false;
             }
             time_nanosleep(0, 2500000); // 2.5ms / 0.0025s
         }
-        return true;
+        return $hasData === true;
     }
 
     /**
      * Checks if there is readable data on the stream.
      *
-     * @return bool
+     * Will return true if data is available, false if no data is detected and null if the operation was interrupted.
+     *
+     * @return bool|null
      * @throws ConnectionException
      */
     private function isDataOnStream()
@@ -591,7 +593,7 @@ class Connection
                     $this->activeHost
                 );
             }
-            return false;
+            return null;
         }
 
         return !empty($read);
