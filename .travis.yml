@@ -8,6 +8,7 @@ services:
 jobs:
   include:
     - &TEST
+      php: "5.6"
       before_script:
         - ./travisci/bin/start.sh
         - composer install
@@ -18,8 +19,6 @@ jobs:
       after_script:
         - ./travisci/bin/stop.sh
     - <<: *TEST
-      php: "5.6"
-    - <<: *TEST
       php: "7.0"
     - <<: *TEST
       php: "7.1"
@@ -27,3 +26,9 @@ jobs:
       php: "7.2"
     - <<: *TEST
       php: "7.3"
+
+    - stage: Static analysis with phpstan
+      php: "7.3"
+      script:
+        - composer require --dev phpstan/phpstan
+        - vendor/bin/phpstan analyse
