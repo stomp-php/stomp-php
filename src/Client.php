@@ -61,8 +61,7 @@ class Client
     private $unprocessedFrames = [];
 
     /**
-     *
-     * @var Connection
+     * @var Connection|null
      */
     private $connection;
 
@@ -359,7 +358,7 @@ class Client
     public function disconnect($sync = false)
     {
         try {
-            if ($this->connection->isConnected()) {
+            if ($this->connection && $this->connection->isConnected()) {
                 if ($this->protocol) {
                     $this->sendFrame($this->protocol->getDisconnectFrame(), $sync);
                 }
@@ -367,7 +366,9 @@ class Client
         } catch (StompException $ex) {
             // nothing!
         }
-        $this->connection->disconnect();
+        if ($this->connection) {
+            $this->connection->disconnect();
+        }
 
         $this->sessionId = null;
         $this->unprocessedFrames = [];
