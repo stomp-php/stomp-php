@@ -39,7 +39,7 @@ interface IStateful
     /**
      * Send a message.
      *
-     * @param $destination
+     * @param string $destination
      * @param \Stomp\Transport\Message $message
      * @return bool
      */
