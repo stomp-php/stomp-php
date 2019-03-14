@@ -81,7 +81,7 @@ class Connection
     /**
      * Active connection resource.
      *
-     * @var resource
+     * @var resource|null
      */
     private $connection;
 
