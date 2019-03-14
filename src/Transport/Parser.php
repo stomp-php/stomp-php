@@ -31,7 +31,7 @@ class Parser
     /**
      * Frame that has been parsed last.
      *
-     * @var Frame
+     * @var Frame|null
      */
     private $frame;
 
@@ -52,7 +52,7 @@ class Parser
     /**
      * Active Frame expected body size (content-length header)
      *
-     * @var integer
+     * @var integer|null
      */
     private $expectedBodyLength;
 

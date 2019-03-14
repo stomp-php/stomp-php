@@ -49,7 +49,7 @@ class Client
     /**
      * Connection session id
      *
-     * @var string
+     * @var string|null
      */
     private $sessionId;
 
@@ -68,7 +68,7 @@ class Client
 
     /**
      *
-     * @var Protocol
+     * @var Protocol|null
      */
     private $protocol;
 
@@ -380,7 +380,7 @@ class Client
     /**
      * Current stomp session ID
      *
-     * @return string
+     * @return string|null
      */
     public function getSessionId()
     {

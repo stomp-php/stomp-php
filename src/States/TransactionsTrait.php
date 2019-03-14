@@ -36,7 +36,7 @@ trait TransactionsTrait
     /**
      * Id used for current transaction.
      *
-     * @var String
+     * @var int|string
      */
     protected $transactionId;
 
