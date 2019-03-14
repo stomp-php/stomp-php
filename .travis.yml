@@ -5,20 +5,25 @@ sudo: true
 services:
   - docker
 
-php:
-  - "7.3"
-  - "7.2"
-  - "7.1"
-  - "7.0"
-  - "5.6"
-  
+jobs:
+  include:
+    - &TEST
+      before_script:
+        - ./travisci/bin/start.sh
+        - composer install
+        - ./travisci/bin/logs.sh
 
-before_script:
-  - ./travisci/bin/start.sh
-  - composer install
-  - ./travisci/bin/logs.sh
+      script: vendor/bin/phpunit --debug
 
-script: vendor/bin/phpunit --debug
-
-after_script:
-  - ./travisci/bin/stop.sh
+      after_script:
+        - ./travisci/bin/stop.sh
+    - <<: *TEST
+      php: "5.6"
+    - <<: *TEST
+      php: "7.0"
+    - <<: *TEST
+      php: "7.1"
+    - <<: *TEST
+      php: "7.2"
+    - <<: *TEST
+      php: "7.3"
