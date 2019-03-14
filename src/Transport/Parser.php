@@ -117,7 +117,7 @@ class Parser
     private $factory;
 
     /**
-     * @var ConnectionObserver
+     * @var ConnectionObserver|null
      */
     private $observer;
 
