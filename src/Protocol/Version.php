@@ -63,7 +63,7 @@ class Version
     /**
      * Returns the protocol to use.
      *
-     * @param $clientId
+     * @param string $clientId
      * @param string $default server to use of no server detected
      * @return ActiveMq|Apollo|Protocol|RabbitMq
      */

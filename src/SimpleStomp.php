@@ -77,7 +77,7 @@ class SimpleStomp
     /**
      * Send a message
      *
-     * @param $destination
+     * @param string $destination
      * @param Message $message
      * @return bool
      * @throws StompException

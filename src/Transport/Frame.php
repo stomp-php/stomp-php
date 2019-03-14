@@ -198,7 +198,7 @@ class Frame implements ArrayAccess
     /**
      * Encodes header values.
      *
-     * @param $value
+     * @param string $value
      * @return string
      */
     protected function encodeHeaderValue($value)

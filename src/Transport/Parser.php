@@ -334,7 +334,7 @@ class Parser
     /**
      * Extracts command and headers from given header source.
      *
-     * @param $source
+     * @param string $source
      * @return void
      */
     private function extractFrameMeta($source)
@@ -360,7 +360,7 @@ class Parser
     /**
      * Decodes header values.
      *
-     * @param $value
+     * @param string $value
      * @return string
      */
     private function decodeHeaderValue($value)
