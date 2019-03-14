@@ -209,6 +209,9 @@ class Connection
     private function parseUrl($url)
     {
         $parsed = parse_url($url);
+        if ($parsed === false) {
+            throw new \Exception('Unable to parse url '. $url);
+        }
         array_push($this->hosts, $parsed + ['port' => '61613', 'scheme' => 'tcp']);
     }
 
