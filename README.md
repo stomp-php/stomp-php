@@ -17,27 +17,26 @@ We would like to thank you for your work and we're happy to continue it.
 - For running projects with `fusesource/stomp-php@2.x` clients you can use version `2.2.2`.
 - All version newer that `2.x` won't be compatible with `fusesource/stomp-php`. (https://github.com/dejanb/stomp-php.)  
 
-
 ## Installing
 
-The source is PSR-0 compliant. So just download the source and add the Namespace "Stomp" to your autoloader
-configuration with the path pointing to src/.
-
-As an alternate you have the possibility to make use of composer to manage your project dependencies.
-
-Just add
-
-```json
-    "require": {
-        "stomp-php/stomp-php": "4.*"
-    }
+```bash
+composer require stomp-php/stomp-php
 ```
 
-to your project composer.json.
+## Examples
 
-Or simply run `composer require stomp-php/stomp-php` in your project home.
+You find different usage tutorials in our example project https://github.com/stomp-php/stomp-php-examples.
 
-## Replace
+### Connection Probing
+
+It's hard to find out if a socket connection is still working or not, Stomp allows us to use heartbeats to test if client
+and server are ready to serve messages.
+
+You should use `\Stomp\Network\Observer\ServerAliveObserver` or `\Stomp\Network\Observer\HeartbeatEmitter` to receive or 
+send heartbeats. Doing so will ensure that your client will detect a broken connection in time. Please have a look at
+https://github.com/stomp-php/stomp-php-examples for some example code with additonal comments.
+
+## Replace fusesource/stomp-php
 
 If you used `fusesource/stomp-php` before, you can use our `2.x` versions.
 
@@ -46,15 +45,7 @@ If you used `fusesource/stomp-php` before, you can use our `2.x` versions.
         "stomp-php/stomp-php": "2.*"
     }
 ```
-
-## Documentation
-
-See our [wiki](https://github.com/stomp-php/stomp-php/wiki).
-
-## Examples
-
-Have a look at our example project https://github.com/stomp-php/stomp-php-examples.
-
+ 
 ## Contributing
 
 We code in `PSR2`, please use our predefined `pre_commit.sh` hook. 
