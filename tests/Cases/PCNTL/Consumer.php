@@ -11,7 +11,14 @@ namespace Stomp\Tests\Cases\PCNTL;
 require __DIR__ . '/../../../vendor/autoload.php';
 
 $signalTest = new ConsumerPCNTLTestCase();
-if (!$signalTest->testRegisteredAndTriggeredSignalHandlerWontLeadToConnectionException()) {
+
+$cases = [
+    'signal_handling' => 'testRegisteredAndTriggeredSignalHandlerWontLeadToConnectionException',
+    'signal_handling_wait_callable' => 'testRegisteredWaitCallableWillDirectlyReturnFromRead'
+];
+
+$case = $cases[$argv[1]];
+if (!$signalTest->$case()) {
     echo 'TEST: FAILED', PHP_EOL;
     exit(1);
 } else {

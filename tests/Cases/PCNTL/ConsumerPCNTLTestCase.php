@@ -14,7 +14,7 @@ use Stomp\Network\Connection;
 use Stomp\StatefulStomp;
 
 /**
- * ConsumerPCNTLTestCase a simulated long running cosumer which is capable of signal handling.
+ * ConsumerPCNTLTestCase a simulated long running consumer which is capable of signal handling.
  *
  * @package Stomp\Tests\Cases\PCNTL
  * @author Jens Radtke <swefl.oss@fin-sn.de>
@@ -67,6 +67,50 @@ class ConsumerPCNTLTestCase
         return true;
     }
 
+    /**
+     * Starts the long running consumer process, ensures that we have a long read timeout.
+     *
+     * Will only return true if the process was stopped by a signal and the wait callable was called, returning false.
+     * Makes sure that we can inject logic that get's executed faster than the configured read timeout.
+     *
+     * @return bool
+     */
+    public function testRegisteredWaitCallableWillDirectlyReturnFromRead()
+    {
+        $this->registerListeners();
+        $this->stomp->subscribe('/queue/test');
+        $this->stomp->getClient()->getConnection()->setReadTimeout(self::MAX_RUNTIME);
+        $this->stomp->getClient()->getConnection()->setWaitCallback(
+            function () {
+                pcntl_signal_dispatch();
+                // return false when stop was signaled
+                return (!$this->stopSignalled);
+            }
+        );
+        echo 'INFO: Started to listen for new messages...', PHP_EOL;
+        $time = @time();
+        while ((@time() - $time) < self::MAX_RUNTIME && (!$this->stopSignalled)) {
+            try {
+                pcntl_signal_dispatch();
+                $this->stomp->read();
+            } catch (Exception $exception) {
+                echo 'FAILED: Received an unexpected exception: ', $exception->getMessage(), PHP_EOL;
+                return false;
+            }
+        }
+
+
+        if (!$this->stopSignalled) {
+            echo 'FAILED: The stop signal was not received!', PHP_EOL;
+            return false;
+        }
+
+        if (@time() - $time > 2) {
+            echo 'FAILED: The process returned after the timeout was reached!', PHP_EOL;
+            return false;
+        }
+        return true;
+    }
 
     private function registerListeners()
     {

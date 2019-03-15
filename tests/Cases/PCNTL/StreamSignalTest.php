@@ -18,7 +18,21 @@ use PHPUnit\Framework\TestCase;
  */
 class StreamSignalTest extends TestCase
 {
-    public function testSignaledWontBreakStreamSelect()
+    public function signalHandlingProvider()
+    {
+        return [
+            // https://github.com/stomp-php/stomp-php/pull/65
+            'Signal Handler will not throw exception.' => ['signal_handling'],
+            // https://github.com/stomp-php/stomp-php/issues/117
+            'Signal Handler will not wait for read timeout to pass, when wait-callable returns false.' => ['signal_handling_wait_callable']
+        ];
+    }
+
+    /**
+     * @dataProvider signalHandlingProvider
+     * @param string $case
+     */
+    public function testConsumerSignalProcessing($case)
     {
         if (!extension_loaded('pcntl')) {
             $this->markTestSkipped('The pcntl extension is required to run this test case.');
@@ -31,9 +45,10 @@ class StreamSignalTest extends TestCase
 
         $process = proc_open(
             sprintf(
-                'exec %s %s',
+                'exec %s %s %s',
                 PHP_BINARY,
-                realpath(__DIR__ . '/Consumer.php')
+                realpath(__DIR__ . '/Consumer.php'),
+                escapeshellarg($case)
             ),
             $descriptorspec,
             $pipes

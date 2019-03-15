@@ -140,6 +140,11 @@ class Connection
     const ALIVE = "\n";
 
     /**
+     * @var callable|null
+     */
+    private $waitCallback;
+
+    /**
      * Initialize connection
      *
      * Example broker uri
@@ -186,6 +191,25 @@ class Connection
     }
 
     /**
+     * Sets a wait callback that will be invoked when the connection is waiting for new data.
+     *
+     * This is a good place to call `pcntl_signal_dispatch()` if you need to ensure that your process signals in an
+     * interval that is lower as read timeout. You should also return `false` in your callback if you don't want the
+     * connection to continue waiting for data.
+     *
+     * @param callable|null $waitCallback
+     */
+    public function setWaitCallback($waitCallback)
+    {
+        if ($waitCallback !== null) {
+            if (!is_callable($waitCallback)) {
+                throw new \InvalidArgumentException('$waitCallback must be callable.');
+            }
+        }
+        $this->waitCallback = $waitCallback;
+    }
+
+    /**
      * Returns the connect timeout in seconds.
      *
      * @return int
@@ -210,12 +234,13 @@ class Connection
      *
      * @param string $url Broker URL
      * @return void
+     * @throws ConnectionException
      */
     private function parseUrl($url)
     {
         $parsed = parse_url($url);
         if ($parsed === false) {
-            throw new \Exception('Unable to parse url '. $url);
+            throw new ConnectionException('Unable to parse url '. $url);
         }
         array_push($this->hosts, $parsed + ['port' => '61613', 'scheme' => 'tcp']);
     }
@@ -563,6 +588,11 @@ class Connection
         while (($hasData = $this->isDataOnStream()) === false) {
             if ($timeout < microtime(true)) {
                 return false;
+            }
+            if ($this->waitCallback) {
+                if (call_user_func($this->waitCallback) === false) {
+                    return false;
+                }
             }
             time_nanosleep(0, 2500000); // 2.5ms / 0.0025s
         }
