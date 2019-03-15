@@ -116,11 +116,11 @@ class HeartbeatEmitter extends AbstractBeats
      * Must return the interval (ms) that should be used to detect a delay.
      *
      * @param integer $maximum
-     * @return integer
+     * @return float
      */
     protected function calculateInterval($maximum)
     {
-        $intervalUsed = floor($maximum * $this->intervalUsage);
+        $intervalUsed = $maximum * $this->intervalUsage;
         $this->assertReadTimeoutSufficient($intervalUsed);
         return $intervalUsed;
     }
@@ -128,13 +128,13 @@ class HeartbeatEmitter extends AbstractBeats
     /**
      * Verify that the client configured heartbeats don't conflict with the connection read timeout.
      *
-     * @param integer $interval
+     * @param float $interval
      * @return void
      */
     private function assertReadTimeoutSufficient($interval)
     {
         $readTimeout = $this->connection->getReadTimeout();
-        $readTimeoutMs = ($readTimeout[0] * 1000) + floor($readTimeout[1] / 1000);
+        $readTimeoutMs = ($readTimeout[0] * 1000) + ($readTimeout[1] / 1000);
 
         if ($interval < $readTimeoutMs) {
             throw new HeartbeatException(

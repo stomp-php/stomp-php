@@ -84,8 +84,8 @@ abstract class AbstractBeats implements ConnectionObserver
     /**
      * Must return the interval (ms) that should be used to detect a delay.
      *
-     * @param integer $maximum
-     * @return integer
+     * @param integer $maximum agreement from client and server in milliseconds
+     * @return float
      */
     abstract protected function calculateInterval($maximum);
 
