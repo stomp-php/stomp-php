@@ -21,7 +21,6 @@ use Stomp\Transport\Frame;
  */
 class ActiveMqTest extends ProtocolTestCase
 {
-
     public function testSubscribeUsesConfiguredPrefetchSize()
     {
         $instance = $this->getProtocol();

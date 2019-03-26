@@ -24,7 +24,6 @@ use Stomp\Transport\Message;
  */
 class SimpleStompTest extends TestCase
 {
-
     public function testSendIsMappedToClient()
     {
         $queue = 'queue';

@@ -19,7 +19,6 @@ use Stomp\Tests\Unit\Protocol\ProtocolTestCase;
  */
 class RabbitMqTest extends ProtocolTestCase
 {
-
     public function testSubscribeUsesConfiguredPrefetchSize()
     {
         $instance = $this->getProtocol();

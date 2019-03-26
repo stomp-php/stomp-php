@@ -173,7 +173,6 @@ class ClientTest extends TestCase
 
     public function testCalculateReceiptWaitEnd()
     {
-
         $stomp = new Client('http://127.0.0.1/');
 
         $stomp->setReceiptWait(2.9);
@@ -340,7 +339,6 @@ class ClientTest extends TestCase
             ->will(
                 $this->returnCallback(
                     function (Frame $frame, $sync) use (&$lastSendFrame, &$lastSyncState) {
-
                         $lastSendFrame = $frame;
                         $lastSyncState = $sync;
                     }

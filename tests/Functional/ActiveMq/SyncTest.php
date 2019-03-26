@@ -85,7 +85,6 @@ class SyncTest extends TestCase
         $frame = $this->Stomp->readFrame();
         $this->assertInstanceOf(Frame::class, $frame);
         $this->assertEquals('test 1', $frame->body, 'test 1 not received!');
-
     }
 
     public function testAbortTransaction()

@@ -481,7 +481,10 @@ class Connection
             } else {
                 // timeout tracking
                 if ((microtime(true) - $lastByteTime) > $timeout) {
-                    throw new ConnectionException('Was not possible to write frame! Write operation timed out.', $this->activeHost);
+                    throw new ConnectionException(
+                        'Was not possible to write frame! Write operation timed out.',
+                        $this->activeHost
+                    );
                 }
             }
             // keep some time to breath

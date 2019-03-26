@@ -20,7 +20,6 @@ use Stomp\Transport\Frame;
  */
 class AbstractBeatsTest extends TestCase
 {
-
     public function testNotDelayedWhenNotActivated()
     {
         $instance = $this->getInstance();

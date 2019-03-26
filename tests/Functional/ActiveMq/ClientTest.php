@@ -400,8 +400,9 @@ class ClientTest extends TestCase
         $this->Stomp->getConnection()->setPersistentConnection(false);
 
         // It's important that the read timeout is lower than the offered beat interval.
-        // In detail the minimum suggested beat is: ((readTimeout μs / 1000 ms) * IntervalUsage %) + time you need to add logic between any call to the lib
-        $this->Stomp->setHeartbeat(500,500); // at least after 0.5 seconds we will let the server know that we're alive
+        // In detail the minimum suggested beat is: ((readTimeout μs / 1000 ms) * IntervalUsage %) + time
+        // you need to add logic between any call to the lib
+        $this->Stomp->setHeartbeat(500, 500); // at least after 0.5 seconds we will let the server know that we're alive
         $this->Stomp->getConnection()->setReadTimeout(0, 250000); // after 0.25 seconds a read operation must timeout
 
         // we add a beat emitter to the observers of our connection

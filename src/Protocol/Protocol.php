@@ -67,8 +67,13 @@ class Protocol
      * @param int[] $heartbeat
      * @return \Stomp\Transport\Frame
      */
-    final public function getConnectFrame($login = '', $passcode = '', array $versions = [], $host = null, $heartbeat = [0, 0])
-    {
+    final public function getConnectFrame(
+        $login = '',
+        $passcode = '',
+        array $versions = [],
+        $host = null,
+        $heartbeat = [0, 0]
+    ) {
         $frame = $this->createFrame('CONNECT');
         $frame->legacyMode(true);
 

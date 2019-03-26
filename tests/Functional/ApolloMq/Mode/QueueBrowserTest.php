@@ -22,7 +22,6 @@ use Stomp\Transport\Message;
  */
 class QueueBrowserTest extends TestCase
 {
-
     public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();

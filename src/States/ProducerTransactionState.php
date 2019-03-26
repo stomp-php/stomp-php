@@ -18,7 +18,6 @@ use Stomp\States\Exception\InvalidStateException;
  */
 class ProducerTransactionState extends ProducerState
 {
-
     use TransactionsTrait;
 
     /**
