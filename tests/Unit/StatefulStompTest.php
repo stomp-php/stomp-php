@@ -29,7 +29,6 @@ use Stomp\Transport\Message;
  */
 class StatefulStompTest extends TestCase
 {
-
     public function testInitialStateIsProducer()
     {
         $stateful = new StatefulStomp(new Client('tcp://127.0.0.1:1'));

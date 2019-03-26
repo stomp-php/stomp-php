@@ -21,7 +21,6 @@ use Stomp\Transport\Frame;
  */
 class ServerAliveObserverTest extends TestCase
 {
-
     public function testHeartBeatFrameMapping()
     {
         $instance = new ServerAliveObserver();

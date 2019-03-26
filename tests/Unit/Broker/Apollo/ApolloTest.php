@@ -21,7 +21,6 @@ use Stomp\Transport\Frame;
  */
 class ApolloTest extends ProtocolTestCase
 {
-
     public function testSubscribeNonDurable()
     {
         $instance = $this->getProtocol();

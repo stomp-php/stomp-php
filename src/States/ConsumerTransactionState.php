@@ -63,7 +63,10 @@ class ConsumerTransactionState extends ConsumerState
      */
     public function nack(Frame $frame, $requeue = null)
     {
-        $this->getClient()->sendFrame($this->getProtocol()->getNackFrame($frame, $this->transactionId, $requeue), false);
+        $this->getClient()->sendFrame(
+            $this->getProtocol()->getNackFrame($frame, $this->transactionId, $requeue),
+            false
+        );
     }
 
     /**

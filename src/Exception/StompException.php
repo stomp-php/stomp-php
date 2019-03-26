@@ -18,5 +18,4 @@ use Exception;
  */
 class StompException extends Exception
 {
-
 }

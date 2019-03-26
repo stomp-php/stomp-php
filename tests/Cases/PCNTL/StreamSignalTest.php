@@ -22,9 +22,11 @@ class StreamSignalTest extends TestCase
     {
         return [
             // https://github.com/stomp-php/stomp-php/pull/65
-            'Signal Handler will not throw exception.' => ['signal_handling'],
+            'Signal Handler will not throw exception.'
+                => ['signal_handling'],
             // https://github.com/stomp-php/stomp-php/issues/117
-            'Signal Handler will not wait for read timeout to pass, when wait-callable returns false.' => ['signal_handling_wait_callable']
+            'Signal Handler will not wait for read timeout to pass, when wait-callable returns false.'
+                => ['signal_handling_wait_callable']
         ];
     }
 
