@@ -597,8 +597,13 @@ class Connection
                     return false;
                 }
             }
-            time_nanosleep(0, 2500000); // 2.5ms / 0.0025s
+
+            $slept = time_nanosleep(0, 2500000); // 2.5ms / 0.0025s
+            if (\is_array($slept)) {
+                return false;
+            }
         }
+
         return $hasData === true;
     }
 
