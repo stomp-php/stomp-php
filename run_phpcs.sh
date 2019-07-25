@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-./vendor/bin/phpcs --extensions=php --standard=PSR2 --ignore=vendor src tests
+./vendor/bin/phpcs src/ tests/ -p --standard=PSR2 --colors

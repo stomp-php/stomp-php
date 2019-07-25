@@ -48,16 +48,29 @@ If you used `fusesource/stomp-php` before, you can use our `2.x` versions.
  
 ## Contributing
 
-We code in `PSR2`, please use our predefined `pre_commit.sh` hook. 
+[Composer](https://getcomposer.org/) is required for dependency management.To contribute, please fork/clone the 
+codebase and run:
+    
+    $ composer install
+    
+This will install PHP dependencies required for development/testing.
+
+We code in `PSR2`, and enfore this standard with [PHP Codesniffer](https://github.com/squizlabs/PHP_CodeSniffer).
+
+Please use our predefined `pre_commit.sh` hook to validate your commit, which will validate coding standards and
+execute the Unit test suite.
 
 ## Tests
 
 To run the tests you first need to fetch the dependencies for the test suite
-via composer:
+via Composer:
 
-    $ php composer.phar install
+    $ composer install
+    
+The Unit test suite is located at `./tests/Unit/`. To execute the suite run `./run_phpunit.sh`.
 
-The functional testsuite is divided into three broker versions.
+
+The functional test suite is divided into three broker versions.
 Currently it's running on `ActiveMq` (Port 61010), `Apollo` (61020), `RabbitMq` (61030).
 Apollo should be configured to use admin:password and RabbitMq to guest:guest.
 While ActiveMq must be configured to use no login at all.
