@@ -366,10 +366,23 @@ class Connection
     protected function getHostList()
     {
         $hosts = array_values($this->hosts);
-        if ($this->params['randomize']) {
+        if ($this->shouldRandomizeHosts()) {
             shuffle($hosts);
         }
         return $hosts;
+    }
+
+    /**
+     * Returns whether the broker host list should be shuffled in random order.
+     *
+     * This applies when specifying multiple hosts using a failover:// protocol in the URI.
+     *
+     * @return bool
+     *   Whether the broker hosts should be shuffled in random order.
+     */
+    protected function shouldRandomizeHosts()
+    {
+        return filter_var($this->params['randomize'], FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
