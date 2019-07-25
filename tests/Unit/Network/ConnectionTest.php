@@ -38,6 +38,38 @@ class ConnectionTest extends TestCase
         $this->assertEquals('host2', $list[1]['host'], 'List is not in expected order.');
     }
 
+    /**
+     * Data provider for testBrokerUriShouldRandomizeHosts().
+     */
+    public function testBrokerUriShouldRandomizeHostsProvider()
+    {
+        return [
+            'non-failover URI' => ['tcp://host1:61614', false],
+            'no randomize param' => ['failover://(tcp://host1:61614,ssl://host2:61612)', false],
+            'randomize=true param' => ['failover://(tcp://host1:61614,ssl://host2:61612)?randomize=true', true],
+            'randomize=false param' => ['failover://(tcp://host1:61614,ssl://host2:61612)?randomize=false', false]
+        ];
+    }
+
+    /**
+     * Tests Connection::shouldRandomizeHosts().
+     *
+     * @param string $uri
+     *   The broker URI string.
+     * @param bool $expected
+     *   The expected result, TRUE/FALSE.
+     *
+     * @dataProvider testBrokerUriShouldRandomizeHostsProvider
+     */
+    public function testBrokerUriShouldRandomizeHosts($uri, $expected)
+    {
+        $connection = new Connection($uri);
+        $shouldRandomizeHosts = new ReflectionMethod($connection, 'shouldRandomizeHosts');
+        $shouldRandomizeHosts->setAccessible(true);
+
+        $this->assertEquals($expected, $shouldRandomizeHosts->invoke($connection));
+    }
+
     public function testBrokerUriParseSimple()
     {
         $connection = new Connection('tcp://host1');
