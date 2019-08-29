@@ -56,6 +56,8 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
 
     /**
      * @inheritdoc
+     *
+     * @return Subscription[]
      */
     public function getIterator()
     {
@@ -64,6 +66,8 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
 
     /**
      * @inheritdoc
+     *
+     * @return bool
      */
     public function offsetExists($offset)
     {
@@ -72,6 +76,8 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
 
     /**
      * @inheritdoc
+     *
+     * @return Subscription
      */
     public function offsetGet($offset)
     {
