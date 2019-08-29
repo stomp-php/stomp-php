@@ -57,7 +57,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
     /**
      * @inheritdoc
      *
-     * @return Subscription[]
+     * @return Iterator|Subscription[]
      */
     public function getIterator()
     {
