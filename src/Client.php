@@ -9,6 +9,7 @@
 
 namespace Stomp;
 
+use Generator;
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\MissingReceiptException;
 use Stomp\Exception\StompException;
@@ -486,5 +487,42 @@ class Client
     public function setSync($sync)
     {
         $this->sync = $sync;
+    }
+
+    /**
+     * Check if all buffers are empty.
+     *
+     * @return bool
+     */
+    public function isBufferEmpty()
+    {
+        if (empty($this->unprocessedFrames) === false) {
+            return false;
+        }
+
+        if ($this->getConnection()->getParser()->isBufferEmpty() === false) {
+            return false;
+        }
+
+        try {
+            return $this->getConnection()->isConnected() == false || $this->getConnection()->hasDataToRead() === false;
+        } catch (ConnectionException $connectionException) {
+            return true;
+        }
+    }
+
+    /**
+     * Generates a set of all frames that are received but not processed.
+     *
+     * @return Generator|Frame[]
+     */
+    public function flushBufferedFrames()
+    {
+        foreach ($this->unprocessedFrames as $unprocessedFrame) {
+            yield $unprocessedFrame;
+        }
+        while ($frame = $this->getConnection()->getParser()->nextFrame()) {
+            yield $frame;
+        }
     }
 }

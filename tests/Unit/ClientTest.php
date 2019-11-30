@@ -533,4 +533,120 @@ class ClientTest extends TestCase
             $this->addToAssertionCount(1);
         }
     }
+
+    public function testIsBufferEmptyReturnsFalseWhenInternalClientBufferIsNotEmpty()
+    {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['connect', 'getParser', 'writeFrame', 'readFrame'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $client = $this->createClientWithUnprocessedMessages([new Message('some-data')], $connection);
+
+        self::assertFalse($client->isBufferEmpty());
+    }
+
+    public function testIsBufferEmptyReturnsFalseWhenParserBufferIsNotEmpty()
+    {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['connect', 'getParser', 'writeFrame', 'readFrame'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $parser = $this->getMockBuilder(Parser::class)->setMethods(['isBufferEmpty'])->getMock();
+        $parser->expects($this->atLeastOnce())->method('isBufferEmpty')->willReturn(false);
+
+        $connection->expects($this->any())->method('getParser')->willReturn($parser);
+        $client = $this->getMockBuilder(Client::class)
+            ->setMethods(['connect', 'isConnected'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+
+        $client->expects($this->any())->method('isConnected')->willReturn(true);
+
+
+        self::assertFalse($client->isBufferEmpty());
+    }
+
+    public function testIsBufferEmptyReturnsFalseWhenConnectionHasDataToRead()
+    {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['connect', 'getParser', 'writeFrame', 'readFrame', 'hasDataToRead', 'isConnected'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $parser = $this->getMockBuilder(Parser::class)->setMethods(['isBufferEmpty'])->getMock();
+        $parser->expects($this->atLeastOnce())->method('isBufferEmpty')->willReturn(true);
+
+        $connection->expects($this->any())->method('getParser')->willReturn($parser);
+        $connection->expects($this->atLeastOnce())->method('isConnected')->willReturn(true);
+        $connection->expects($this->atLeastOnce())->method('hasDataToRead')->willReturn(true);
+        $client = $this->getMockBuilder(Client::class)
+            ->setMethods(['connect', 'isConnected'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+
+        $client->expects($this->any())->method('isConnected')->willReturn(true);
+
+
+        self::assertFalse($client->isBufferEmpty());
+    }
+
+
+    public function testIsBufferEmptyReturnsTrueWhenConnectionHasDataToReadFailsWithException()
+    {
+        $connection = $this->getMockBuilder(Connection::class)
+            ->setMethods(['connect', 'getParser', 'writeFrame', 'readFrame', 'hasDataToRead', 'isConnected'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $parser = $this->getMockBuilder(Parser::class)->setMethods(['isBufferEmpty'])->getMock();
+        $parser->expects($this->atLeastOnce())->method('isBufferEmpty')->willReturn(true);
+
+        $connection->expects($this->any())->method('getParser')->willReturn($parser);
+        $connection->expects($this->atLeastOnce())->method('isConnected')->willReturn(true);
+        $connection->expects($this->atLeastOnce())
+            ->method('hasDataToRead')
+            ->willThrowException(new ConnectionException('-'));
+
+        $client = $this->getMockBuilder(Client::class)
+            ->setMethods(['connect', 'isConnected'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+
+        $client->expects($this->any())->method('isConnected')->willReturn(true);
+
+
+        self::assertTrue($client->isBufferEmpty());
+    }
+
+    private function createClientWithUnprocessedMessages(array $unprocessed, $connection)
+    {
+        $unprocessed[] = new Message('some-data');
+
+        $connection->expects($this->any())->method('writeFrame')
+            ->willReturnCallback(
+                function (Frame $frame) use (&$unprocessed) {
+                    $unprocessed[] = new Frame('RECEIPT', ['receipt-id' => $frame['receipt']]);
+                    return true;
+                }
+            );
+
+        $connection->expects($this->any())->method('readFrame')->willReturnCallback(
+            function () use (&$unprocessed) {
+                return array_shift($unprocessed);
+            }
+        );
+
+        $client = $this->getMockBuilder(Client::class)
+            ->setMethods(['connect', 'isConnected'])
+            ->setConstructorArgs([$connection])
+            ->getMock();
+
+        $client->expects($this->any())->method('isConnected')->willReturn(true);
+
+        $client->sendFrame(new Message('-'));
+
+        return $client;
+    }
 }

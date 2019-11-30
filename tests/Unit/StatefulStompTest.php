@@ -16,6 +16,7 @@ use Stomp\Protocol\Version;
 use Stomp\StatefulStomp;
 use Stomp\States\ConsumerState;
 use Stomp\States\ConsumerTransactionState;
+use Stomp\States\DrainingConsumerState;
 use Stomp\States\Exception\InvalidStateException;
 use Stomp\States\ProducerState;
 use Stomp\States\ProducerTransactionState;
@@ -40,15 +41,16 @@ class StatefulStompTest extends TestCase
      * @param array $init
      * @param array $transactions
      * @param array $disabled
+     * @param array $mocks
      *
      * @dataProvider stateProvider
      */
-    public function testTransitions($state, array $init, array $transactions, array $disabled)
+    public function testTransitions($state, array $init, array $transactions, array $disabled, array $mocks = [])
     {
         $methods = $this->methodProvider();
         foreach ($transactions as $method => $targetState) {
             $disabled[] = $method;
-            $stateful = $this->getStatefulStompWithState($state, $init);
+            $stateful = $this->getStatefulStompWithState($state, $init, $mocks);
             call_user_func_array([$stateful, $method], $methods[$method]);
             $this->assertInstanceOf(
                 $targetState,
@@ -62,7 +64,7 @@ class StatefulStompTest extends TestCase
                 continue;
             }
 
-            $stateful = $this->getStatefulStompWithState($state, $init);
+            $stateful = $this->getStatefulStompWithState($state, $init, $mocks);
             try {
                 call_user_func_array([$stateful, $method], $parameters);
             } catch (InvalidStateException $stateFail) {
@@ -78,17 +80,19 @@ class StatefulStompTest extends TestCase
     }
 
 
-    protected function getStatefulStompWithState($state, array $init)
+    protected function getStatefulStompWithState($state, array $init, array $mocks = [])
     {
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getProtocol', 'sendFrame', 'readFrame', 'isConnected'])
+            ->setMethods(['getProtocol', 'sendFrame', 'readFrame', 'isConnected', 'isBufferEmpty'])
             ->getMock();
 
         $client->method('getProtocol')->willReturn(new Protocol('stateful-test-client', Version::VERSION_1_2));
         $client->method('sendFrame')->willReturn(true);
-        $client->method('readFrame')->willReturn(new Message('read-frame'));
+        $client->method('readFrame')
+            ->willReturn(isset($mocks['readFrame']) ? $mocks['readFrame'] : new Message('read-frame'));
         $client->method('isConnected')->willReturn(true);
+        $client->method('isBufferEmpty')->willReturn(isset($mocks['isBufferEmpty']) ? $mocks['isBufferEmpty'] : true);
 
         /**
          * @var $client Client
@@ -115,7 +119,7 @@ class StatefulStompTest extends TestCase
     public function stateProvider()
     {
         return [
-            ConsumerState::class => [
+            sprintf('%s-with-empty-buffer', ConsumerState::class) => [
                 // state to test
                 ConsumerState::class,
                 // init options
@@ -128,7 +132,7 @@ class StatefulStompTest extends TestCase
                 // methods not to test
                 ['subscribe']
             ],
-            ConsumerTransactionState::class => [
+            sprintf('%s-with-empty-buffer', ConsumerTransactionState::class) => [
                 // state to test
                 ConsumerTransactionState::class,
                 // init options
@@ -168,6 +172,46 @@ class StatefulStompTest extends TestCase
                 ],
                 // methods not to test
                 []
+            ],
+            sprintf('%s-with-filled-buffer', ConsumerState::class) => [
+                // state to test
+                ConsumerState::class,
+                // init options
+                ['destination' => 'test', 'selector' => 'test', 'ack' => 'auto', 'header' => []],
+                // transactions
+                [
+                    'unsubscribe' => DrainingConsumerState::class,
+                ],
+                // methods not to test
+                ['subscribe', 'begin'],
+                // mocks
+                ['isBufferEmpty' => false]
+            ],
+            sprintf('%s-with-filled-buffer', DrainingConsumerState::class) => [
+                // state to test
+                DrainingConsumerState::class,
+                // init options
+                ['destination' => 'test', 'selector' => 'test', 'ack' => 'auto', 'header' => []],
+                // transactions
+                [
+                    'read' => DrainingConsumerState::class,
+                ],
+                // methods not to test
+                ['begin']
+            ],
+            sprintf('%s-with-empty-buffer', DrainingConsumerState::class) => [
+                // state to test
+                DrainingConsumerState::class,
+                // init options
+                ['destination' => 'test', 'selector' => 'test', 'ack' => 'auto', 'header' => []],
+                // transactions
+                [
+                    'read' => ProducerState::class,
+                ],
+                // methods not to test
+                ['subscribe', 'begin'],
+                // mocks
+                ['readFrame' => false]
             ],
         ];
     }

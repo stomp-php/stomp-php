@@ -75,10 +75,17 @@ class ConsumerTransactionState extends ConsumerState
     public function unsubscribe($subscriptionId = null)
     {
         if ($this->endSubscription($subscriptionId)) {
-            $this->setState(
-                new ProducerTransactionState($this->getClient(), $this->getBase()),
-                ['transactionId' => $this->transactionId]
-            );
+            if ($this->getClient()->isBufferEmpty()) {
+                $this->setState(
+                    new ProducerTransactionState($this->getClient(), $this->getBase()),
+                    ['transactionId' => $this->transactionId]
+                );
+            } else {
+                $this->setState(
+                    new DrainingTransactionConsumerState($this->getClient(), $this->getBase()),
+                    ['transactionId' => $this->transactionId]
+                );
+            }
         }
     }
 
