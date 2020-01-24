@@ -546,7 +546,7 @@ class Connection
             if ($frame = $this->parser->nextFrame()) {
                 return $this->onFrame($frame);
             }
-        } while ($this->isDataOnStream());
+        } while ($this->hasDataToRead());
 
         return false;
     }
@@ -684,7 +684,7 @@ class Connection
             $this->writeData(self::ALIVE, $timeout);
         }
     }
-    
+
     /**
      * Immediately releases all allocated resources when the connection object gets destroyed.
      *
