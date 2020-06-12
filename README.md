@@ -58,7 +58,7 @@ via composer:
     $ php composer.phar install
 
 The functional testsuite is divided into three broker versions.
-Currently it's running on `ActiveMq` (Port 61010), `Apollo` (61020), `RabbitMq` (61030).
+Currently it's running on `ActiveMq` (Port 61010), `Apollo` (61020), `RabbitMq` (61030), `Artemis` (61040).
 Apollo should be configured to use admin:password and RabbitMq to guest:guest.
 While ActiveMq must be configured to use no login at all.
 
