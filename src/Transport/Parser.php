@@ -235,6 +235,7 @@ class Parser
             break;
         }
 
+        /** @phpstan-ignore-next-line */
         if ($this->offset > 0) {
             // remove parsed buffer
             $this->buffer = substr($this->buffer, $this->offset);
