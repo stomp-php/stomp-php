@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<configuration xmlns="urn:activemq" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="urn:activemq /schema/artemis-configuration.xsd">
+    <core xmlns="urn:activemq:core" xsi:schemaLocation="urn:activemq:core ">
+
+        <address-settings>
+            <address-setting match="queue/#">
+                <default-address-routing-type>ANYCAST</default-address-routing-type>
+                <default-queue-routing-type>ANYCAST</default-queue-routing-type>
+            </address-setting>
+            <address-setting match="topic/#">
+                <default-address-routing-type>MULTICAST</default-address-routing-type>
+                <default-queue-routing-type>MULTICAST</default-queue-routing-type>
+            </address-setting>
+        </address-settings>
+        <wildcard-addresses>
+            <delimiter>/</delimiter>
+        </wildcard-addresses>
+    </core>
+</configuration>
