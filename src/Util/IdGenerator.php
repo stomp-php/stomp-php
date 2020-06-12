@@ -8,6 +8,8 @@
 
 namespace Stomp\Util;
 
+use RuntimeException;
+
 /**
  * IdGenerator generates Ids which are unique during the runtime scope.
  *
@@ -34,6 +36,7 @@ class IdGenerator
                 return $rand;
             }
         }
+        throw new RuntimeException('Message Id generation failed.');
     }
 
     /**

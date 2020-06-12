@@ -347,15 +347,15 @@ class Connection
     {
         $hosts = $this->getHostList();
 
+        $lastException = null;
         while ($host = array_shift($hosts)) {
             try {
                 return $this->connectSocket($host);
             } catch (ConnectionException $connectionException) {
-                if (empty($hosts)) {
-                    throw new ConnectionException("Could not connect to a broker", [], $connectionException);
-                }
+                $lastException = $connectionException;
             }
         }
+        throw new ConnectionException("Could not connect to a broker", [], $lastException);
     }
 
     /**
