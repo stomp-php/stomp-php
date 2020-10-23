@@ -250,6 +250,6 @@ abstract class AbstractBeats implements ConnectionObserver
      */
     public function emptyBuffer()
     {
-        $this->onServerActivity();
+        $this->onPotentialConnectionStateActivity();
     }
 }

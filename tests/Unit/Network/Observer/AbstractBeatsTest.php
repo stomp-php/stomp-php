@@ -150,10 +150,10 @@ class AbstractBeatsTest extends TestCase
         $instance->emptyRead();
     }
 
-    public function testEmptyBufferWillTriggerServerActivity()
+    public function testEmptyBufferWillTriggerPotentialConnectionStateActivity()
     {
         $instance = $this->getInstance();
-        $instance->expects($this->once())->method('onServerActivity');
+        $instance->expects($this->once())->method('onPotentialConnectionStateActivity');
         $instance->emptyBuffer();
     }
 
