@@ -39,14 +39,16 @@ class DurableSubscription extends ActiveMqMode
      * @param string $topic
      * @param string $selector
      * @param string $ack
+     * @param string $subscriptionId
      * @throws StompException
      */
-    public function __construct(Client $client, $topic, $selector = null, $ack = 'auto')
+    public function __construct(Client $client, $topic, $selector = null, $ack = 'auto', $subscriptionId = NULL)
     {
         parent::__construct($client);
         if (!$client->getClientId()) {
             throw new StompException('Client must have been configured to use a specific clientId!');
         }
+        $subscriptionId = $subscriptionId ?? $client->getClientId();
         $this->subscription = new Subscription($topic, $selector, $ack, $client->getClientId());
     }
 
