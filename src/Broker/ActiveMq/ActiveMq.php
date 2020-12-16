@@ -52,7 +52,7 @@ class ActiveMq extends Protocol
         $frame = parent::getSubscribeFrame($destination, $subscriptionId, $ack, $selector);
         $frame['activemq.prefetchSize'] = $this->prefetchSize;
         if ($durable) {
-            $frame['activemq.subscriptionName'] = $this->getClientId();
+            $frame['activemq.subscriptionName'] = $subscriptionId;
         }
         return $frame;
     }
