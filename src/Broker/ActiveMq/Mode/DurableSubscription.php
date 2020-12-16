@@ -42,7 +42,7 @@ class DurableSubscription extends ActiveMqMode
      * @param string $subscriptionId
      * @throws StompException
      */
-    public function __construct(Client $client, $topic, $selector = null, $ack = 'auto', $subscriptionId = NULL)
+    public function __construct(Client $client, $topic, $selector = null, $ack = 'auto', $subscriptionId = null)
     {
         parent::__construct($client);
         if (!$client->getClientId()) {
