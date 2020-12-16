@@ -49,7 +49,7 @@ class DurableSubscription extends ActiveMqMode
             throw new StompException('Client must have been configured to use a specific clientId!');
         }
         $subscriptionId = $subscriptionId ?? $client->getClientId();
-        $this->subscription = new Subscription($topic, $selector, $ack, $client->getClientId());
+        $this->subscription = new Subscription($topic, $selector, $ack, $subscriptionId);
     }
 
     /**
