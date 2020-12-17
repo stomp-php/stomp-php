@@ -69,7 +69,7 @@ class ActiveMq extends Protocol
     {
         $frame = parent::getUnsubscribeFrame($destination, $subscriptionId);
         if ($durable) {
-            $frame['activemq.subscriptionName'] = $this->getClientId();
+            $frame['activemq.subscriptionName'] = $subscriptionId;
         }
         return $frame;
     }
