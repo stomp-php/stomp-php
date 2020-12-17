@@ -26,9 +26,11 @@ jobs:
       php: "7.2"
     - <<: *TEST
       php: "7.3"
+    - <<: *TEST
+      php: "7.4"
 
     - stage: Static analysis with phpstan
-      php: "7.3"
+      php: "7.4"
       script:
         - composer require --dev phpstan/phpstan
         - vendor/bin/phpstan analyse
