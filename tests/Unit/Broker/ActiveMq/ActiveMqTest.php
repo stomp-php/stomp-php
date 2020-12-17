@@ -52,7 +52,7 @@ class ActiveMqTest extends ProtocolTestCase
         $result = $instance->getSubscribeFrame('target', 'test-durable-subscriber-name', 'auto', null, true);
         $this->assertEquals($instance->getPrefetchSize(), $result['activemq.prefetchSize']);
         $this->assertEquals('test-client-id', $result['activemq.subscriptionName']);
-        $this->assertEquals('test-durable-subscriber-name', $result['durable-subscription-name']);
+        $this->assertEquals('test-durable-subscriber-name', $result['durable-subscriber-name']);
     }
 
     public function testUnsubscribeNonDurable()
@@ -70,7 +70,7 @@ class ActiveMqTest extends ProtocolTestCase
          */
         $result = $instance->getUnsubscribeFrame('target', 'test-durable-subscriber-name', true);
         $this->assertEquals('test-client-id', $result['activemq.subscriptionName']);
-        $this->assertEquals('test-durable-subscriber-name', $result['durable-subscription-name']);
+        $this->assertEquals('test-durable-subscriber-name', $result['durable-subscriber-name']);
     }
 
     public function testAckVersionZero()
