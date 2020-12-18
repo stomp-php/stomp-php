@@ -2,6 +2,10 @@ language: php
 
 sudo: true
 
+env:
+  global:
+    - XDEBUG_MODE=coverage
+
 services:
   - docker
 
