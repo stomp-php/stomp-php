@@ -83,14 +83,11 @@ class ClientTest extends TestCase
 
         $this->assertFalse($this->Stomp->getConnection()->hasDataToRead(), 'Has frame to read when non expected');
 
-        $result = $this->Stomp->send($this->queue, 'testHasFrameToRead');
+        $this->Stomp->send($this->queue, 'testHasFrameToRead');
 
         $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
 
-        $this->assertTrue(
-            $this->Stomp->getConnection()->hasDataToRead(),
-            sprintf('Did not have frame to read when expected, send result = %s', $result)
-        );
+        $this->assertTrue($this->Stomp->getConnection()->hasDataToRead(), 'Did not have frame to read when expected');
 
         $frame = $this->Stomp->readFrame();
 
