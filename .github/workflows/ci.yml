@@ -34,8 +34,10 @@ jobs:
 
       - run: ./travisci/bin/start.sh
 
+      - run: ./travisci/bin/logs.sh
+
       - uses: "ramsey/composer-install@v1"
 
       - run: vendor/bin/phpunit
 
-      - run: ./travisci/bin/logs.sh
+      - run: ./travisci/bin/stop.sh
