@@ -79,7 +79,7 @@ class ClientTest extends TestCase
             $this->Stomp->connect();
         }
 
-        $this->Stomp->getConnection()->setReadTimeout(1);
+        $this->Stomp->getConnection()->setReadTimeout(10);
 
         $this->assertFalse($this->Stomp->getConnection()->hasDataToRead(), 'Has frame to read when non expected');
 
