@@ -36,6 +36,6 @@ jobs:
 
       - uses: "ramsey/composer-install@v1"
 
-      - run: vendor/bin/phpunit --debug
+      - run: vendor/bin/phpunit
 
       - run: ./travisci/bin/logs.sh
