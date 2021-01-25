@@ -75,9 +75,10 @@ class ClientTest extends TestCase
      */
     public function testHasFrameToRead()
     {
-        if (! $this->Stomp->isConnected()) {
-            $this->Stomp->connect();
+        if ($this->Stomp->isConnected()) {
+            $this->Stomp->disconnect();
         }
+        $this->Stomp->connect();
 
         $this->Stomp->getConnection()->setReadTimeout(10);
 
