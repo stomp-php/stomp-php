@@ -86,6 +86,7 @@ class ClientTest extends TestCase
         $this->Stomp->send($this->queue, 'testHasFrameToRead');
 
         $this->simpleStomp->subscribe($this->queue, 'mysubid', 'client');
+        sleep(1);
 
         $this->assertTrue($this->Stomp->getConnection()->hasDataToRead(), 'Did not have frame to read when expected');
 
