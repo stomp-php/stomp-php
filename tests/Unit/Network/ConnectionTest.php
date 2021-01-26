@@ -143,7 +143,7 @@ class ConnectionTest extends TestCase
             $connection->connect();
             $this->fail('No connection was established, expected exception!');
         } catch (Exception $ex) {
-            $this->assertContains('Could not connect to a broker', $ex->getMessage());
+            $this->assertStringContainsString('Could not connect to a broker', $ex->getMessage());
         }
     }
 

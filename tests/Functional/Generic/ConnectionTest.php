@@ -42,7 +42,7 @@ class ConnectionTest extends TestCase
             $connection->readFrame();
             $this->fail('Expected a exception!');
         } catch (ConnectionException $exception) {
-            $this->assertContains('Was not possible to read data from stream.', $exception->getMessage());
+            $this->assertStringContainsString('Was not possible to read data from stream.', $exception->getMessage());
         }
     }
 
@@ -68,7 +68,7 @@ class ConnectionTest extends TestCase
             $connection->readFrame();
             $this->fail('Expected a exception!');
         } catch (ErrorFrameException $exception) {
-            $this->assertContains('stomp-err-info', $exception->getMessage());
+            $this->assertStringContainsString('stomp-err-info', $exception->getMessage());
             $this->assertEquals('body', $exception->getFrame()->body);
         }
         fclose($fp);
@@ -93,7 +93,7 @@ class ConnectionTest extends TestCase
             $connection->writeFrame(new Frame('TEST'));
             $this->fail('Expected a exception!');
         } catch (ConnectionException $exception) {
-            $this->assertContains('Was not possible to write frame!', $exception->getMessage());
+            $this->assertStringContainsString('Was not possible to write frame!', $exception->getMessage());
         }
         fclose($fp);
     }
@@ -129,7 +129,7 @@ class ConnectionTest extends TestCase
             $connection->readFrame();
             $this->fail('Expected a exception!');
         } catch (ConnectionException $exception) {
-            $this->assertContains('Check failed to determine if the socket is readable', $exception->getMessage());
+            $this->assertStringContainsString('Check failed to determine if the socket is readable', $exception->getMessage());
         }
     }
 
@@ -140,7 +140,7 @@ class ConnectionTest extends TestCase
             $connection->connect();
             $this->fail('Expected an exception!');
         } catch (ConnectionException $ex) {
-            $this->assertContains('Could not connect to a broker', $ex->getMessage());
+            $this->assertStringContainsString('Could not connect to a broker', $ex->getMessage());
 
             $this->assertInstanceOf(
                 ConnectionException::class,
