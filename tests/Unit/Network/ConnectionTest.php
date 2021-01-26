@@ -204,12 +204,10 @@ class ConnectionTest extends TestCase
         stream_wrapper_unregister('stompFakeStream');
     }
 
-
-    /**
-     * @expectedException  \Stomp\Exception\ConnectionException
-     */
     public function testSendAliveWillCauseConnectionException()
     {
+        $this->expectException(ConnectionException::class);
+
         stream_wrapper_register('stompFakeStream', FakeStream::class);
 
 
@@ -236,7 +234,7 @@ class ConnectionTest extends TestCase
         fclose($fakeStreamResource);
         stream_wrapper_unregister('stompFakeStream');
         if (!$exception) {
-            $this->fail('Excepted exception.');
+            $this->fail('Expected exception.');
         }
         throw $exception;
     }

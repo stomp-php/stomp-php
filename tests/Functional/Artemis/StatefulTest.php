@@ -8,6 +8,7 @@
 
 namespace Stomp\Tests\Functional\Artemis;
 
+use LogicException;
 use Stomp\Tests\Functional\Stomp\StatefulTestBase;
 use Stomp\Transport\Frame;
 use Stomp\Transport\Message;
@@ -51,9 +52,6 @@ class StatefulTest extends StatefulTestBase
         $receiver->unsubscribe();
     }
 
-    /**
-     * @expectedException \LogicException
-     */
     public function testNackRequeueException()
     {
         $queue = 'queue/tests-ack-nack-add-again';
@@ -65,6 +63,8 @@ class StatefulTest extends StatefulTestBase
         $producer->send($queue, new Message('message-a', ['persistent' => 'true']));
         $producer->send($queue, new Message('message-b', ['persistent' => 'true']));
         $producer->getClient()->disconnect(true);
+
+        $this->expectException(LogicException::class);
 
         $frameA = $receiver->read();
         $receiver->nack($frameA, true);
