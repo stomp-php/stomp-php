@@ -137,7 +137,7 @@ class ConnectionTest extends TestCase
             $this->assertStringContainsString('Check failed to determine if the socket is readable', $exception->getMessage());
         } catch (\ValueError $exception) {
             $this->assertStringContainsString(
-                'ValueError: No stream arrays were passed',
+                'No stream arrays were passed',
                 $exception->getMessage()
             );
         }
