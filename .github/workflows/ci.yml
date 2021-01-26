@@ -32,19 +32,12 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: xdebug
 
-      - run: docker-compose up -d
-
-      - uses: nev7n/wait_for_response@v1
-        with:
-          url: 'http://127.0.0.1:61010/admin'
-          responseCode: 200
-          timeout: 50000
-          interval: 1000
+      - run: ./travisci/bin/start.sh
 
       - uses: "ramsey/composer-install@v1"
 
-      - run: docker-compose logs -f &
+      - run: ./travisci/bin/logs.sh
 
       - run: vendor/bin/phpunit
 
-      - run: docker-compose down
+      - run: /travisci/bin/stop.sh
