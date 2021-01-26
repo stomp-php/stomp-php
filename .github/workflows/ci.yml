@@ -31,13 +31,14 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: xdebug
+          ini-values: error_reporting=E_ALL
 
       - run: ./travisci/bin/start.sh
 
       - uses: "ramsey/composer-install@v1"
 
-      - run: ./travisci/bin/logs.sh
-
-      - run: vendor/bin/phpunit
+      - run: |
+          ./travisci/bin/logs.sh
+          vendor/bin/phpunit --debug
 
       - run: ./travisci/bin/stop.sh
