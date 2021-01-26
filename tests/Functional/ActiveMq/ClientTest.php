@@ -439,6 +439,8 @@ class ClientTest extends TestCase
 
     public function testSendAlive()
     {
+        $this->expectNotToPerformAssertions();
+
         $this->Stomp->connect();
         $this->Stomp->getConnection()->sendAlive();
         $this->Stomp->disconnect();

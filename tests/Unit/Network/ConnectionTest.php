@@ -42,7 +42,7 @@ class ConnectionTest extends TestCase
     /**
      * Data provider for testBrokerUriShouldRandomizeHosts().
      */
-    public function testBrokerUriShouldRandomizeHostsProvider()
+    public function brokerUriProvider()
     {
         return [
             'non-failover URI' => ['tcp://host1:61614', false],
@@ -60,7 +60,7 @@ class ConnectionTest extends TestCase
      * @param bool $expected
      *   The expected result, TRUE/FALSE.
      *
-     * @dataProvider testBrokerUriShouldRandomizeHostsProvider
+     * @dataProvider brokerUriProvider
      */
     public function testBrokerUriShouldRandomizeHosts($uri, $expected)
     {
