@@ -74,8 +74,8 @@ class StreamSignalTest extends TestCase
         fclose($pipes[1]);
         fclose($pipes[2]);
         $returnCode = proc_close($process);
-        $this->assertContains('INFO: Started to listen for new messages...', $output);
-        $this->assertContains('TEST: SUCCEEDED', $output);
+        $this->assertStringContainsString('INFO: Started to listen for new messages...', $output);
+        $this->assertStringContainsString('TEST: SUCCEEDED', $output);
         $this->assertEquals(0, $returnCode);
     }
 }

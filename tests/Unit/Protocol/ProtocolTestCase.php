@@ -61,7 +61,7 @@ abstract class ProtocolTestCase extends TestCase
             $protocol->getSubscribeFrame('my-destination', 'my-sub-id', 'my-ack', 'my-selector');
             $this->fail();
         } catch (StompException $e) {
-            $this->assertContains('"my-ack" is not a valid ack value', $e->getMessage());
+            $this->assertStringContainsString('"my-ack" is not a valid ack value', $e->getMessage());
         }
     }
 
