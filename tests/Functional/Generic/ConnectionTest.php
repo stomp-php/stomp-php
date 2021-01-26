@@ -43,6 +43,11 @@ class ConnectionTest extends TestCase
             $this->fail('Expected a exception!');
         } catch (ConnectionException $exception) {
             $this->assertStringContainsString('Was not possible to read data from stream.', $exception->getMessage());
+        } catch (\TypeError $exception) {
+            $this->assertStringContainsString(
+                'fread(): supplied resource is not a valid stream resource',
+                $exception->getMessage()
+            );
         }
     }
 
@@ -130,6 +135,11 @@ class ConnectionTest extends TestCase
             $this->fail('Expected a exception!');
         } catch (ConnectionException $exception) {
             $this->assertStringContainsString('Check failed to determine if the socket is readable', $exception->getMessage());
+        } catch (\ValueError $exception) {
+            $this->assertStringContainsString(
+                'ValueError: No stream arrays were passed',
+                $exception->getMessage()
+            );
         }
     }
 
