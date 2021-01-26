@@ -10,8 +10,10 @@ namespace Stomp\Tests\Unit\Network\Observer;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit_Framework_MockObject_MockObject;
+use RuntimeException;
 use Stomp\Exception\ConnectionException;
 use Stomp\Network\Connection;
+use Stomp\Network\Observer\Exception\HeartbeatException;
 use Stomp\Network\Observer\HeartbeatEmitter;
 use Stomp\Transport\Frame;
 
@@ -202,10 +204,6 @@ class HeartbeatEmitterTest extends TestCase
         $this->assertEquals((0.5 * 500) / 1000, $this->instance->getInterval());
     }
 
-    /**
-     * @expectedException \Stomp\Network\Observer\Exception\HeartbeatException
-     * @expectedExceptionMessage Client heartbeat is lower than connection read timeout, causing failing heartbeats.
-     */
     public function testEmitterThrowsExceptionWhenConnectionReadTimeoutIsTooHigh()
     {
         $this->connectionReadTimeOut = [0,900000]; // 900 ms
@@ -214,16 +212,17 @@ class HeartbeatEmitterTest extends TestCase
         $connectFrame['heart-beat'] = '300,0';
         $this->instance->sentFrame($connectFrame);
 
+        $this->expectException(HeartbeatException::class);
+        $this->expectExceptionMessage(
+            'Client heartbeat is lower than connection read timeout, causing failing heartbeats.'
+        );
+
         // server asks for 500
         $connectedFrame = new Frame(HeartbeatEmitter::FRAME_SERVER_CONNECTED);
         $connectedFrame['heart-beat'] = '0,500';
         $this->instance->receivedFrame($connectedFrame);
     }
 
-    /**
-     * @expectedExceptionMessage Could not send heartbeat to server.
-     * @expectedException \RuntimeException
-     */
     public function testEmitterThrowsExceptionWhenAliveSignalFails()
     {
         // can happen when the connection was recycled
@@ -236,6 +235,10 @@ class HeartbeatEmitterTest extends TestCase
         $this->connection->expects($this->once())
             ->method('sendAlive')
             ->willThrowException(new ConnectionException('Send failure.'));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Could not send heartbeat to server.');
+
         $this->instance->emptyBuffer();
     }
 

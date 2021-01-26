@@ -10,6 +10,7 @@ namespace Stomp\Tests\Unit\Network\Observer;
 
 use PHPUnit\Framework\TestCase;
 use Stomp\Network\Observer\AbstractBeats;
+use Stomp\Network\Observer\Exception\HeartbeatException;
 use Stomp\Network\Observer\ServerAliveObserver;
 use Stomp\Transport\Frame;
 
@@ -46,12 +47,11 @@ class ServerAliveObserverTest extends TestCase
         self::assertEquals(20, $method->invoke($instance, 4));
     }
 
-    /**
-     * @expectedExceptionMessage The server failed to send expected heartbeats.
-     * @expectedException \Stomp\Network\Observer\Exception\HeartbeatException
-     */
     public function testOnDelayThrowsException()
     {
+        $this->expectException(HeartbeatException::class);
+        $this->expectExceptionMessage('The server failed to send expected heartbeats.');
+
         $instance = new ServerAliveObserver();
         $method = new \ReflectionMethod($instance, 'onDelay');
         $method->setAccessible(true);
