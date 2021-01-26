@@ -41,7 +41,7 @@ function waitForService()
     printf "service is online %s:%s\n" $1 $2
 }
 
-waitForService activemq 61010 50
+waitForService 127.0.0.1 61010 50
 
 echo ""
 echo "Brokers have been started for you, stop them by running ./travisci/bin/stop.sh"
