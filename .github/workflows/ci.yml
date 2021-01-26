@@ -32,7 +32,7 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: xdebug
 
-      - run: docker-compose up
+      - run: docker-compose up -d
 
       - run: ./travisci/bin/wait.sh
 
