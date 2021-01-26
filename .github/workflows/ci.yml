@@ -34,7 +34,12 @@ jobs:
 
       - run: docker-compose up -d
 
-      - run: ./travisci/bin/wait.sh
+      - uses: nev7n/wait_for_response@v1
+        with:
+          url: 'http://127.0.0.1:61010/admin'
+          responseCode: 200
+          timeout: 50000
+          interval: 1000
 
       - uses: "ramsey/composer-install@v1"
 
