@@ -42,6 +42,9 @@ function waitForService()
 }
 
 waitForService 127.0.0.1 61010 50
+waitForService 127.0.0.1 61020 50
+waitForService 127.0.0.1 61030 50
+waitForService 127.0.0.1 61040 50
 
 echo ""
 echo "Brokers have been started for you, stop them by running ./travisci/bin/stop.sh"
