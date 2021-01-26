@@ -32,12 +32,12 @@ jobs:
           php-version: ${{ matrix.php }}
           coverage: xdebug
 
-      - run: ./travisci/bin/start.sh
+      - run: docker-compose up
+
+      - run: ./travisci/bin/wait.sh
 
       - uses: "ramsey/composer-install@v1"
 
-      - run: ./travisci/bin/logs.sh
-
       - run: vendor/bin/phpunit
 
-      - run: ./travisci/bin/stop.sh
+      - run: docker-compose down
