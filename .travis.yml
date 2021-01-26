@@ -24,6 +24,8 @@ jobs:
         - ./travisci/bin/stop.sh
     - <<: *TEST
       php: "7.4"
+    - <<: *TEST
+      php: "8.0"
 
     - stage: Static analysis with phpstan
       php: "7.4"
