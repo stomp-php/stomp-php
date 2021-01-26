@@ -10,6 +10,7 @@
 namespace Stomp\Tests\Unit\Network;
 
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 use Stomp\Exception\ConnectionException;
@@ -117,7 +118,7 @@ class ConnectionTest extends TestCase
 
     public function testConnectionSetupTriesFullHostListBeforeGivingUp()
     {
-        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
+        /** @var Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
             ->setMethods(['connectSocket'])
             ->setConstructorArgs(['failover://(tcp://host1,tcp://host2,tcp://host3)'])

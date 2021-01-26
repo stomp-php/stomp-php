@@ -34,7 +34,7 @@ class ASyncTest extends TestCase
     /**
      * Prepares the environment before running a test.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->Stomp = ClientProvider::getClient();
@@ -45,7 +45,7 @@ class ASyncTest extends TestCase
     /**
      * Cleans up the environment after running a test.
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->Stomp->disconnect(true);
         $this->Stomp = null;

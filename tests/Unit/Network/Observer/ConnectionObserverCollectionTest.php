@@ -26,7 +26,7 @@ class ConnectionObserverCollectionTest extends TestCase
      */
     private $instance;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->instance = new ConnectionObserverCollection();

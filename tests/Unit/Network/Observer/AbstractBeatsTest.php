@@ -8,6 +8,7 @@
 
 namespace Stomp\Tests\Unit\Network\Observer;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Stomp\Network\Observer\AbstractBeats;
 use Stomp\Transport\Frame;
@@ -161,11 +162,11 @@ class AbstractBeatsTest extends TestCase
      * Injects a function that will update the last detected beat whenever a server signal is received.
      *
      * @noinspection PhpDocMissingThrowsInspection
-     * @param \PHPUnit_Framework_MockObject_MockObject|AbstractBeats $instance
+     * @param MockObject|AbstractBeats $instance
      * @param $interval
      */
     private function injectActivatedWithServerActivityBeatUpdate(
-        \PHPUnit_Framework_MockObject_MockObject $instance,
+        MockObject $instance,
         $interval
     ) {
         $frame = $this->getServerConnectedFrame($interval, $interval);
@@ -185,13 +186,13 @@ class AbstractBeatsTest extends TestCase
     /**
      * Assert that the instance will be enabled when a frame with heartbeat details is detected.
      *
-     * @param \PHPUnit_Framework_MockObject_MockObject|AbstractBeats $instance
+     * @param MockObject|AbstractBeats $instance
      * @param Frame $frame
      * @param integer $intervalServer
      * @param integer $intervalClient
      */
     private function assertEnabledOnce(
-        \PHPUnit_Framework_MockObject_MockObject $instance,
+        MockObject $instance,
         Frame $frame,
         $intervalServer,
         $intervalClient
@@ -241,7 +242,7 @@ class AbstractBeatsTest extends TestCase
     /**
      * Generates a beat instance.
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|AbstractBeats
+     * @return MockObject|AbstractBeats
      */
     private function getInstance()
     {

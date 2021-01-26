@@ -39,7 +39,7 @@ class ClientTest extends TestCase
      */
     private static $stomp;
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         self::$stomp = null;
         parent::tearDownAfterClass();
