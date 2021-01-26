@@ -40,4 +40,4 @@ jobs:
 
       - run: vendor/bin/phpunit
 
-      - run: /travisci/bin/stop.sh
+      - run: ./travisci/bin/stop.sh
