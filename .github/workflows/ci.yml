@@ -38,6 +38,8 @@ jobs:
 
       - uses: "ramsey/composer-install@v1"
 
+      - run: docker-compose logs -f &
+
       - run: vendor/bin/phpunit
 
       - run: docker-compose down
