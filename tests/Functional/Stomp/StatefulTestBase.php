@@ -28,7 +28,7 @@ abstract class StatefulTestBase extends TestCase
      */
     private $clients = [];
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         foreach ($this->clients as $client) {
             if ($client->isConnected()) {

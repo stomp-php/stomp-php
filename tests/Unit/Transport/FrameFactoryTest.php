@@ -27,7 +27,7 @@ class FrameFactoryTest extends TestCase
      */
     private $instance;
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->instance = new FrameFactory();

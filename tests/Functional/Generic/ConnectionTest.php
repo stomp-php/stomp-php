@@ -9,6 +9,7 @@
 
 namespace Stomp\Tests\Functional\Generic;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Stomp\Exception\ConnectionException;
 use Stomp\Exception\ErrorFrameException;
@@ -24,7 +25,7 @@ class ConnectionTest extends TestCase
 {
     public function testReadFrameThrowsExceptionIfStreamIsBroken()
     {
-        /** @var Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
+        /** @var Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
             ->setMethods(['hasDataToRead', 'connectSocket'])
             ->setConstructorArgs(['tcp://host'])
@@ -47,7 +48,7 @@ class ConnectionTest extends TestCase
 
     public function testReadFrameThrowsExceptionIfErrorFrameIsReceived()
     {
-        /** @var \Stomp\Network\Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
+        /** @var \Stomp\Network\Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
             ->setMethods(['hasDataToRead', 'connectSocket'])
             ->setConstructorArgs(['tcp://host'])
@@ -75,7 +76,7 @@ class ConnectionTest extends TestCase
 
     public function testWriteFrameThrowsExceptionIfConnectionIsBroken()
     {
-        /** @var \Stomp\Network\Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
+        /** @var \Stomp\Network\Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
             ->setMethods(['connectSocket'])
             ->setConstructorArgs(['tcp://host'])
@@ -99,7 +100,7 @@ class ConnectionTest extends TestCase
 
     public function testHasDataToReadThrowsExceptionIfConnectionIsBroken()
     {
-        /** @var \Stomp\Network\Connection|\PHPUnit_Framework_MockObject_MockObject $connection */
+        /** @var \Stomp\Network\Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
             ->setMethods(['isConnected', 'connectSocket'])
             ->setConstructorArgs(['tcp://host'])
