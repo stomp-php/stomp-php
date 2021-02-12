@@ -20,14 +20,43 @@ use Stomp\States\IStateful;
 class InvalidStateException extends StompException
 {
 
+    /** @var IStateful */
+    private $state;
+
+    /** @var string|null */
+    private $hint;
+
     /**
      * InvalidStateException constructor.
      *
      * @param IStateful $state
      * @param string $method
+     * @param string|null $hint
      */
-    public function __construct(IStateful $state, $method)
+    public function __construct(IStateful $state, $method, $hint = null)
     {
-        parent::__construct(sprintf('"%s" is not allowed in "%s".', $method, get_class($state)));
+        $this->state = $state;
+        $this->hint = $hint;
+        if ($hint !== null) {
+            parent::__construct(sprintf('"%s" is not allowed in "%s". %s', $method, get_class($state), $hint));
+        } else {
+            parent::__construct(sprintf('"%s" is not allowed in "%s".', $method, get_class($state)));
+        }
+    }
+
+    /**
+     * @return IStateful
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getHint()
+    {
+        return $this->hint;
     }
 }

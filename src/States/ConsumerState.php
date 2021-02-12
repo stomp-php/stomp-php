@@ -43,12 +43,6 @@ class ConsumerState extends StateTemplate
     protected $destination;
 
     /**
-     * SubscriptionId
-     * @var int
-     */
-    protected $subId;
-
-    /**
      * @var SubscriptionList
      */
     protected $subscriptions;
@@ -124,9 +118,15 @@ class ConsumerState extends StateTemplate
     public function unsubscribe($subscriptionId = null)
     {
         if ($this->endSubscription($subscriptionId)) {
-            $this->setState(
-                new ProducerState($this->getClient(), $this->getBase())
-            );
+            if ($this->getClient()->isBufferEmpty()) {
+                $this->setState(
+                    new ProducerState($this->getClient(), $this->getBase())
+                );
+            } else {
+                $this->setState(
+                    new DrainingConsumerState($this->getClient(), $this->getBase())
+                );
+            }
         }
     }
 

@@ -9,9 +9,14 @@
 namespace Stomp\Tests\Unit\States;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 use Stomp\Client;
+use Stomp\Protocol\Protocol;
 use Stomp\StatefulStomp;
 use Stomp\States\ConsumerState;
+use Stomp\States\DrainingConsumerState;
+use Stomp\States\Meta\Subscription;
+use Stomp\States\Meta\SubscriptionList;
 
 /**
  * ConsumerStateTest
@@ -37,5 +42,38 @@ class ConsumerStateTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
 
         $consumerState->unsubscribe('not-existing');
+    }
+
+    public function testUnsubscribeWillOpenDrainingConsumerStateWhenClientBuffersNotEmpty()
+    {
+        $client = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getProtocol', 'sendFrame', 'readFrame', 'isBufferEmpty'])
+            ->getMock();
+
+        $client->expects($this->once())
+            ->method('isBufferEmpty')
+            ->willReturn(false);
+
+        $protocol = new Protocol('-');
+        $client->expects($this->any())
+            ->method('getProtocol')
+            ->willReturn($protocol);
+        /**
+         * @var $client Client
+         */
+        $stateful = new StatefulStomp($client);
+        $consumerState = new ConsumerState($client, $stateful);
+
+        $subscriptions = new SubscriptionList();
+        $subscriptions['id-a'] = new Subscription('somewhere', null, 'AUTO', 'id-a');
+
+        $accessor = new ReflectionMethod($consumerState, 'init');
+        $accessor->setAccessible(true);
+        $accessor->invoke($consumerState, ['subscriptions' => $subscriptions]);
+
+        $consumerState->unsubscribe();
+
+        self::assertInstanceOf(DrainingConsumerState::class, $stateful->getState());
     }
 }
