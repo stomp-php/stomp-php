@@ -59,7 +59,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
      *
      * @return \Iterator|Subscription[]
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->subscriptions);
     }
@@ -69,7 +69,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
      *
      * @return bool
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->subscriptions[$offset]);
     }
@@ -79,7 +79,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
      *
      * @return Subscription
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->subscriptions[$offset];
     }
@@ -87,7 +87,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
     /**
      * @inheritdoc
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->subscriptions[$offset] = $value;
     }
@@ -95,7 +95,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
     /**
      * @inheritdoc
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->subscriptions[$offset]);
     }
@@ -103,7 +103,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
     /**
      * @inheritdoc
      */
-    public function count()
+    public function count(): int
     {
         return count($this->subscriptions);
     }
