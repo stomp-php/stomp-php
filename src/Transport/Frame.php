@@ -212,7 +212,7 @@ class Frame implements ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetExists($offset)
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->headers[$offset]);
     }
@@ -220,7 +220,7 @@ class Frame implements ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         if (isset($this->headers[$offset])) {
             return $this->headers[$offset];
@@ -231,7 +231,7 @@ class Frame implements ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         if ($value !== null) {
             $this->headers[$offset] = $value;
@@ -242,7 +242,7 @@ class Frame implements ArrayAccess
     /**
      * @inheritdoc
      */
-    public function offsetUnset($offset)
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->headers[$offset]);
     }
