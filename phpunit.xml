@@ -2,16 +2,17 @@
 
 <!-- https://phpunit.readthedocs.io/en/stable/configuration.html -->
 <phpunit
-    backupGlobals                   = "false"
-    backupStaticAttributes          = "false"
-    colors                          = "true"
-    convertDeprecationsToExceptions = "true"
-    convertErrorsToExceptions       = "true"
-    convertNoticesToExceptions      = "true"
-    convertWarningsToExceptions     = "true"
-    processIsolation                = "false"
-    stopOnFailure                   = "false"
-    bootstrap                       = "tests/bootstrap.php" >
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    colors="true"
+    convertDeprecationsToExceptions="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    bootstrap="tests/bootstrap.php"
+>
     <coverage>
         <include>
             <directory>src/</directory>
