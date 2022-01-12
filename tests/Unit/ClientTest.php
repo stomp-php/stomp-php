@@ -119,7 +119,7 @@ class ClientTest extends TestCase
     public function testConnectWillUseConfiguredVersions()
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['readFrame', 'writeFrame', 'getParser', 'isConnected', 'disconnect'])
+            ->onlyMethods(['readFrame', 'writeFrame', 'getParser', 'isConnected', 'disconnect'])
             ->disableOriginalConstructor()
             ->getMock();
         $connection
@@ -213,7 +213,7 @@ class ClientTest extends TestCase
     protected function getStompWithInjectedMockedConnectionReadResult($readFrameResult)
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['readFrame', 'writeFrame', 'getParser', 'isConnected', 'disconnect'])
+            ->onlyMethods(['readFrame', 'writeFrame', 'getParser', 'isConnected', 'disconnect'])
             ->disableOriginalConstructor()
             ->getMock();
         $connection
@@ -329,7 +329,7 @@ class ClientTest extends TestCase
     protected function getStompMockWithSendFrameCatcher(&$lastSendFrame, &$lastSyncState)
     {
         $stomp = $this->getMockBuilder(Client::class)
-            ->setMethods(['sendFrame', 'isConnected'])
+            ->onlyMethods(['sendFrame', 'isConnected'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -352,7 +352,7 @@ class ClientTest extends TestCase
     public function testSendFrameWithSyncWillLeadToMessageWithReceiptHeader()
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['writeFrame', 'readFrame'])
+            ->onlyMethods(['writeFrame', 'readFrame'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -376,7 +376,7 @@ class ClientTest extends TestCase
             );
         $stomp = $this->getMockBuilder(Client::class)
             ->setConstructorArgs([$connection])
-            ->setMethods(['isConnected'])
+            ->onlyMethods(['isConnected'])
             ->getMock();
         $stomp->expects($this->any())->method('isConnected')->willReturn(true);
         /**
@@ -397,7 +397,7 @@ class ClientTest extends TestCase
     public function testWaitForReceiptWillQueueUpFramesWithNoReceiptCommand()
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['readFrame'])
+            ->onlyMethods(['readFrame'])
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -424,7 +424,7 @@ class ClientTest extends TestCase
 
         $stomp = $this->getMockBuilder(Client::class)
             ->setConstructorArgs([$connection])
-            ->setMethods(['isConnected'])
+            ->onlyMethods(['isConnected'])
             ->getMock();
         $stomp->expects($this->any())->method('isConnected')->willReturn(true);
         /**
@@ -469,7 +469,7 @@ class ClientTest extends TestCase
     {
         $connection = $this->getMockBuilder(Connection::class)
             ->setConstructorArgs(['tcp://127.0.0.1:'])
-            ->setMethods(['disconnect', 'readFrame', 'writeFrame', 'isConnected'])
+            ->onlyMethods(['disconnect', 'readFrame', 'writeFrame', 'isConnected'])
             ->getMock();
 
         $connection->expects($this->any())->method('isConnected')->willReturn(true);
@@ -504,7 +504,7 @@ class ClientTest extends TestCase
     public function testClientWillAutoConnectOnSendFrame()
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['connect', 'getParser'])
+            ->onlyMethods(['connect', 'getParser'])
             ->disableOriginalConstructor()
             ->getMock();
         $connection->expects($this->once())->method('connect');
@@ -521,7 +521,7 @@ class ClientTest extends TestCase
     public function testClientWillAutoConnectOnGetProtocol()
     {
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['connect', 'getParser'])
+            ->onlyMethods(['connect', 'getParser'])
             ->disableOriginalConstructor()
             ->getMock();
         $connection->expects($this->once())->method('connect');

@@ -27,7 +27,7 @@ class ActiveMqModeTest extends TestCase
     {
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getProtocol'])
+            ->onlyMethods(['getProtocol'])
             ->getMock();
 
         $client->expects($this->any())->method('getProtocol')->willReturn(new RabbitMq('clientid'));

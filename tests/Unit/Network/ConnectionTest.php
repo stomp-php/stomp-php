@@ -120,7 +120,7 @@ class ConnectionTest extends TestCase
     {
         /** @var Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['connectSocket'])
+            ->onlyMethods(['connectSocket'])
             ->setConstructorArgs(['failover://(tcp://host1,tcp://host2,tcp://host3)'])
             ->getMock();
 
@@ -182,7 +182,7 @@ class ConnectionTest extends TestCase
         stream_wrapper_register('stompFakeStream', FakeStream::class);
 
         $mock = $this->getMockBuilder(Connection::class)
-            ->setMethods(['getConnection'])
+            ->onlyMethods(['getConnection'])
             ->setConstructorArgs(['stompFakeStream://notInUse'])
             ->getMock();
         $fakeStreamResource = fopen('stompFakeStream://notInUse', 'rw');
@@ -212,7 +212,7 @@ class ConnectionTest extends TestCase
 
 
         $mock = $this->getMockBuilder(Connection::class)
-            ->setMethods(['getConnection'])
+            ->onlyMethods(['getConnection'])
             ->setConstructorArgs(['stompFakeStream://notInUse'])
             ->getMock();
         $fakeStreamResource = fopen('stompFakeStream://notInUse', 'rw');

@@ -82,7 +82,7 @@ class StatefulStompTest extends TestCase
     {
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getProtocol', 'sendFrame', 'readFrame', 'isConnected'])
+            ->onlyMethods(['getProtocol', 'sendFrame', 'readFrame', 'isConnected'])
             ->getMock();
 
         $client->method('getProtocol')->willReturn(new Protocol('stateful-test-client', Version::VERSION_1_2));
