@@ -31,7 +31,7 @@ class SimpleStompTest extends TestCase
 
         $stomp = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->setMethods(['send'])
+            ->onlyMethods(['send'])
             ->getMock();
 
         $stomp->expects($this->once())->method('send')->with($queue, $message);
@@ -53,7 +53,7 @@ class SimpleStompTest extends TestCase
     {
         $stomp = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->setMethods(['sendFrame', 'getProtocol'])
+            ->onlyMethods(['sendFrame', 'getProtocol'])
             ->getMock();
 
         $stomp->expects($this->any())

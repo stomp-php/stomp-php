@@ -27,7 +27,7 @@ class ConnectionTest extends TestCase
     {
         /** @var Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['hasDataToRead', 'connectSocket'])
+            ->onlyMethods(['hasDataToRead', 'connectSocket'])
             ->setConstructorArgs(['tcp://host'])
             ->getMock();
 
@@ -55,7 +55,7 @@ class ConnectionTest extends TestCase
     {
         /** @var \Stomp\Network\Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['hasDataToRead', 'connectSocket'])
+            ->onlyMethods(['hasDataToRead', 'connectSocket'])
             ->setConstructorArgs(['tcp://host'])
             ->getMock();
 
@@ -83,7 +83,7 @@ class ConnectionTest extends TestCase
     {
         /** @var \Stomp\Network\Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['connectSocket'])
+            ->onlyMethods(['connectSocket'])
             ->setConstructorArgs(['tcp://host'])
             ->getMock();
 
@@ -107,7 +107,7 @@ class ConnectionTest extends TestCase
     {
         /** @var \Stomp\Network\Connection|MockObject $connection */
         $connection = $this->getMockBuilder(Connection::class)
-            ->setMethods(['isConnected', 'connectSocket'])
+            ->onlyMethods(['isConnected', 'connectSocket'])
             ->setConstructorArgs(['tcp://host'])
             ->getMock();
 

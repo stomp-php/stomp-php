@@ -37,7 +37,7 @@ class ConnectionObserverCollectionTest extends TestCase
         $frameA = new Message('message-a');
         $frameB = new Message('message-b');
         $observerA = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'emptyRead'])
+            ->onlyMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'emptyRead'])
             ->getMock();
         $observerA->expects($this->exactly(1))->method('sentFrame')->with($frameA);
         $observerA->expects($this->exactly(1))->method('emptyLineReceived');
@@ -46,7 +46,7 @@ class ConnectionObserverCollectionTest extends TestCase
         $observerA->expects($this->exactly(1))->method('receivedFrame')->with($frameB);
 
         $observerB = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'emptyRead'])
+            ->onlyMethods(['sentFrame', 'emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'emptyRead'])
             ->getMock();
         $observerB->expects($this->exactly(1))->method('sentFrame')->with($frameA);
         $observerB->expects($this->exactly(1))->method('emptyLineReceived');

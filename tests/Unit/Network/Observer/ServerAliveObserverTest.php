@@ -71,7 +71,7 @@ class ServerAliveObserverTest extends TestCase
     {
         $methods = ['rememberActivity', 'checkDelayed'];
         $instance = $this->getMockBuilder(ServerAliveObserver::class)
-            ->setMethods($methods)
+            ->onlyMethods($methods)
             ->getMock();
         foreach ($methods as $method) {
             $instance->expects(($observerMethod === $method) ? $this->once() : $this->never())
