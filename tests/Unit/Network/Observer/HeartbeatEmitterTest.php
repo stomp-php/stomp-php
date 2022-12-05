@@ -45,7 +45,7 @@ class HeartbeatEmitterTest extends TestCase
         parent::setUp();
         $this->connection = $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
-            ->setMethods(['sendAlive', 'getReadTimeout'])
+            ->onlyMethods(['sendAlive', 'getReadTimeout'])
             ->getMock();
         $this->connection->expects($this->any())->method('sendAlive')->willReturnCallback(
             function () {

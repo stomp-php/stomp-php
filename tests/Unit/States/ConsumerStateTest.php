@@ -25,7 +25,7 @@ class ConsumerStateTest extends TestCase
     {
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getProtocol', 'sendFrame', 'readFrame'])
+            ->onlyMethods(['getProtocol', 'sendFrame', 'readFrame'])
             ->getMock();
 
         /**

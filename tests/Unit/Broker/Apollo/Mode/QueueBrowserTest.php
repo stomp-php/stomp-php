@@ -26,7 +26,7 @@ class QueueBrowserTest extends TestCase
     {
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getProtocol'])
+            ->onlyMethods(['getProtocol'])
             ->getMock();
         $client->method('getProtocol')->willReturn(new RabbitMq('client-id'));
 
