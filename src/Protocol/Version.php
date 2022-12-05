@@ -69,7 +69,7 @@ class Version
      */
     public function getProtocol($clientId, $default = 'ActiveMQ/5.11.1')
     {
-        $server = $this->frame['server'] ? trim($this->frame['server']) : $default;
+        $server = trim((string) $this->frame['server']) ?: $default;
         $version = $this->getVersion();
         if (stristr($server, 'rabbitmq') !== false) {
             return new RabbitMq($clientId, $version, $server);
