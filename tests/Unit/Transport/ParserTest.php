@@ -277,7 +277,7 @@ class ParserTest extends TestCase
     public function testParserTriggersObserversHeartBeatAfterFrame()
     {
         $observer = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
+            ->onlyMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
             ->getMock();
         $observer->expects($this->once())->method('emptyLineReceived');
         $observer->expects($this->once())->method('receivedFrame');
@@ -295,7 +295,7 @@ class ParserTest extends TestCase
     public function testParserTriggersObserversOnSingleHeartBeat()
     {
         $observer = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
+            ->onlyMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
             ->getMock();
         $observer->expects($this->once())->method('emptyLineReceived');
         $observer->expects($this->never())->method('receivedFrame');
@@ -311,7 +311,7 @@ class ParserTest extends TestCase
     public function testParserTriggersObserversOnMultipleHeartBeatOnlyOnce()
     {
         $observer = $this->getMockBuilder(ConnectionObserver::class)
-            ->setMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
+            ->onlyMethods(['emptyLineReceived', 'emptyBuffer', 'receivedFrame', 'sentFrame', 'emptyRead'])
             ->getMock();
         $observer->expects($this->once())->method('emptyLineReceived');
         $observer->expects($this->never())->method('receivedFrame');
