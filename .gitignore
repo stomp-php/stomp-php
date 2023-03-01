@@ -6,3 +6,5 @@ vendor
 /.project
 /travisci/tmp
 stomp-php.iml
+
+.phpunit.result.cache
