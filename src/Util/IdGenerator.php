@@ -31,12 +31,13 @@ class IdGenerator
     public static function generateId()
     {
         while ($rand = rand(1, PHP_INT_MAX)) {
-            if (!in_array($rand, static::$generatedIds, true)) {
-                static::$generatedIds[] = $rand;
+            if (!in_array($rand, self::$generatedIds, true)) {
+                self::$generatedIds[] = $rand;
                 return $rand;
             }
         }
-        throw new RuntimeException('Message Id generation failed.');
+        // This is never hit because the above becomes an infinite loop. Possibly need a release valve.
+        // throw new RuntimeException('Message Id generation failed.');
     }
 
     /**
@@ -46,9 +47,9 @@ class IdGenerator
      */
     public static function releaseId($generatedId)
     {
-        $index = array_search($generatedId, static::$generatedIds, true);
+        $index = array_search($generatedId, self::$generatedIds, true);
         if ($index !== false) {
-            unset(static::$generatedIds[$index]);
+            unset(self::$generatedIds[$index]);
         }
     }
 }

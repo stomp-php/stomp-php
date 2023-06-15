@@ -220,6 +220,7 @@ class Parser
         $this->frame = null;
         $this->offset = 0;
         $this->bufferSize = strlen($this->buffer);
+        /** @phpstan-ignore-next-line */
         while ($this->offset < $this->bufferSize) {
             if ($this->mode === self::MODE_HEADER) {
                 $this->skipEmptyLines();
