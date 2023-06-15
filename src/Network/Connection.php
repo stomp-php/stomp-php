@@ -521,11 +521,7 @@ class Connection
             return $this->onFrame($frame);
         }
 
-        if (!$this->hasDataToRead()) {
-            return false;
-        }
-
-        do {
+        while ($this->hasDataToRead()) {
             $read = @fread($this->connection, $this->maxReadBytes);
             if ($read === false) {
                 throw new ConnectionException(sprintf('Was not possible to read data from stream.'), $this->activeHost);
@@ -546,7 +542,7 @@ class Connection
             if ($frame = $this->parser->nextFrame()) {
                 return $this->onFrame($frame);
             }
-        } while ($this->hasDataToRead());
+        }
 
         return false;
     }
@@ -638,7 +634,7 @@ class Connection
         if ($hasStreamInfo === false) {
             // can return `false` if used in combination with `pcntl_signal` and lead to false errors here
             $error = error_get_last();
-            if ($error && isset($error['message']) && stripos($error['message'], 'interrupted system call') === false) {
+            if ($error && stripos($error['message'], 'interrupted system call') === false) {
                 throw new ConnectionException(
                     'Check failed to determine if the socket is readable.',
                     $this->activeHost
@@ -647,7 +643,7 @@ class Connection
             return null;
         }
 
-        return !empty($read);
+        return $hasStreamInfo > 0;
     }
 
     /**
