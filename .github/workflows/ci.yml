@@ -32,17 +32,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup ActiveMq
-        run: docker run --rm -d --name stomp-activemq -v ${{ github.workspace }}/travisci/conf/amq/activemq.xml:/opt/activemq/conf/activemq.xml:ro -p 127.0.0.1:61010:61010 rmohr/activemq:${{ vars.ACTIVEMQ_IMAGE_TAG }}
-
-      - name: Setup Apollo
-        run: docker run --rm -d --name stomp-apollo -p 127.0.0.1:61020:61020 finsn/stomp-apollo:${{ vars.APOLLO_IMAGE_TAG }}
-
-      - name: Setup Artemis
-        run: docker run --rm -d --name stomp-artemis -p 127.0.0.1:61040:61613 -e DISABLE_SECURITY=true -v ${{ github.workspace }}/travisci/conf/artemis/broker-00.xml:/var/lib/artemis/etc-override/broker-00.xml:ro vromero/activemq-artemis:${{ vars.ARTEMIS_IMAGE_TAG }}
-
-      - name: Setup RabbitMq
-        run: docker run --rm -d --name stomp-rabbit -p 127.0.0.1:61030:61030 -v ${{ github.workspace }}/travisci/conf/rabbit/:/etc/rabbitmq/ rabbitmq:${{ vars.RABBITMQ_IMAGE_TAG }}
+      - name: Setup Brokers
+        run: ./travisci/bin/start.sh
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -69,4 +60,6 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Run tests
-        run: vendor/bin/phpunit --debug
+        run: |
+          ./travisci/bin/logs.sh
+          vendor/bin/phpunit --debug
