@@ -46,7 +46,7 @@ class ServerAliveObserver extends AbstractBeats
      *
      * @param float $intervalUsage 150% default
      */
-    public function __construct($intervalUsage = 1.5)
+    public function __construct(float $intervalUsage = 1.5)
     {
         $this->intervalUsage = max(1, $intervalUsage);
     }
@@ -99,8 +99,8 @@ class ServerAliveObserver extends AbstractBeats
     /**
      * @inheritdoc
      */
-    protected function calculateInterval($maximum)
+    protected function calculateInterval(int $maximum): float
     {
-        return $maximum * $this->intervalUsage;
+        return floatval($maximum * $this->intervalUsage);
     }
 }

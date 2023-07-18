@@ -157,7 +157,7 @@ class Connection
      * @param array $context stream context
      * @throws ConnectionException
      */
-    public function __construct($brokerUri, $connectionTimeout = 1, array $context = [])
+    public function __construct(string $brokerUri, int $connectionTimeout = 1, array $context = [])
     {
         $this->parser = new Parser();
         $this->observers = new ConnectionObserverCollection();
@@ -199,7 +199,7 @@ class Connection
      *
      * @param callable|null $waitCallback
      */
-    public function setWaitCallback($waitCallback)
+    public function setWaitCallback(?callable $waitCallback)
     {
         if ($waitCallback !== null) {
             if (!is_callable($waitCallback)) {
@@ -214,7 +214,7 @@ class Connection
      *
      * @return int
      */
-    public function getConnectTimeout()
+    public function getConnectTimeout(): ?int
     {
         return $this->connectTimeout;
     }
@@ -224,7 +224,7 @@ class Connection
      *
      * @return ConnectionObserverCollection
      */
-    public function getObservers()
+    public function getObservers(): ConnectionObserverCollection
     {
         return $this->observers;
     }
@@ -236,7 +236,7 @@ class Connection
      * @return void
      * @throws ConnectionException
      */
-    private function parseUrl($url)
+    private function parseUrl(string $url)
     {
         $parsed = parse_url($url);
         if ($parsed === false) {
@@ -252,7 +252,7 @@ class Connection
      * @param integer $microseconds microseconds (1μs = 0.000001s, ex. 500ms = 500000)
      * @return void
      */
-    public function setReadTimeout($seconds, $microseconds = 0)
+    public function setReadTimeout(int $seconds, int $microseconds = 0)
     {
         $this->readTimeout[0] = $seconds;
         $this->readTimeout[1] = $microseconds;
@@ -265,7 +265,7 @@ class Connection
      *
      * @return array
      */
-    public function getReadTimeout()
+    public function getReadTimeout(): array
     {
         return $this->readTimeout;
     }
@@ -275,7 +275,7 @@ class Connection
      *
      * @param int $writeTimeout seconds
      */
-    public function setWriteTimeout($writeTimeout)
+    public function setWriteTimeout(int $writeTimeout)
     {
         $this->writeTimeout = $writeTimeout;
     }
@@ -298,7 +298,7 @@ class Connection
      *
      * @param int $maxWriteBytes bytes
      */
-    public function setMaxWriteBytes($maxWriteBytes)
+    public function setMaxWriteBytes(int $maxWriteBytes)
     {
         $this->maxWriteBytes = $maxWriteBytes;
     }
@@ -310,7 +310,7 @@ class Connection
      *
      * @param int $maxReadBytes bytes
      */
-    public function setMaxReadBytes($maxReadBytes)
+    public function setMaxReadBytes(int $maxReadBytes)
     {
         $this->maxReadBytes = $maxReadBytes;
     }
@@ -321,7 +321,7 @@ class Connection
      * @return boolean
      * @throws ConnectionException
      */
-    public function connect()
+    public function connect(): bool
     {
         if (!$this->isConnected()) {
             $this->connection = $this->getConnection();
@@ -332,7 +332,7 @@ class Connection
     /**
      * @param boolean $persistentConnection
      */
-    public function setPersistentConnection($persistentConnection)
+    public function setPersistentConnection(bool $persistentConnection)
     {
         $this->persistentConnection = $persistentConnection;
     }
@@ -363,7 +363,7 @@ class Connection
      *
      * @return array
      */
-    protected function getHostList()
+    protected function getHostList(): array
     {
         $hosts = array_values($this->hosts);
         if ($this->shouldRandomizeHosts()) {
@@ -380,7 +380,7 @@ class Connection
      * @return bool
      *   Whether the broker hosts should be shuffled in random order.
      */
-    protected function shouldRandomizeHosts()
+    protected function shouldRandomizeHosts(): bool
     {
         return filter_var($this->params['randomize'], FILTER_VALIDATE_BOOLEAN);
     }
@@ -430,7 +430,7 @@ class Connection
      *
      * @return boolean
      */
-    public function isConnected()
+    public function isConnected(): bool
     {
         return ($this->connection && is_resource($this->connection));
     }
@@ -457,7 +457,7 @@ class Connection
      * @return boolean
      * @throws ConnectionException
      */
-    public function writeFrame(Frame $stompFrame)
+    public function writeFrame(Frame $stompFrame): ?bool
     {
         if (!$this->isConnected()) {
             throw new ConnectionException('Not connected to any server.', $this->activeHost);
@@ -474,7 +474,7 @@ class Connection
      * @param float $timeout in seconds, supporting fractions
      * @throws ConnectionException
      */
-    private function writeData($stompFrame, $timeout)
+    private function writeData($stompFrame, float $timeout)
     {
         $data = (string) $stompFrame;
         $offset = 0;
@@ -554,7 +554,7 @@ class Connection
      * @return Frame
      * @throws ErrorFrameException
      */
-    private function onFrame(Frame $frame)
+    private function onFrame(Frame $frame): Frame
     {
         if ($frame->isErrorFrame()) {
             throw new ErrorFrameException($frame);
@@ -571,7 +571,7 @@ class Connection
      * @throws ConnectionException
      * @see Connection::setReadTimeout()
      */
-    public function hasDataToRead()
+    public function hasDataToRead(): bool
     {
         if (!$this->isConnected()) {
             throw new ConnectionException('Not connected to any server.', $this->activeHost);
@@ -594,7 +594,7 @@ class Connection
      * @return bool
      * @throws ConnectionException
      */
-    private function connectionHasDataToRead($timeoutSec, $timeoutMicros)
+    private function connectionHasDataToRead(int $timeoutSec, int $timeoutMicros): bool
     {
         $timeout = microtime(true) + $timeoutSec + ($timeoutMicros ? $timeoutMicros / 1000000 : 0);
         while (($hasData = $this->isDataOnStream()) === false) {
@@ -624,7 +624,7 @@ class Connection
      * @return bool|null
      * @throws ConnectionException
      */
-    private function isDataOnStream()
+    private function isDataOnStream(): ?bool
     {
         $read = [$this->connection];
         $write = null;
@@ -651,7 +651,7 @@ class Connection
      *
      * @return Parser
      */
-    public function getParser()
+    public function getParser(): Parser
     {
         return $this->parser;
     }
@@ -661,7 +661,7 @@ class Connection
      *
      * @return String
      */
-    public function getHost()
+    public function getHost(): ?string
     {
         return $this->host;
     }
@@ -674,7 +674,7 @@ class Connection
      * @return void
      * @throws ConnectionException
      */
-    public function sendAlive($timeout = 1.0)
+    public function sendAlive(float $timeout = 1.0)
     {
         if ($this->isConnected()) {
             $this->writeData(self::ALIVE, $timeout);

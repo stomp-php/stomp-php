@@ -64,7 +64,7 @@ class HeartbeatEmitter extends AbstractBeats
      * @param Connection $connection
      * @param float $intervalUsage
      */
-    public function __construct(Connection $connection, $intervalUsage = 0.65)
+    public function __construct(Connection $connection, float $intervalUsage = 0.65)
     {
         $this->intervalUsage = max(0.05, min($intervalUsage, 0.95));
         $this->connection = $connection;
@@ -75,7 +75,7 @@ class HeartbeatEmitter extends AbstractBeats
      *
      * @param bool $pessimistic
      */
-    public function setPessimistic($pessimistic)
+    public function setPessimistic(bool $pessimistic)
     {
         $this->pessimistic = $pessimistic;
     }
@@ -118,11 +118,11 @@ class HeartbeatEmitter extends AbstractBeats
      * @param integer $maximum
      * @return float
      */
-    protected function calculateInterval($maximum)
+    protected function calculateInterval(int $maximum): float
     {
         $intervalUsed = $maximum * $this->intervalUsage;
         $this->assertReadTimeoutSufficient($intervalUsed);
-        return $intervalUsed;
+        return floatval($intervalUsed);
     }
 
     /**
@@ -131,7 +131,7 @@ class HeartbeatEmitter extends AbstractBeats
      * @param float $interval
      * @return void
      */
-    private function assertReadTimeoutSufficient($interval)
+    private function assertReadTimeoutSufficient(float $interval)
     {
         $readTimeout = $this->connection->getReadTimeout();
         $readTimeoutMs = ($readTimeout[0] * 1000) + ($readTimeout[1] / 1000);

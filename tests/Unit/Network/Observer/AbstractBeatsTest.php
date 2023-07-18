@@ -208,7 +208,7 @@ class AbstractBeatsTest extends TestCase
             );
         $instance->expects($this->once())
             ->method('calculateInterval')
-            ->willReturn(max($intervalClient, $intervalClient));
+            ->willReturn(floatval(max($intervalClient, $intervalClient)));
     }
 
     /**

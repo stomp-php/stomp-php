@@ -87,7 +87,7 @@ abstract class AbstractBeats implements ConnectionObserver
      * @param integer $maximum agreement from client and server in milliseconds
      * @return float
      */
-    abstract protected function calculateInterval($maximum);
+    abstract protected function calculateInterval(int $maximum): float;
 
     /**
      * Called whenever a activity is detected that was issued by the client.
@@ -115,7 +115,7 @@ abstract class AbstractBeats implements ConnectionObserver
      *
      * @return bool
      */
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->enabled;
     }
@@ -125,7 +125,7 @@ abstract class AbstractBeats implements ConnectionObserver
      *
      * @return bool
      */
-    public function isDelayed()
+    public function isDelayed(): bool
     {
         if ($this->enabled && $this->lastbeat) {
             $now = microtime(true);
@@ -139,7 +139,7 @@ abstract class AbstractBeats implements ConnectionObserver
      *
      * @return null|float
      */
-    public function getInterval()
+    public function getInterval(): ?float
     {
         return $this->intervalUsed;
     }
@@ -172,7 +172,7 @@ abstract class AbstractBeats implements ConnectionObserver
      * @param Frame $frame
      * @return array
      */
-    private function getHeartbeats(Frame $frame)
+    private function getHeartbeats(Frame $frame): array
     {
         $beats = $frame['heart-beat'];
         if ($beats) {

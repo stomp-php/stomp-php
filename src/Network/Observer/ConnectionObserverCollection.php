@@ -29,7 +29,7 @@ class ConnectionObserverCollection implements ConnectionObserver
      * @param ConnectionObserver $observer
      * @return ConnectionObserverCollection this collection
      */
-    public function addObserver(ConnectionObserver $observer)
+    public function addObserver(ConnectionObserver $observer): self
     {
         if (!in_array($observer, $this->observers, true)) {
             $this->observers[] = $observer;
@@ -43,7 +43,7 @@ class ConnectionObserverCollection implements ConnectionObserver
      * @param ConnectionObserver $observer
      * @return ConnectionObserverCollection this collection
      */
-    public function removeObserver(ConnectionObserver $observer)
+    public function removeObserver(ConnectionObserver $observer): self
     {
         $index = array_search($observer, $this->observers, true);
         if ($index !== false) {
@@ -57,7 +57,7 @@ class ConnectionObserverCollection implements ConnectionObserver
      *
      * @return ConnectionObserver[]
      */
-    public function getObservers()
+    public function getObservers(): array
     {
         return array_values($this->observers);
     }
