@@ -134,7 +134,10 @@ class ConnectionTest extends TestCase
             $connection->readFrame();
             $this->fail('Expected a exception!');
         } catch (ConnectionException $exception) {
-            $this->assertStringContainsString('Check failed to determine if the socket is readable', $exception->getMessage());
+            $this->assertStringContainsString(
+                'Check failed to determine if the socket is readable',
+                $exception->getMessage()
+            );
         } catch (\ValueError $exception) {
             $this->assertStringContainsString(
                 'No stream arrays were passed',

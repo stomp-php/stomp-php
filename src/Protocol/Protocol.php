@@ -32,6 +32,8 @@ class Protocol
     private $clientId;
 
     /**
+     * Stomp version
+     *
      * @var string
      */
     private $version;
@@ -46,11 +48,11 @@ class Protocol
     /**
      * Setup stomp protocol with configuration.
      *
-     * @param string $clientId
+     * @param string|null $clientId
      * @param string $version
-     * @param string $server
+     * @param string|null $server
      */
-    public function __construct($clientId, $version = Version::VERSION_1_0, $server = null)
+    public function __construct(?string $clientId, string $version = Version::VERSION_1_0, ?string $server = null)
     {
         $this->clientId = $clientId;
         $this->server = $server;
@@ -60,20 +62,20 @@ class Protocol
     /**
      * Get the connect frame
      *
-     * @param string $login
-     * @param string $passcode
-     * @param array $versions
-     * @param string $host
-     * @param int[] $heartbeat
-     * @return \Stomp\Transport\Frame
+     * @param string|null $login The username credential.
+     * @param string|null $passcode The password credential.
+     * @param array $versions Array of versions to support.
+     * @param string|null $host The host to connect to.
+     * @param int[] $heartbeat Array of how often the client will send a heartbeat and will expect a heartbeat.
+     * @return \Stomp\Transport\Frame The CONNECT frame.
      */
     final public function getConnectFrame(
-        $login = '',
-        $passcode = '',
+        ?string $login = '',
+        ?string $passcode = '',
         array $versions = [],
-        $host = null,
-        $heartbeat = [0, 0]
-    ) {
+        ?string $host = null,
+        array $heartbeat = [0, 0]
+    ): Frame {
         $frame = $this->createFrame('CONNECT');
         $frame->legacyMode(true);
 
@@ -99,15 +101,22 @@ class Protocol
     /**
      * Get subscribe frame.
      *
-     * @param string $destination
-     * @param string $subscriptionId
-     * @param string $ack
-     * @param string $selector
-     * @return \Stomp\Transport\Frame
-     * @throws StompException;
+     * @param string $destination The destination to subscribe to.
+     * @param string|null $subscriptionId A subscription id.
+     * @param string $ack The ACK selection.
+     * @param string|null $selector An Sql 92 selector.
+     * @return \Stomp\Transport\Frame A SUBSCRIBE frame.
+     *
+     * @throws \Stomp\Exception\StompException
+     *
+     * @see https://activemq.apache.org/selectors.html
      */
-    public function getSubscribeFrame($destination, $subscriptionId = null, $ack = 'auto', $selector = null)
-    {
+    public function getSubscribeFrame(
+        string $destination,
+        ?string $subscriptionId = null,
+        string $ack = 'auto',
+        ?string $selector = null
+    ): Frame {
         // validate ACK types per spec
         // https://stomp.github.io/stomp-specification-1.0.html#frame-ACK
         // https://stomp.github.io/stomp-specification-1.1.html#ACK
@@ -140,11 +149,11 @@ class Protocol
     /**
      * Get unsubscribe frame.
      *
-     * @param string $destination
-     * @param string $subscriptionId
-     * @return \Stomp\Transport\Frame
+     * @param string $destination The destination to unsubscribe from.
+     * @param string|null $subscriptionId The subscription id to unsubscribe from.
+     * @return \Stomp\Transport\Frame The UNSUBSCRIBE frame.
      */
-    public function getUnsubscribeFrame($destination, $subscriptionId = null)
+    public function getUnsubscribeFrame(string $destination, ?string $subscriptionId = null): Frame
     {
         $frame = $this->createFrame('UNSUBSCRIBE');
         $frame['destination'] = $destination;
@@ -155,10 +164,10 @@ class Protocol
     /**
      * Get transaction begin frame.
      *
-     * @param string $transactionId
-     * @return \Stomp\Transport\Frame
+     * @param string|null $transactionId The transaction ID.
+     * @return \Stomp\Transport\Frame The BEGIN frame.
      */
-    public function getBeginFrame($transactionId = null)
+    public function getBeginFrame(?string $transactionId = null): Frame
     {
         $frame = $this->createFrame('BEGIN');
         $frame['transaction'] = $transactionId;
@@ -168,10 +177,10 @@ class Protocol
     /**
      * Get transaction commit frame.
      *
-     * @param string $transactionId
-     * @return \Stomp\Transport\Frame
+     * @param string|null $transactionId The transaction ID.
+     * @return \Stomp\Transport\Frame The COMMIT frame.
      */
-    public function getCommitFrame($transactionId = null)
+    public function getCommitFrame(?string $transactionId = null): Frame
     {
         $frame = $this->createFrame('COMMIT');
         $frame['transaction'] = $transactionId;
@@ -181,10 +190,10 @@ class Protocol
     /**
      * Get transaction abort frame.
      *
-     * @param string $transactionId
-     * @return \Stomp\Transport\Frame
+     * @param string|null $transactionId The transaction ID.
+     * @return \Stomp\Transport\Frame The ABORT frame.
      */
-    public function getAbortFrame($transactionId = null)
+    public function getAbortFrame(?string $transactionId = null): Frame
     {
         $frame = $this->createFrame('ABORT');
         $frame['transaction'] = $transactionId;
@@ -194,11 +203,11 @@ class Protocol
     /**
      * Get message acknowledge frame.
      *
-     * @param Frame $frame
-     * @param string $transactionId
-     * @return Frame
+     * @param Frame $frame The frame to acknowledge.
+     * @param string|null $transactionId The transaction ID (if any).
+     * @return Frame The ACK frame.
      */
-    public function getAckFrame(Frame $frame, $transactionId = null)
+    public function getAckFrame(Frame $frame, ?string $transactionId = null): Frame
     {
         $ack = $this->createFrame('ACK');
         $ack['transaction'] = $transactionId;
@@ -220,14 +229,14 @@ class Protocol
     /**
      * Get message not acknowledge frame.
      *
-     * @param \Stomp\Transport\Frame $frame
-     * @param string $transactionId
-     * @param bool $requeue Requeue header
-     * @return \Stomp\Transport\Frame
-     * @throws StompException
-     * @throws \LogicException
+     * @param \Stomp\Transport\Frame $frame The frame to not acknowledge.
+     * @param string|null $transactionId The transaction ID (if any).
+     * @param bool|null $requeue Requeue header (if any)
+     * @return \Stomp\Transport\Frame The NACK frame.
+     * @throws StompException If protocol using Stomp version 1.0
+     * @throws \LogicException If requeue header specified (RabbitMQ specific NOT Stomp).
      */
-    public function getNackFrame(Frame $frame, $transactionId = null, $requeue = null)
+    public function getNackFrame(Frame $frame, ?string $transactionId = null, ?bool $requeue = null): Frame
     {
         if ($requeue !== null) {
             throw new \LogicException('requeue header not supported');
@@ -253,9 +262,9 @@ class Protocol
     /**
      * Get the disconnect frame.
      *
-     * @return \Stomp\Transport\Frame
+     * @return \Stomp\Transport\Frame The DISCONNECT frame.
      */
-    public function getDisconnectFrame()
+    public function getDisconnectFrame(): Frame
     {
         $frame = $this->createFrame('DISCONNECT');
         if ($this->hasClientId()) {
@@ -269,17 +278,17 @@ class Protocol
      *
      * @return boolean
      */
-    public function hasClientId()
+    public function hasClientId(): bool
     {
         return (boolean) $this->clientId;
     }
 
     /**
-     * Client Id is set
+     * Get Client Id.
      *
-     * @return string
+     * @return string The client Id.
      */
-    public function getClientId()
+    public function getClientId(): ?string
     {
         return $this->clientId;
     }
@@ -289,7 +298,7 @@ class Protocol
      *
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->version;
     }
@@ -299,7 +308,7 @@ class Protocol
      *
      * @return string
      */
-    public function getServer()
+    public function getServer(): string
     {
         return $this->server;
     }
@@ -310,7 +319,7 @@ class Protocol
      * @param string $version
      * @return bool
      */
-    public function hasVersion($version)
+    public function hasVersion(string $version): bool
     {
         return version_compare($this->version, $version, '>=');
     }
@@ -318,10 +327,10 @@ class Protocol
     /**
      * Creates a Frame according to the detected STOMP version.
      *
-     * @param string $command
-     * @return Frame
+     * @param string $command The frame command.
+     * @return Frame The frame.
      */
-    protected function createFrame($command)
+    protected function createFrame(string $command): Frame
     {
         $frame = new Frame($command);
 

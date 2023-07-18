@@ -24,7 +24,7 @@ class OpenMq extends Protocol
     /**
      * @inheritdoc
      */
-    public function getAckFrame(Frame $frame, $transactionId = null)
+    public function getAckFrame(Frame $frame, ?string $transactionId = null): Frame
     {
         $ack = $this->createFrame('ACK');
         $ack['transaction'] = $transactionId;

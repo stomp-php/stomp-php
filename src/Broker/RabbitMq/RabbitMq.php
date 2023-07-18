@@ -39,19 +39,19 @@ class RabbitMq extends Protocol
      * RabbitMq subscribe frame.
      *
      * @param string $destination
-     * @param string $subscriptionId
+     * @param string|null $subscriptionId
      * @param string $ack
-     * @param string $selector
+     * @param string|null $selector
      * @param boolean|false $durable durable subscription
      * @return Frame
      */
     public function getSubscribeFrame(
-        $destination,
-        $subscriptionId = null,
-        $ack = 'auto',
-        $selector = null,
-        $durable = false
-    ) {
+        string $destination,
+        ?string $subscriptionId = null,
+        string $ack = 'auto',
+        ?string $selector = null,
+        bool $durable = false
+    ): Frame {
         $frame = parent::getSubscribeFrame($destination, $subscriptionId, $ack, $selector);
         $frame['prefetch-count'] = $this->prefetchCount;
         if ($durable) {
@@ -64,12 +64,15 @@ class RabbitMq extends Protocol
      * RabbitMq unsubscribe frame.
      *
      * @param string $destination
-     * @param string $subscriptionId
+     * @param string|null $subscriptionId
      * @param bool|false $durable
      * @return \Stomp\Transport\Frame
      */
-    public function getUnsubscribeFrame($destination, $subscriptionId = null, $durable = false)
-    {
+    public function getUnsubscribeFrame(
+        string $destination,
+        ?string $subscriptionId = null,
+        bool $durable = false
+    ): Frame {
         $frame = parent::getUnsubscribeFrame($destination, $subscriptionId);
         if ($durable) {
             $frame['persistent'] = 'true';
@@ -83,7 +86,7 @@ class RabbitMq extends Protocol
      *
      * @return int
      */
-    public function getPrefetchCount()
+    public function getPrefetchCount(): int
     {
         return $this->prefetchCount;
     }
@@ -93,7 +96,7 @@ class RabbitMq extends Protocol
      *
      * @param int $prefetchCount
      */
-    public function setPrefetchCount($prefetchCount)
+    public function setPrefetchCount(int $prefetchCount)
     {
         $this->prefetchCount = $prefetchCount;
     }
@@ -103,12 +106,12 @@ class RabbitMq extends Protocol
      * Get message not acknowledge frame.
      *
      * @param \Stomp\Transport\Frame $frame
-     * @param string $transactionId
-     * @param bool $requeue Requeue header supported on RabbitMQ >= 3.4, ignored in prior versions
+     * @param string|null $transactionId
+     * @param bool|null $requeue Requeue header supported on RabbitMQ >= 3.4, ignored in prior versions
      * @return \Stomp\Transport\Frame
      * @throws StompException
      */
-    public function getNackFrame(Frame $frame, $transactionId = null, $requeue = null)
+    public function getNackFrame(Frame $frame, ?string $transactionId = null, ?bool $requeue = null): Frame
     {
         if ($this->getVersion() === Version::VERSION_1_0) {
             throw new StompException('Stomp Version 1.0 has no support for NACK Frames.');

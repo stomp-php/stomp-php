@@ -36,19 +36,19 @@ class ActiveMq extends Protocol
      * ActiveMq subscribe frame.
      *
      * @param string $destination
-     * @param string $subscriptionId
+     * @param string|null $subscriptionId
      * @param string $ack
-     * @param string $selector
-     * @param boolean|false $durable durable subscription
+     * @param string|null $selector
+     * @param boolean $durable durable subscription
      * @return Frame
      */
     public function getSubscribeFrame(
-        $destination,
-        $subscriptionId = null,
-        $ack = 'auto',
-        $selector = null,
-        $durable = false
-    ) {
+        string $destination,
+        ?string $subscriptionId = null,
+        string $ack = 'auto',
+        ?string $selector = null,
+        bool $durable = false
+    ): Frame {
         $frame = parent::getSubscribeFrame($destination, $subscriptionId, $ack, $selector);
         $frame['activemq.prefetchSize'] = $this->prefetchSize;
         if ($durable) {
@@ -61,13 +61,16 @@ class ActiveMq extends Protocol
     /**
      * ActiveMq unsubscribe frame.
      *
-     * @param string $destination
-     * @param string $subscriptionId
-     * @param bool|false $durable
+     * @param string $destination The destination to unsubscribe from.
+     * @param string|null $subscriptionId The subscription id to unsubscribe from.
+     * @param bool $durable Whether this was a durable subscription.
      * @return Frame
      */
-    public function getUnsubscribeFrame($destination, $subscriptionId = null, $durable = false)
-    {
+    public function getUnsubscribeFrame(
+        string $destination,
+        ?string $subscriptionId = null,
+        bool $durable = false
+    ): Frame {
         $frame = parent::getUnsubscribeFrame($destination, $subscriptionId);
         if ($durable) {
             $frame['activemq.subscriptionName'] = $this->getClientId();
@@ -79,7 +82,7 @@ class ActiveMq extends Protocol
     /**
      * @inheritdoc
      */
-    public function getAckFrame(Frame $frame, $transactionId = null)
+    public function getAckFrame(Frame $frame, ?string $transactionId = null): Frame
     {
         $ack = $this->createFrame('ACK');
         $ack['transaction'] = $transactionId;
@@ -97,7 +100,7 @@ class ActiveMq extends Protocol
     /**
      * @inheritdoc
      */
-    public function getNackFrame(Frame $frame, $transactionId = null, $requeue = null)
+    public function getNackFrame(Frame $frame, ?string $transactionId = null, ?bool $requeue = null): Frame
     {
         if ($requeue !== null) {
             throw new \LogicException(
@@ -123,7 +126,7 @@ class ActiveMq extends Protocol
      *
      * @return int
      */
-    public function getPrefetchSize()
+    public function getPrefetchSize(): int
     {
         return $this->prefetchSize;
     }
@@ -134,7 +137,7 @@ class ActiveMq extends Protocol
      * @param int $prefetchSize
      * @return ActiveMq
      */
-    public function setPrefetchSize($prefetchSize)
+    public function setPrefetchSize(int $prefetchSize): self
     {
         $this->prefetchSize = $prefetchSize;
         return $this;
