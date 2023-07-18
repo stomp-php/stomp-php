@@ -47,7 +47,7 @@ abstract class ActiveMqMode
      * @return ActiveMq
      * @throws \Stomp\Broker\Exception\UnsupportedBrokerException
      */
-    protected function getProtocol()
+    protected function getProtocol(): ActiveMq
     {
         $protocol = $this->client->getProtocol();
         if (!$protocol instanceof ActiveMq) {
@@ -60,7 +60,7 @@ abstract class ActiveMqMode
     /**
      * @return Options
      */
-    public function getOptions()
+    public function getOptions(): Options
     {
         return $this->options;
     }
@@ -69,7 +69,7 @@ abstract class ActiveMqMode
      * @param Options $options
      * @return ActiveMqMode
      */
-    public function setOptions(Options $options)
+    public function setOptions(Options $options): self
     {
         $this->options = $options;
         return $this;

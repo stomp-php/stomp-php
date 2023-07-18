@@ -43,76 +43,126 @@ class Options implements ArrayAccess
         }
     }
 
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    /**
+     * @inheritdoc
+     */
+    public function offsetExists($offset): bool
     {
         return isset($this->options[$offset]);
     }
 
+
+    /**
+     * @inheritdoc
+     */
     #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->options[$offset];
     }
 
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    /**
+     * @inheritdoc
+     */
+    public function offsetSet($offset, $value): void
     {
         if (in_array($offset, $this->extensions, true)) {
             $this->options[$offset] = $value;
         }
     }
 
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    /**
+     * @inheritdoc
+     */
+    public function offsetUnset($offset): void
     {
         unset($this->options[$offset]);
     }
 
-    public function getOptions()
+    /**
+     * @return array The options.
+     */
+    public function getOptions(): array
     {
         return $this->options;
     }
 
 
-    public function activateRetroactive()
+    /**
+     * Activate retroactive option.
+     *
+     * @return $this
+     */
+    public function activateRetroactive(): self
     {
         $this['activemq.retroactive'] = 'true';
         return $this;
     }
-    public function activateExclusive()
+
+    /**
+     * Active exclusive option.
+     *
+     * @return $this
+     */
+    public function activateExclusive(): self
     {
         $this['activemq.exclusive'] = 'true';
         return $this;
     }
 
-    public function activateDispatchAsync()
+    /**
+     * Active dispatchAsync option.
+     *
+     * @return $this
+     */
+    public function activateDispatchAsync(): self
     {
         $this['activemq.dispatchAsync'] = 'true';
         return $this;
     }
 
-    public function setPriority($priority)
+    /**
+     * Set the priority.
+     *
+     * @param $priority mixed The priority.
+     * @return $this
+     */
+    public function setPriority($priority): self
     {
         $this['activemq.priority'] = $priority;
         return $this;
     }
 
-
-    public function setPrefetchSize($size)
+    /**
+     * Set the prefetch size.
+     *
+     * @param $size mixed The prefetch size to set.
+     * @return $this
+     */
+    public function setPrefetchSize($size): self
     {
         $this['activemq.prefetchSize'] = max($size, 1);
         return $this;
     }
 
-
-    public function activateNoLocal()
+    /**
+     * Activate the noLocal option.
+     *
+     * @return $this
+     */
+    public function activateNoLocal(): self
     {
         $this['activemq.noLocal'] = 'true';
         return $this;
     }
 
-    public function setMaximumPendingLimit($limit)
+    /**
+     * Set the maximum pending limit option.
+     *
+     * @param $limit mixed The max pending limit.
+     * @return $this
+     */
+    public function setMaximumPendingLimit($limit): self
     {
         $this['activemq.maximumPendingMessageLimit'] = $limit;
         return $this;

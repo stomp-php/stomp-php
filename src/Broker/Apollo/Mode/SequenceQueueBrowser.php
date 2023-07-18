@@ -50,8 +50,12 @@ class SequenceQueueBrowser extends QueueBrowser
      * @param int $startAt
      * @param bool $stopOnEnd
      */
-    public function __construct(Client $client, $destination, $startAt = self::START_HEAD, $stopOnEnd = true)
-    {
+    public function __construct(
+        Client $client,
+        string $destination,
+        int $startAt = self::START_HEAD,
+        bool $stopOnEnd = true
+    ) {
         $this->startAt = $startAt;
         parent::__construct($client, $destination, $stopOnEnd);
     }
@@ -59,7 +63,7 @@ class SequenceQueueBrowser extends QueueBrowser
     /**
      * @inheritdoc
      */
-    protected function getHeader()
+    protected function getHeader(): array
     {
         return parent::getHeader() + ['include-seq' => 'seq', 'from-seq' => $this->startAt];
     }
@@ -80,7 +84,7 @@ class SequenceQueueBrowser extends QueueBrowser
      *
      * @return null|int
      */
-    public function getSeq()
+    public function getSeq(): ?int
     {
         return $this->seq;
     }

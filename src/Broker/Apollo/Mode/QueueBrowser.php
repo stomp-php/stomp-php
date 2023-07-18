@@ -56,9 +56,8 @@ class QueueBrowser
      * @param string $destination
      * @param bool $stopOnEnd
      */
-    public function __construct(Client $client, $destination, $stopOnEnd = true)
+    public function __construct(Client $client, string $destination, bool $stopOnEnd = true)
     {
-        $this->stopOnEnd = $stopOnEnd;
         $this->client = $client;
         $this->stopOnEnd = $stopOnEnd;
         $this->subscription = new Subscription($destination, null, 'auto', IdGenerator::generateId());
@@ -69,7 +68,7 @@ class QueueBrowser
      * @return Apollo
      * @throws UnsupportedBrokerException
      */
-    final protected function getProtocol()
+    final protected function getProtocol(): Apollo
     {
         $protocol = $this->client->getProtocol();
         if (!$protocol instanceof Apollo) {
@@ -83,7 +82,7 @@ class QueueBrowser
      *
      * @return array
      */
-    protected function getHeader()
+    protected function getHeader(): array
     {
         return [
             'browser' => 'true',
@@ -135,7 +134,7 @@ class QueueBrowser
     /**
      * Read next message.
      *
-     * @return bool|false|\Stomp\Transport\Frame
+     * @return bool|\Stomp\Transport\Frame
      */
     public function read()
     {
@@ -156,7 +155,7 @@ class QueueBrowser
      *
      * @return boolean
      */
-    public function hasReachedEnd()
+    public function hasReachedEnd(): bool
     {
         return $this->reachedEnd;
     }
@@ -166,7 +165,7 @@ class QueueBrowser
      *
      * @return boolean
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->active;
     }
@@ -176,7 +175,7 @@ class QueueBrowser
      *
      * @return Subscription
      */
-    public function getSubscription()
+    public function getSubscription(): Subscription
     {
         return $this->subscription;
     }
