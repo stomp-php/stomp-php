@@ -63,11 +63,11 @@ class Version
     /**
      * Returns the protocol to use.
      *
-     * @param string $clientId
+     * @param string|null $clientId
      * @param string $default server to use of no server detected
      * @return ActiveMq|Apollo|Protocol|RabbitMq
      */
-    public function getProtocol($clientId, $default = 'ActiveMQ/5.11.1')
+    public function getProtocol(?string $clientId, string $default = 'ActiveMQ/5.11.1'): Protocol
     {
         $server = trim((string) $this->frame['server']) ?: $default;
         $version = $this->getVersion();
@@ -91,7 +91,7 @@ class Version
      *
      * @return string
      */
-    public function getVersion()
+    public function getVersion(): string
     {
         return $this->frame['version'] ?: self::VERSION_1_0;
     }
@@ -102,7 +102,7 @@ class Version
      * @param string $version to check against
      * @return boolean
      */
-    public function hasVersion($version)
+    public function hasVersion(string $version): bool
     {
         return version_compare($this->getVersion(), $version, '>=');
     }
