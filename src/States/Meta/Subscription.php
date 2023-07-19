@@ -19,7 +19,7 @@ use Stomp\Transport\Frame;
 class Subscription
 {
     /**
-     * @var int
+     * @var string
      */
     private $subscriptionId;
 
@@ -46,16 +46,16 @@ class Subscription
     /**
      * Subscription constructor.
      * @param String $destination
-     * @param String $selector
+     * @param String|null $selector
      * @param String $ack
-     * @param int $subscriptionId
+     * @param string|null $subscriptionId
      * @param array $header additionally passed to create this subscription
      */
     public function __construct(
         string $destination,
         ?string $selector,
         string $ack,
-        ?int $subscriptionId,
+        ?string $subscriptionId,
         array $header = []
     ) {
         $this->subscriptionId = $subscriptionId;
@@ -67,9 +67,9 @@ class Subscription
 
 
     /**
-     * @return int
+     * @return string
      */
-    public function getSubscriptionId(): int
+    public function getSubscriptionId(): string
     {
         return $this->subscriptionId;
     }

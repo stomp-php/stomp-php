@@ -75,17 +75,17 @@ interface IStateful
      * @param string|null $selector
      * @param string $ack
      * @param array  $header
-     * @return int
+     * @return string The subscription ID.
      */
-    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): int;
+    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): string;
 
     /**
      * Unsubscribe from current or given destination.
      *
-     * @param int $subscriptionId
+     * @param string|null $subscriptionId
      * @return void
      */
-    public function unsubscribe(int $subscriptionId = null);
+    public function unsubscribe(string $subscriptionId = null);
 
 
     /**

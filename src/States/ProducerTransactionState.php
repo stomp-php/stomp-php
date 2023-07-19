@@ -50,7 +50,7 @@ class ProducerTransactionState extends ProducerState
     /**
      * @inheritdoc
      */
-    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): int
+    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): string
     {
         return $this->setState(
             new ConsumerTransactionState($this->getClient(), $this->getBase()),

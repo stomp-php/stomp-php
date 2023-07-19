@@ -102,7 +102,7 @@ class ConsumerState extends StateTemplate
     /**
      * @inheritdoc
      */
-    public function subscribe($destination, $selector, $ack, array $header = []): int
+    public function subscribe($destination, $selector, $ack, array $header = []): string
     {
         $subscription = new Subscription($destination, $selector, $ack, IdGenerator::generateId(), $header);
         $this->getClient()->sendFrame(

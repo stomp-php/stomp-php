@@ -124,9 +124,9 @@ class StatefulStomp extends StateSetter implements IStateful
      * @param string $selector
      * @param string $ack
      * @param array $header
-     * @return int
+     * @return string The subscription id.
      */
-    public function subscribe(string $destination, $selector = null, string $ack = 'auto', array $header = []): int
+    public function subscribe(string $destination, $selector = null, string $ack = 'auto', array $header = []): string
     {
         return $this->state->subscribe($destination, $selector, $ack, $header);
     }
@@ -134,10 +134,10 @@ class StatefulStomp extends StateSetter implements IStateful
     /**
      * Unsubscribe from current or given destination.
      *
-     * @param int $subscriptionId
+     * @param string $subscriptionId
      * @return void
      */
-    public function unsubscribe(int $subscriptionId = null)
+    public function unsubscribe(string $subscriptionId = null)
     {
         $this->state->unsubscribe($subscriptionId);
     }

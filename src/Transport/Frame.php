@@ -86,17 +86,13 @@ class Frame implements ArrayAccess
      *
      * @return string
      */
-    public function getMessageId(): string
+    public function getMessageId(): ?string
     {
-        if (!isset($this['message-id'])) {
-            $this['message-id'] = $this->uuid();
+        if ($this->isLegacyMode()) {
+            return $this['message-id'];
+        } else {
+            return $this['id'] ?? $this['message-id'];
         }
-        return $this['message-id'];
-    }
-
-    private function uuid(): string
-    {
-        return bin2hex(random_bytes(20));
     }
 
     /**

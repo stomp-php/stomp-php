@@ -152,7 +152,7 @@ abstract class StateTemplate extends StateSetter implements IStateful
     /**
      * @inheritdoc
      */
-    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): int
+    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): string
     {
         throw new InvalidStateException($this, __FUNCTION__);
     }

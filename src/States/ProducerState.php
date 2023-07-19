@@ -35,7 +35,7 @@ class ProducerState extends StateTemplate
     /**
      * @inheritdoc
      */
-    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): int
+    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): string
     {
         return $this->setState(
             new ConsumerState($this->getClient(), $this->getBase()),
