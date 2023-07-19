@@ -90,7 +90,7 @@ abstract class ProtocolTestCase extends TestCase
         $instance = $this->getProtocol(Version::VERSION_1_2);
 
         $actual = $instance->getAckFrame(
-            new Frame(null, ['id' => 'id-value', 'ack' => 'ack-id-value']),
+            new Frame(null, ['id' => 'id-value', 'ack' => 'id-value']),
             'my-transaction'
         );
         $this->assertIsAckFrame($actual);
@@ -121,7 +121,10 @@ abstract class ProtocolTestCase extends TestCase
     {
         $instance = $this->getProtocol(Version::VERSION_1_2);
 
-        $actual = $instance->getNackFrame(new Frame(null, ['message-id' => 'id-value']), 'my-transaction');
+        $actual = $instance->getNackFrame(
+            new Frame(null, ['message-id' => 'id-value', 'ack' => 'id-value']),
+            'my-transaction'
+        );
         $this->assertIsNackFrame($actual);
         $this->assertEquals('id-value', $actual['id']);
         $this->assertEquals('my-transaction', $actual['transaction']);
