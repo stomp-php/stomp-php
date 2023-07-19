@@ -51,8 +51,13 @@ class Subscription
      * @param int $subscriptionId
      * @param array $header additionally passed to create this subscription
      */
-    public function __construct($destination, $selector, $ack, $subscriptionId, array $header = [])
-    {
+    public function __construct(
+        string $destination,
+        ?string $selector,
+        string $ack,
+        ?int $subscriptionId,
+        array $header = []
+    ) {
         $this->subscriptionId = $subscriptionId;
         $this->selector = $selector;
         $this->destination = $destination;
@@ -64,7 +69,7 @@ class Subscription
     /**
      * @return int
      */
-    public function getSubscriptionId()
+    public function getSubscriptionId(): int
     {
         return $this->subscriptionId;
     }
@@ -72,7 +77,7 @@ class Subscription
     /**
      * @return String
      */
-    public function getSelector()
+    public function getSelector(): ?string
     {
         return $this->selector;
     }
@@ -80,7 +85,7 @@ class Subscription
     /**
      * @return String
      */
-    public function getDestination()
+    public function getDestination(): ?string
     {
         return $this->destination;
     }
@@ -88,7 +93,7 @@ class Subscription
     /**
      * @return String
      */
-    public function getAck()
+    public function getAck(): string
     {
         return $this->ack;
     }
@@ -96,7 +101,7 @@ class Subscription
     /**
      * @return array
      */
-    public function getHeader()
+    public function getHeader(): array
     {
         return $this->header;
     }
@@ -107,7 +112,7 @@ class Subscription
      * @param Frame $frame
      * @return bool
      */
-    public function belongsTo(Frame $frame)
+    public function belongsTo(Frame $frame): bool
     {
         return ($frame['subscription'] == $this->subscriptionId);
     }

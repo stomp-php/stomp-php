@@ -25,13 +25,13 @@ trait TransactionsTrait
     /**
      * @return Protocol
      */
-    abstract public function getProtocol();
+    abstract public function getProtocol(): Protocol;
 
 
     /**
      * @return Client
      */
-    abstract public function getClient();
+    abstract public function getClient(): Client;
 
     /**
      * Id used for current transaction.
@@ -62,7 +62,7 @@ trait TransactionsTrait
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return ['transactionId' => $this->transactionId];
     }
@@ -74,7 +74,7 @@ trait TransactionsTrait
      * @param \Stomp\Transport\Message $message
      * @return bool
      */
-    public function send($destination, Message $message)
+    public function send(string $destination, Message $message): bool
     {
         return $this->getClient()->send($destination, $message, ['transaction' => $this->transactionId], false);
     }

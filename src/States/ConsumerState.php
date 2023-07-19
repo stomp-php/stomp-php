@@ -86,7 +86,7 @@ class ConsumerState extends StateTemplate
     /**
      * @inheritdoc
      */
-    public function send($destination, Message $message)
+    public function send(string $destination, Message $message): bool
     {
         return $this->getClient()->send($destination, $message);
     }
@@ -102,7 +102,7 @@ class ConsumerState extends StateTemplate
     /**
      * @inheritdoc
      */
-    public function subscribe($destination, $selector, $ack, array $header = [])
+    public function subscribe($destination, $selector, $ack, array $header = []): int
     {
         $subscription = new Subscription($destination, $selector, $ack, IdGenerator::generateId(), $header);
         $this->getClient()->sendFrame(
@@ -134,10 +134,10 @@ class ConsumerState extends StateTemplate
     /**
      * Closes given subscription or last opened.
      *
-     * @param string $subscriptionId
+     * @param string|null $subscriptionId
      * @return bool true if last one was closed
      */
-    protected function endSubscription($subscriptionId = null)
+    protected function endSubscription(?string $subscriptionId = null): bool
     {
         if (!$subscriptionId) {
             $subscriptionId = $this->subscriptions->getLast()->getSubscriptionId();
@@ -173,7 +173,7 @@ class ConsumerState extends StateTemplate
     /**
      * @inheritdoc
      */
-    public function getSubscriptions()
+    public function getSubscriptions(): SubscriptionList
     {
         return $this->subscriptions;
     }
@@ -182,7 +182,7 @@ class ConsumerState extends StateTemplate
     /**
      * @inheritdoc
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             'subscriptions' => $this->subscriptions

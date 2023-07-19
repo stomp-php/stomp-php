@@ -80,7 +80,7 @@ class StatefulStomp extends StateSetter implements IStateful
      * @param \Stomp\Transport\Message $message
      * @return bool
      */
-    public function send($destination, Message $message)
+    public function send(string $destination, Message $message): bool
     {
         return $this->state->send($destination, $message);
     }
@@ -126,7 +126,7 @@ class StatefulStomp extends StateSetter implements IStateful
      * @param array $header
      * @return int
      */
-    public function subscribe($destination, $selector = null, $ack = 'auto', array $header = [])
+    public function subscribe(string $destination, $selector = null, string $ack = 'auto', array $header = []): int
     {
         return $this->state->subscribe($destination, $selector, $ack, $header);
     }
@@ -137,7 +137,7 @@ class StatefulStomp extends StateSetter implements IStateful
      * @param int $subscriptionId
      * @return void
      */
-    public function unsubscribe($subscriptionId = null)
+    public function unsubscribe(int $subscriptionId = null)
     {
         $this->state->unsubscribe($subscriptionId);
     }
@@ -147,7 +147,7 @@ class StatefulStomp extends StateSetter implements IStateful
      *
      * @return SubscriptionList
      */
-    public function getSubscriptions()
+    public function getSubscriptions(): SubscriptionList
     {
         return $this->state->getSubscriptions();
     }

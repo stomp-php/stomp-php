@@ -52,7 +52,7 @@ abstract class StateTemplate extends StateSetter implements IStateful
      *
      * @return StatefulStomp
      */
-    protected function getBase()
+    protected function getBase(): StatefulStomp
     {
         return $this->base;
     }
@@ -70,12 +70,12 @@ abstract class StateTemplate extends StateSetter implements IStateful
      *
      * @return array
      */
-    abstract protected function getOptions();
+    abstract protected function getOptions(): array;
 
     /**
      * @return Client
      */
-    protected function getClient()
+    protected function getClient(): Client
     {
         return $this->client;
     }
@@ -83,7 +83,7 @@ abstract class StateTemplate extends StateSetter implements IStateful
     /**
      * @return Protocol
      */
-    protected function getProtocol()
+    protected function getProtocol(): Protocol
     {
         return $this->client->getProtocol();
     }
@@ -120,7 +120,7 @@ abstract class StateTemplate extends StateSetter implements IStateful
     /**
      * @inheritdoc
      */
-    public function send($destination, Message $message)
+    public function send(string $destination, Message $message): bool
     {
         return $this->getClient()->send($destination, $message);
     }
@@ -152,7 +152,7 @@ abstract class StateTemplate extends StateSetter implements IStateful
     /**
      * @inheritdoc
      */
-    public function subscribe($destination, $selector, $ack, array $header = [])
+    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): int
     {
         throw new InvalidStateException($this, __FUNCTION__);
     }
@@ -176,7 +176,7 @@ abstract class StateTemplate extends StateSetter implements IStateful
     /**
      * @inheritdoc
      */
-    public function getSubscriptions()
+    public function getSubscriptions(): SubscriptionList
     {
         return new SubscriptionList();
     }

@@ -33,7 +33,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
      *
      * @return Subscription
      */
-    public function getLast()
+    public function getLast(): Subscription
     {
         return end($this->subscriptions);
     }
@@ -57,21 +57,17 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
     /**
      * @inheritdoc
      *
-     * @return \Iterator|Subscription[]
+     * @return \ArrayIterator|Subscription[]
      */
-    #[\ReturnTypeWillChange]
-    public function getIterator()
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->subscriptions);
     }
 
     /**
      * @inheritdoc
-     *
-     * @return bool
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->subscriptions[$offset]);
     }
@@ -81,8 +77,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
      *
      * @return Subscription
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet($offset): Subscription
     {
         return $this->subscriptions[$offset];
     }
@@ -90,8 +85,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->subscriptions[$offset] = $value;
     }
@@ -99,8 +93,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->subscriptions[$offset]);
     }
@@ -108,8 +101,7 @@ class SubscriptionList implements IteratorAggregate, ArrayAccess, Countable
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function count()
+    public function count(): int
     {
         return count($this->subscriptions);
     }

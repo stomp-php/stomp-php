@@ -34,7 +34,7 @@ interface IStateful
      * @param bool $requeue Requeue header not supported on all brokers
      * @return void
      */
-    public function nack(Frame $frame, $requeue = null);
+    public function nack(Frame $frame, ?bool $requeue = null);
 
     /**
      * Send a message.
@@ -43,7 +43,7 @@ interface IStateful
      * @param \Stomp\Transport\Message $message
      * @return bool
      */
-    public function send($destination, Message $message);
+    public function send(string $destination, Message $message): bool;
 
     /**
      * Begins an transaction.
@@ -72,12 +72,12 @@ interface IStateful
      * Returns the subscriptionId used for this.
      *
      * @param string $destination
-     * @param string $selector
+     * @param string|null $selector
      * @param string $ack
      * @param array  $header
      * @return int
      */
-    public function subscribe($destination, $selector, $ack, array $header = []);
+    public function subscribe(string $destination, ?string $selector, string $ack, array $header = []): int;
 
     /**
      * Unsubscribe from current or given destination.
@@ -85,7 +85,7 @@ interface IStateful
      * @param int $subscriptionId
      * @return void
      */
-    public function unsubscribe($subscriptionId = null);
+    public function unsubscribe(int $subscriptionId = null);
 
 
     /**
@@ -100,5 +100,5 @@ interface IStateful
      *
      * @return SubscriptionList
      */
-    public function getSubscriptions();
+    public function getSubscriptions(): SubscriptionList;
 }
