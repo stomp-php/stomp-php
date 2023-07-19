@@ -59,6 +59,9 @@ class ApolloTest extends ProtocolTestCase
         $this->assertIsUnsubscribeFrame($result);
     }
 
+    /**
+     * TODO: There is no NACK in Stomp version 1.0, so this is testing code that is in violation of the spec?
+     */
     public function testNackVersionZero()
     {
         $instance = $this->getProtocol(Version::VERSION_1_0);

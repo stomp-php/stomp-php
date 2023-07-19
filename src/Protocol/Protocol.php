@@ -212,13 +212,9 @@ class Protocol
         $ack = $this->createFrame('ACK');
         $ack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
-            if (isset($frame['ack'])) {
-                $ack['id'] = $frame['ack'];
-            } else {
-                $ack['id'] = $frame->getMessageId();
-            }
+            $ack['id'] = $frame['id'] ?: $frame->getMessageId();
         } else {
-            $ack['message-id'] = $frame->getMessageId();
+            $ack['message-id'] = $frame['message-id'] ?: $frame->getMessageId();
             if ($this->hasVersion(Version::VERSION_1_1)) {
                 $ack['subscription'] = $frame['subscription'];
             }
@@ -247,15 +243,14 @@ class Protocol
         $nack = $this->createFrame('NACK');
         $nack['transaction'] = $transactionId;
         if ($this->hasVersion(Version::VERSION_1_2)) {
-            $nack['id'] = $frame->getMessageId();
+            $nack['id'] = $frame['id'] ?: $frame->getMessageId();
         } else {
-            $nack['message-id'] = $frame->getMessageId();
+            $nack['message-id'] = $frame['message-id'] ?: $frame->getMessageId();
             if ($this->hasVersion(Version::VERSION_1_1)) {
                 $nack['subscription'] = $frame['subscription'];
             }
         }
 
-        $nack['message-id'] = $frame->getMessageId();
         return $nack;
     }
 

@@ -26,17 +26,7 @@ class OpenMq extends Protocol
      */
     public function getAckFrame(Frame $frame, ?string $transactionId = null): Frame
     {
-        $ack = $this->createFrame('ACK');
-        $ack['transaction'] = $transactionId;
-        if ($this->hasVersion(Version::VERSION_1_2)) {
-            if (isset($frame['ack'])) {
-                $ack['id'] = $frame['ack'];
-            } else {
-                $ack['id'] = $frame->getMessageId();
-            }
-        } else {
-            $ack['message-id'] = $frame->getMessageId();
-        }
+        $ack = parent::getAckFrame($frame, $transactionId);
         // spec quote: "ACK should always specify a "subscription" header for the subscription id
         //              that the message to be acked was delivered to ."
         // see https://mq.java.net/4.4-content/stomp-funcspec.html

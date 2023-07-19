@@ -119,8 +119,8 @@ class SimpleStompTest extends TestCase
             ],
             'nack' => [
                 'nack',
-                [new Frame('MESSAGE', ['ack' => 212])],
-                [$protocol->getNackFrame(new Frame('MESSAGE', ['ack' => 212])), false],
+                [new Frame('MESSAGE', ['id' => 212])],
+                [$protocol->getNackFrame(new Frame('MESSAGE', ['id' => 212])), false],
                 null
             ]
         ];
