@@ -32,7 +32,7 @@ class Bytes extends Message
     /**
      * @inheritdoc
      */
-    protected function getBodySize()
+    protected function getBodySize(): int
     {
         return count(unpack('c*', $this->getBody()));
     }

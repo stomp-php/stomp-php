@@ -124,9 +124,9 @@ class Parser
     /**
      * Parser constructor.
      *
-     * @param FrameFactory $factory
+     * @param FrameFactory|null $factory
      */
-    public function __construct(FrameFactory $factory = null)
+    public function __construct(?FrameFactory $factory = null)
     {
         $this->factory = $factory ?: new FrameFactory();
     }
@@ -137,7 +137,7 @@ class Parser
      * @param ConnectionObserver $observer
      * @return Parser
      */
-    public function setObserver(ConnectionObserver $observer)
+    public function setObserver(ConnectionObserver $observer): self
     {
         $this->observer = $observer;
         return $this;
@@ -149,7 +149,7 @@ class Parser
      *
      * @return FrameFactory
      */
-    public function getFactory()
+    public function getFactory(): ?FrameFactory
     {
         return $this->factory;
     }
@@ -157,9 +157,9 @@ class Parser
     /**
      * Set parser in legacy mode.
      *
-     * @param bool|false $legacy
+     * @param bool $legacy
      */
-    public function legacyMode($legacy = false)
+    public function legacyMode(bool $legacy = false)
     {
         $this->legacyMode = $legacy;
     }
@@ -170,7 +170,7 @@ class Parser
      * @param string $data
      * @return void
      */
-    public function addData($data)
+    public function addData(string $data)
     {
         $this->buffer .= $data;
     }
@@ -181,7 +181,7 @@ class Parser
      * @deprecated Will be removed in next version. Please use nextFrame().
      * @return Frame
      */
-    public function getFrame()
+    public function getFrame(): Frame
     {
         return $this->frame;
     }
@@ -191,7 +191,7 @@ class Parser
      *
      * @return null|Frame
      */
-    public function nextFrame()
+    public function nextFrame(): ?Frame
     {
         if ($this->parse()) {
             $frame = $this->getFrame();
@@ -212,7 +212,7 @@ class Parser
      *
      * @return bool
      */
-    public function parse()
+    public function parse(): bool
     {
         if ($this->buffer === '') {
             return false;
@@ -269,7 +269,7 @@ class Parser
      *
      * @return bool
      */
-    private function detectFrameHead()
+    private function detectFrameHead(): bool
     {
         $firstCrLf = strpos($this->buffer, self::HEADER_STOP_CR_LF, $this->offset);
         $firstLf = strpos($this->buffer, self::HEADER_STOP_LF, $this->offset);
@@ -294,7 +294,7 @@ class Parser
      *
      * @return bool
      */
-    private function detectFrameEnd()
+    private function detectFrameEnd(): bool
     {
         $bodySize = null;
         if ($this->expectedBodyLength) {
@@ -318,7 +318,7 @@ class Parser
      *
      * @param integer $bodySize
      */
-    private function setFrame($bodySize)
+    private function setFrame(int $bodySize)
     {
         $this->frame = $this->factory->createFrame(
             $this->command,
@@ -339,7 +339,7 @@ class Parser
      * @param string $source
      * @return void
      */
-    private function extractFrameMeta($source)
+    private function extractFrameMeta(string $source)
     {
         $headers = preg_split("/(\r?\n)+/", $source);
 
@@ -365,7 +365,7 @@ class Parser
      * @param string $value
      * @return string
      */
-    private function decodeHeaderValue($value)
+    private function decodeHeaderValue(string $value): string
     {
         if ($this->legacyMode) {
             return str_replace(['\n'], ["\n"], $value);
@@ -378,7 +378,7 @@ class Parser
      *
      * @return string
      */
-    public function flushBuffer()
+    public function flushBuffer(): string
     {
         $this->expectedBodyLength = null;
         $this->headers = [];

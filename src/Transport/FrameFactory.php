@@ -46,7 +46,7 @@ class FrameFactory
      * @param boolean $legacyMode stomp 1.0 mode (headers)
      * @return Frame
      */
-    public function createFrame($command, array $headers, $body, $legacyMode)
+    public function createFrame($command, array $headers, $body, $legacyMode): Frame
     {
         foreach ($this->resolver as $resolver) {
             if ($frame = $resolver($command, $headers, $body, $legacyMode)) {
@@ -65,7 +65,7 @@ class FrameFactory
      * @param boolean $legacyMode
      * @return Frame
      */
-    private function defaultFrame($command, array $headers, $body, $legacyMode)
+    private function defaultFrame($command, array $headers, $body, $legacyMode): Frame
     {
         $frame = new Frame($command, $headers, $body);
         $frame->legacyMode($legacyMode);
@@ -81,7 +81,7 @@ class FrameFactory
      * @param callable $callable
      * @return FrameFactory
      */
-    public function registerResolver($callable)
+    public function registerResolver($callable): FrameFactory
     {
         array_unshift($this->resolver, $callable);
         return $this;

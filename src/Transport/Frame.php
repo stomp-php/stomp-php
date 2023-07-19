@@ -75,7 +75,7 @@ class Frame implements ArrayAccess
      * @param array $header
      * @return Frame
      */
-    public function addHeaders(array $header)
+    public function addHeaders(array $header): self
     {
         $this->headers += $header;
         return $this;
@@ -86,9 +86,17 @@ class Frame implements ArrayAccess
      *
      * @return string
      */
-    public function getMessageId()
+    public function getMessageId(): string
     {
+        if (!isset($this['message-id'])) {
+            $this['message-id'] = $this->uuid();
+        }
         return $this['message-id'];
+    }
+
+    private function uuid(): string
+    {
+        return bin2hex(random_bytes(20));
     }
 
     /**
@@ -96,7 +104,7 @@ class Frame implements ArrayAccess
      *
      * @return boolean
      */
-    public function isErrorFrame()
+    public function isErrorFrame(): bool
     {
         return ($this->command == 'ERROR');
     }
@@ -104,9 +112,9 @@ class Frame implements ArrayAccess
     /**
      * Tell the frame that we expect an length header.
      *
-     * @param bool|false $expected
+     * @param bool $expected
      */
-    public function expectLengthHeader($expected = false)
+    public function expectLengthHeader(bool $expected = false)
     {
         $this->addLengthHeader = $expected;
     }
@@ -114,9 +122,9 @@ class Frame implements ArrayAccess
     /**
      * Enable legacy mode for this frame
      *
-     * @param bool|false $legacy
+     * @param bool $legacy
      */
-    public function legacyMode($legacy = false)
+    public function legacyMode(bool $legacy = false)
     {
         $this->legacyMode = $legacy;
     }
@@ -126,7 +134,7 @@ class Frame implements ArrayAccess
      *
      * @return bool
      */
-    public function isLegacyMode()
+    public function isLegacyMode(): bool
     {
         return $this->legacyMode;
     }
@@ -136,7 +144,7 @@ class Frame implements ArrayAccess
      *
      * @return string
      */
-    public function getCommand()
+    public function getCommand(): string
     {
         return $this->command;
     }
@@ -146,7 +154,7 @@ class Frame implements ArrayAccess
      *
      * @return string
      */
-    public function getBody()
+    public function getBody(): string
     {
         return $this->body;
     }
@@ -156,7 +164,7 @@ class Frame implements ArrayAccess
      *
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }
@@ -190,7 +198,7 @@ class Frame implements ArrayAccess
      *
      * @return int
      */
-    protected function getBodySize()
+    protected function getBodySize(): int
     {
         return strlen($this->body);
     }
@@ -201,7 +209,7 @@ class Frame implements ArrayAccess
      * @param string $value
      * @return string
      */
-    protected function encodeHeaderValue($value)
+    protected function encodeHeaderValue(string $value): string
     {
         if ($this->legacyMode) {
             return str_replace(["\n"], ['\n'], $value);
@@ -212,8 +220,7 @@ class Frame implements ArrayAccess
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->headers[$offset]);
     }
@@ -233,8 +240,7 @@ class Frame implements ArrayAccess
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($value !== null) {
             $this->headers[$offset] = $value;
@@ -245,8 +251,7 @@ class Frame implements ArrayAccess
     /**
      * @inheritdoc
      */
-    #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->headers[$offset]);
     }
