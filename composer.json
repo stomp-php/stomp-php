@@ -49,8 +49,8 @@
         "unit-tests": [
             "./vendor/bin/phpunit --no-configuration tests/Unit"
         ],
-        "static-analysis": [
-            "./vendor/bin/phpstan"
+        "phpstan": [
+            "./vendor/bin/phpstan analyse"
         ]
     }
 }

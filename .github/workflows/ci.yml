@@ -19,7 +19,14 @@ jobs:
           php-version: '7.4'
           tools: phpstan, composer:v2
 
-      - run: phpstan analyse
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run codesniffer
+        run: composer codestyle
+
+      - name: Run phpstan
+        run: phpstan analyse
 
   tests:
     runs-on: ubuntu-latest
