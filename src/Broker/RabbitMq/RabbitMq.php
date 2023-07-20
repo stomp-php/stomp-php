@@ -38,12 +38,12 @@ class RabbitMq extends Protocol
     /**
      * RabbitMq subscribe frame.
      *
-     * @param string $destination
-     * @param string|null $subscriptionId
-     * @param string $ack
-     * @param string|null $selector
+     * @param string $destination The destination to subscribe to.
+     * @param string|null $subscriptionId A subscription id.
+     * @param string $ack The ACK selection.
+     * @param string|null $selector An Sql 92 selector.
      * @param boolean|false $durable durable subscription
-     * @return Frame
+     * @return Frame The SUBSCRIBE frame
      */
     public function getSubscribeFrame(
         string $destination,
@@ -63,10 +63,10 @@ class RabbitMq extends Protocol
     /**
      * RabbitMq unsubscribe frame.
      *
-     * @param string $destination
-     * @param string|null $subscriptionId
-     * @param bool|false $durable
-     * @return \Stomp\Transport\Frame
+     * @param string $destination The destination to unsubscribe from.
+     * @param string|null $subscriptionId The subscription id to unsubscribe from.
+     * @param bool $durable Whether this was a durable subscription.
+     * @return \Stomp\Transport\Frame The UNSUBSCRIBE frame
      */
     public function getUnsubscribeFrame(
         string $destination,
@@ -105,32 +105,18 @@ class RabbitMq extends Protocol
     /**
      * Get message not acknowledge frame.
      *
-     * @param \Stomp\Transport\Frame $frame
-     * @param string|null $transactionId
+     * @param \Stomp\Transport\Frame $frame The frame to generate a NACK frame for.
+     * @param string|null $transactionId A transaction ID (if applicable)
      * @param bool|null $requeue Requeue header supported on RabbitMQ >= 3.4, ignored in prior versions
-     * @return \Stomp\Transport\Frame
+     * @return \Stomp\Transport\Frame The NACK frame
      * @throws StompException
      */
     public function getNackFrame(Frame $frame, ?string $transactionId = null, ?bool $requeue = null): Frame
     {
-        if ($this->getVersion() === Version::VERSION_1_0) {
-            throw new StompException('Stomp Version 1.0 has no support for NACK Frames.');
-        }
-        $nack = $this->createFrame('NACK');
+        $nack = parent::getNackFrame($frame, $transactionId);
         if ($requeue !== null) {
             $nack->addHeaders(['requeue' => $requeue ? 'true' : 'false']);
         }
-        $nack['transaction'] = $transactionId;
-        if ($this->hasVersion(Version::VERSION_1_2)) {
-            $nack['id'] = $frame->getMessageId();
-        } else {
-            $nack['message-id'] = $frame->getMessageId();
-            if ($this->hasVersion(Version::VERSION_1_1)) {
-                $nack['subscription'] = $frame['subscription'];
-            }
-        }
-
-        $nack['message-id'] = $frame->getMessageId();
         return $nack;
     }
 }

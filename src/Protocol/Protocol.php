@@ -48,9 +48,9 @@ class Protocol
     /**
      * Setup stomp protocol with configuration.
      *
-     * @param string|null $clientId
-     * @param string $version
-     * @param string|null $server
+     * @param string|null $clientId A client ID.
+     * @param string $version The Stomp version to use.
+     * @param string|null $server The server identifying string.
      */
     public function __construct(?string $clientId, string $version = Version::VERSION_1_0, ?string $server = null)
     {
@@ -231,6 +231,7 @@ class Protocol
      * @return \Stomp\Transport\Frame The NACK frame.
      * @throws StompException If protocol using Stomp version 1.0
      * @throws \LogicException If requeue header specified (RabbitMQ specific NOT Stomp).
+     * TODO: Requeue is only for RabbitMQ and is not in Stomp spec, should be specific to that protocol.
      */
     public function getNackFrame(Frame $frame, ?string $transactionId = null, ?bool $requeue = null): Frame
     {

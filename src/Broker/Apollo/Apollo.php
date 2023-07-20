@@ -24,12 +24,12 @@ class Apollo extends Protocol
     /**
      * Apollo subscribe frame.
      *
-     * @param string $destination
-     * @param string|null $subscriptionId
-     * @param string $ack
-     * @param string|null $selector
+     * @param string $destination The destination to subscribe to.
+     * @param string|null $subscriptionId A subscription id.
+     * @param string $ack The ACK selection.
+     * @param string|null $selector An Sql 92 selector.
      * @param boolean $durable durable subscription
-     * @return \Stomp\Transport\Frame
+     * @return \Stomp\Transport\Frame The SUBSCRIBE frame
      */
     public function getSubscribeFrame(
         string $destination,
@@ -48,10 +48,10 @@ class Apollo extends Protocol
     /**
      * Apollo unsubscribe frame.
      *
-     * @param string $destination
-     * @param string|null $subscriptionId
-     * @param bool|false $durable
-     * @return \Stomp\Transport\Frame
+     * @param string $destination The destination to unsubscribe from.
+     * @param string|null $subscriptionId The subscription id to unsubscribe from.
+     * @param bool $durable Whether this was a durable subscription.
+     * @return \Stomp\Transport\Frame The UNSUBSCRIBE frame
      */
     public function getUnsubscribeFrame(
         string $destination,
@@ -68,7 +68,7 @@ class Apollo extends Protocol
     /**
      * @inheritdoc
      *
-     * TODO: Apollo uses some 'ack' header for ack and nack messages. This is not spec compliant.
+     * @note Apollo seems to allow 'ack' header for ack messages. This is not spec compliant.
      */
     public function getAckFrame(Frame $frame, string $transactionId = null): Frame
     {
@@ -88,7 +88,7 @@ class Apollo extends Protocol
     /**
      * @inheritdoc
      *
-     * TODO: Apollo uses some 'ack' header for ack and nack messages. This is not spec compliant.
+     * @note Apollo seems to allow 'ack' header for nack messages. This is not spec compliant.
      */
     public function getNackFrame(Frame $frame, ?string $transactionId = null, ?bool $requeue = null): Frame
     {
