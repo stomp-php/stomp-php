@@ -80,7 +80,7 @@ class Version
         if (stristr($server, 'activemq') !== false) {
             return new ActiveMq($clientId, $version, $server);
         }
-        if (stristr($server, 'open message queue') !== false) {
+        if (stristr($server, 'open message queue') !== false || stristr($server, 'openmq') !== false) {
             return new OpenMq($clientId, $version, $server);
         }
         return new Protocol($clientId, $version, $server);
