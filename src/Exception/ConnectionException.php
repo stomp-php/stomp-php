@@ -30,7 +30,7 @@ class ConnectionException extends StompException
      * @param array $connection
      * @param ConnectionException $previous
      */
-    public function __construct($info, array $connection = [], ConnectionException $previous = null)
+    public function __construct($info, array $connection = [], ?ConnectionException $previous = null)
     {
         $this->connectionInfo = $connection;
 

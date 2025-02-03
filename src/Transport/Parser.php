@@ -126,7 +126,7 @@ class Parser
      *
      * @param FrameFactory $factory
      */
-    public function __construct(FrameFactory $factory = null)
+    public function __construct(?FrameFactory $factory = null)
     {
         $this->factory = $factory ?: new FrameFactory();
     }
