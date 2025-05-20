@@ -34,6 +34,6 @@ class Bytes extends Message
      */
     protected function getBodySize()
     {
-        return count(unpack('c*', $this->getBody()));
+        return ini_get('mbstring.func_overload') ? mb_strlen($this->getBody(), '8bit') : strlen($this->getBody());
     }
 }
