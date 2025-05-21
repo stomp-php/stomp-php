@@ -104,7 +104,7 @@ class Protocol
      * @param string $ack
      * @param string $selector
      * @return \Stomp\Transport\Frame
-     * @throws StompException;
+     * @throws StompException
      */
     public function getSubscribeFrame($destination, $subscriptionId = null, $ack = 'auto', $selector = null)
     {
