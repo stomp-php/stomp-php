@@ -26,6 +26,7 @@ class ProducerTransactionState extends ProducerState
     protected function init(array $options = [])
     {
         $this->initTransaction($options);
+        /** @phpstan-ignore-next-line staticMethod.resultUnused */
         parent::init($options);
     }
 
