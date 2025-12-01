@@ -31,7 +31,9 @@ class ConnectionTest extends TestCase
     {
         $connection = new Connection('failover://(tcp://host1:61614,ssl://host2:61612)');
         $getHostList = new ReflectionMethod($connection, 'getHostList');
-        $getHostList->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $getHostList->setAccessible(true);
+        }
 
         $list = $getHostList->invoke($connection);
 
@@ -66,7 +68,9 @@ class ConnectionTest extends TestCase
     {
         $connection = new Connection($uri);
         $shouldRandomizeHosts = new ReflectionMethod($connection, 'shouldRandomizeHosts');
-        $shouldRandomizeHosts->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $shouldRandomizeHosts->setAccessible(true);
+        }
 
         $this->assertEquals($expected, $shouldRandomizeHosts->invoke($connection));
     }
@@ -75,7 +79,9 @@ class ConnectionTest extends TestCase
     {
         $connection = new Connection('tcp://host1');
         $getHostList = new ReflectionMethod($connection, 'getHostList');
-        $getHostList->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $getHostList->setAccessible(true);
+        }
 
         $hostList = $getHostList->invoke($connection);
         $host = array_shift($hostList);
@@ -88,7 +94,9 @@ class ConnectionTest extends TestCase
     {
         $connection = new Connection('tcp://host_test');
         $getHostList = new ReflectionMethod($connection, 'getHostList');
-        $getHostList->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $getHostList->setAccessible(true);
+        }
 
         $hostList = $getHostList->invoke($connection);
         $host = array_shift($hostList);
@@ -100,7 +108,9 @@ class ConnectionTest extends TestCase
     {
         $connection = new Connection('tcp://host1:55');
         $getHostList = new ReflectionMethod($connection, 'getHostList');
-        $getHostList->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $getHostList->setAccessible(true);
+        }
 
         $hostList = $getHostList->invoke($connection);
         $host = array_shift($hostList);
