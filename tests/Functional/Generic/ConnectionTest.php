@@ -44,10 +44,20 @@ class ConnectionTest extends TestCase
         } catch (ConnectionException $exception) {
             $this->assertStringContainsString('Was not possible to read data from stream.', $exception->getMessage());
         } catch (\TypeError $exception) {
-            $this->assertStringContainsString(
-                'fread(): supplied resource is not a valid stream resource',
-                $exception->getMessage()
-            );
+            // PHP < 8.5: 'fread(): supplied resource is not a valid stream resource'
+            // PHP >= 8.5: 'fread(): Argument #1 ($stream) must be an open stream resource'
+            if (PHP_VERSION_ID < 80500) {
+                $this->assertStringContainsString(
+                    'fread(): supplied resource is not a valid stream resource',
+                    $exception->getMessage()
+                );
+
+            } else {
+                $this->assertStringContainsString(
+                    'fread(): Argument #1 ($stream) must be an open stream resource',
+                    $exception->getMessage()
+                );
+            }
         }
     }
 
