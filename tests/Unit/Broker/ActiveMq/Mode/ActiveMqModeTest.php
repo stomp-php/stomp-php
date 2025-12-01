@@ -35,8 +35,9 @@ class ActiveMqModeTest extends TestCase
         $activeMqMode = $this->getMockForAbstractClass(ActiveMqMode::class, [$client]);
 
         $getProtocol = new ReflectionMethod($activeMqMode, 'getProtocol');
-        $getProtocol->setAccessible(true);
-
+        if (PHP_VERSION_ID < 80100) {
+            $getProtocol->setAccessible(true);
+        }
         $this->expectException(UnsupportedBrokerException::class);
 
         $getProtocol->invoke($activeMqMode);

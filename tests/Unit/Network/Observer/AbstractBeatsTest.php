@@ -33,7 +33,9 @@ class AbstractBeatsTest extends TestCase
         $instance = $this->getInstance();
 
         $checkDelayed = new \ReflectionMethod($instance, 'checkDelayed');
-        $checkDelayed->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $checkDelayed->setAccessible(true);
+        }
 
         $instance->expects($this->once())->method('onDelay');
         $this->injectActivatedWithServerActivityBeatUpdate($instance, 1);
@@ -51,7 +53,9 @@ class AbstractBeatsTest extends TestCase
         $this->injectActivatedWithServerActivityBeatUpdate($instance, 500);
 
         $checkDelayed = new \ReflectionMethod($instance, 'checkDelayed');
-        $checkDelayed->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $checkDelayed->setAccessible(true);
+        }
         $checkDelayed->invoke($instance);
         $this->assertFalse($instance->isDelayed());
     }
@@ -173,7 +177,9 @@ class AbstractBeatsTest extends TestCase
         $this->assertEnabledOnce($instance, $frame, $interval, $interval);
         $instance->receivedFrame($frame);
         $remember = new \ReflectionMethod($instance, 'rememberActivity');
-        $remember->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $remember->setAccessible(true);
+        }
         $instance->expects($this->any())
             ->method('onServerActivity')
             ->willReturnCallback(
@@ -221,7 +227,9 @@ class AbstractBeatsTest extends TestCase
     private function injectClientInterval(AbstractBeats $instance, $interval)
     {
         $property = new \ReflectionProperty($instance, 'intervalClient');
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
         $property->setValue($instance, $interval);
     }
 
@@ -235,7 +243,9 @@ class AbstractBeatsTest extends TestCase
     private function injectServerInterval(AbstractBeats $instance, $interval)
     {
         $property = new \ReflectionProperty($instance, 'intervalServer');
-        $property->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $property->setAccessible(true);
+        }
         $property->setValue($instance, $interval);
     }
 

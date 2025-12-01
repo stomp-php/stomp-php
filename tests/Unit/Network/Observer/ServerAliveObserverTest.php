@@ -26,16 +26,22 @@ class ServerAliveObserverTest extends TestCase
     {
         $instance = new ServerAliveObserver();
         $method = new \ReflectionMethod($instance, 'onHeartbeatFrame');
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
 
         $method->invoke($instance, new Frame(AbstractBeats::FRAME_CLIENT_CONNECT), [10, 20]);
         $clientProperty = new \ReflectionProperty($instance, 'intervalClient');
-        $clientProperty->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $clientProperty->setAccessible(true);
+        }
         self::assertEquals(20, $clientProperty->getValue($instance));
 
         $method->invoke($instance, new Frame(AbstractBeats::FRAME_SERVER_CONNECTED), [30, 40]);
         $serverProperty = new \ReflectionProperty($instance, 'intervalServer');
-        $serverProperty->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $serverProperty->setAccessible(true);
+        }
         self::assertEquals(30, $serverProperty->getValue($instance));
     }
 
@@ -43,7 +49,9 @@ class ServerAliveObserverTest extends TestCase
     {
         $instance = new ServerAliveObserver(5);
         $method = new \ReflectionMethod($instance, 'calculateInterval');
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
         self::assertEquals(20, $method->invoke($instance, 4));
     }
 
@@ -54,7 +62,9 @@ class ServerAliveObserverTest extends TestCase
 
         $instance = new ServerAliveObserver();
         $method = new \ReflectionMethod($instance, 'onDelay');
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
         $method->invoke($instance);
     }
 
@@ -78,7 +88,9 @@ class ServerAliveObserverTest extends TestCase
                 ->method($method);
         }
         $method = new \ReflectionMethod($instance, $activityMethod);
-        $method->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $method->setAccessible(true);
+        }
         $method->invoke($instance);
     }
 

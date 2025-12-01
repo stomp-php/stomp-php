@@ -163,7 +163,9 @@ class ClientTest extends TestCase
         $stomp = $this->getStompWithInjectedMockedConnectionReadResult($receiptFrame);
 
         $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
-        $waitForReceipt->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $waitForReceipt->setAccessible(true);
+        }
 
         $this->expectException(StompException::class);
 
@@ -177,7 +179,9 @@ class ClientTest extends TestCase
 
         $stomp->setReceiptWait(2.9);
         $calculateWaitEnd = new ReflectionMethod($stomp, 'calculateReceiptWaitEnd');
-        $calculateWaitEnd->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $calculateWaitEnd->setAccessible(true);
+        }
 
         $now = microtime(true);
         $result = $calculateWaitEnd->invoke($stomp);
@@ -195,7 +199,9 @@ class ClientTest extends TestCase
         $stomp->setReceiptWait(0);
 
         $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
-        $waitForReceipt->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $waitForReceipt->setAccessible(true);
+        }
 
         $this->expectException(\Stomp\Exception\MissingReceiptException::class);
         $this->expectExceptionMessage('my-expected-receive-id');
@@ -432,7 +438,9 @@ class ClientTest extends TestCase
          */
 
         $waitForReceipt = new ReflectionMethod($stomp, 'waitForReceipt');
-        $waitForReceipt->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $waitForReceipt->setAccessible(true);
+        }
 
         $result = $waitForReceipt->invoke($stomp, 'my-id');
 

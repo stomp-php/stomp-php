@@ -95,12 +95,16 @@ class StatefulStompTest extends TestCase
          */
         $stateful = new StatefulStomp($client);
         $setState = new ReflectionMethod($stateful, 'setState');
-        $setState->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $setState->setAccessible(true);
+        }
 
         $stateInstance = new $state($client, $stateful);
 
         $initState = new ReflectionMethod($stateInstance, 'init');
-        $initState->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $initState->setAccessible(true);
+        }
         $initState->invoke($stateInstance, $init);
 
         $setState->invoke($stateful, $stateInstance);
