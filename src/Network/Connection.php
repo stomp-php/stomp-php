@@ -202,6 +202,7 @@ class Connection
     public function setWaitCallback($waitCallback)
     {
         if ($waitCallback !== null) {
+            /** @phpstan-ignore error-identifier */
             if (!is_callable($waitCallback)) {
                 throw new \InvalidArgumentException('$waitCallback must be callable.');
             }
