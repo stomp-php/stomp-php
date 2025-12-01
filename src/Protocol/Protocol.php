@@ -267,11 +267,11 @@ class Protocol
     /**
      * Client Id is set
      *
-     * @return boolean
+     * @return bool
      */
     public function hasClientId()
     {
-        return (boolean) $this->clientId;
+        return (bool) $this->clientId;
     }
 
     /**
